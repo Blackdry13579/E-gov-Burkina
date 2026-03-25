@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import '../../../shared/presentation/widgets/citizen_bottom_nav.dart';
+import 'package:url_launcher/url_launcher.dart';
+
+
 class DossierApprouvePage extends StatelessWidget {
   static const routeName = '/dossier-approuve';
 
@@ -10,6 +13,7 @@ class DossierApprouvePage extends StatelessWidget {
   final String tailleFichier;
   final String delivrePar;
   final String validite;
+  final String? documentUrl;
 
   const DossierApprouvePage({
     super.key,
@@ -18,6 +22,7 @@ class DossierApprouvePage extends StatelessWidget {
     required this.tailleFichier,
     required this.delivrePar,
     required this.validite,
+    this.documentUrl,
   });
 
   // Colors
@@ -235,19 +240,30 @@ class DossierApprouvePage extends StatelessWidget {
                   ),
 
                   // Bouton télécharger
-                  Container(
-                    width: 44,
-                    height: 44,
-                    decoration: const BoxDecoration(
-                      color: primaryBlue,
-                      shape: BoxShape.circle,
-                    ),
-                    child: const Icon(
-                      Icons.download_rounded,
-                      color: Colors.white,
-                      size: 22,
+                  GestureDetector(
+                    onTap: () async {
+                      if (documentUrl != null && documentUrl!.isNotEmpty) {
+                        final uri = Uri.parse(documentUrl!);
+                        if (await canLaunchUrl(uri)) {
+                          await launchUrl(uri, mode: LaunchMode.externalApplication);
+                        }
+                      }
+                    },
+                    child: Container(
+                      width: 44,
+                      height: 44,
+                      decoration: const BoxDecoration(
+                        color: primaryBlue,
+                        shape: BoxShape.circle,
+                      ),
+                      child: const Icon(
+                        Icons.download_rounded,
+                        color: Colors.white,
+                        size: 22,
+                      ),
                     ),
                   ),
+
                 ],
               ),
             ),
@@ -340,16 +356,23 @@ class DossierApprouvePage extends StatelessWidget {
             ),
             const SizedBox(height: 32),
 
-            // E. BOUTON Imprimer mon document
+            // E. BOUTON Voir mon document
             SizedBox(
               width: double.infinity,
               height: 56,
               child: ElevatedButton.icon(
-                onPressed: () {},
+                onPressed: () async {
+                  if (documentUrl != null && documentUrl!.isNotEmpty) {
+                    final uri = Uri.parse(documentUrl!);
+                    if (await canLaunchUrl(uri)) {
+                      await launchUrl(uri, mode: LaunchMode.externalApplication);
+                    }
+                  }
+                },
                 iconAlignment: IconAlignment.end,
                 icon: const Icon(Icons.print_rounded, size: 20),
                 label: Text(
-                  "Imprimer mon document",
+                  documentUrl != null && documentUrl!.isNotEmpty ? "Télécharger mon document (PDF)" : "Génération PDF en attente...",
                   style: GoogleFonts.inter(
                     fontSize: 16,
                     fontWeight: FontWeight.w700,

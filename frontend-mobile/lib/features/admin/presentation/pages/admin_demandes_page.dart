@@ -1,12 +1,13 @@
+import 'package:egov_mobile/core/providers/auth_provider.dart';
+import 'package:egov_mobile/core/providers/demande_provider.dart';
+import 'package:egov_mobile/features/shared/domain/models/demande_model.dart';
 import 'package:egov_mobile/features/shared/presentation/widgets/egov_main_app_bar.dart';
 import 'package:egov_mobile/features/shared/presentation/widgets/admin_bottom_nav.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
 
 import '../../../agent/presentation/pages/detail_demande_page.dart';
-import 'admin_users_page.dart';
-import 'admin_documents_page.dart';
-import 'admin_home_page.dart';
 
 // ─── Couleurs globales ──────────────────────────────────────────────────────
 const _kNavy       = Color(0xFF1a237e);
@@ -22,94 +23,6 @@ const _kPendingFg  = Color(0xFF991b1b);
 const _kValidBg    = Color(0xFFdcfce7);
 const _kValidFg    = Color(0xFF16a34a);
 
-// ─── Modèle léger ──────────────────────────────────────────────────────────
-class _Demande {
-  final String type;
-  final String citoyen;
-  final String reference;
-  final String service;
-  final String date;
-  final String statut; // 'EN ATTENTE' | 'VALIDÉE' | 'REJETÉE'
-
-  const _Demande({
-    required this.type,
-    required this.citoyen,
-    required this.reference,
-    required this.service,
-    required this.date,
-    required this.statut,
-  });
-}
-
-// ─── Données mock ───────────────────────────────────────────────────────────
-const _allDemandes = [
-  _Demande(
-    type: 'Acte Naissance',
-    citoyen: 'Jean-Baptiste OUÉDRAOGO',
-    reference: 'CDB-2026-001234',
-    service: 'Mairie',
-    date: '12/10/2026',
-    statut: 'EN ATTENTE',
-  ),
-  _Demande(
-    type: 'Casier Judiciaire',
-    citoyen: 'Fatou DIALLO',
-    reference: 'CDB-2026-001235',
-    service: 'Justice',
-    date: '11/10/2026',
-    statut: 'VALIDÉE',
-  ),
-  _Demande(
-    type: 'CNIB Renouvellement',
-    citoyen: 'Idrissa SAWADOGO',
-    reference: 'CDB-2026-001236',
-    service: 'Police',
-    date: '10/10/2026',
-    statut: 'EN ATTENTE',
-  ),
-  _Demande(
-    type: 'Certificat de Nationalité',
-    citoyen: 'Awa KOULIBALY',
-    reference: 'CDB-2026-005678',
-    service: 'Justice',
-    date: '09/10/2026',
-    statut: 'EN ATTENTE',
-  ),
-  _Demande(
-    type: 'Légalisation de Signature',
-    citoyen: 'Issouf SAWADOGO',
-    reference: 'MAI-2026-0092-P',
-    service: 'Mairie',
-    date: '08/10/2026',
-    statut: 'VALIDÉE',
-  ),
-  _Demande(
-    type: 'Casier Judiciaire',
-    citoyen: 'Ibrahim SANOU',
-    reference: 'CDB-2026-009901',
-    service: 'Justice',
-    date: '07/10/2026',
-    statut: 'REJETÉE',
-  ),
-  _Demande(
-    type: 'Extrait de naissance',
-    citoyen: 'Paul KABRÉ',
-    reference: 'MAI-2026-1122-K',
-    service: 'Mairie',
-    date: '06/10/2026',
-    statut: 'EN ATTENTE',
-  ),
-  _Demande(
-    type: 'Certificat de Nationalité',
-    citoyen: 'Sylvie VOKOUMA',
-    reference: 'JUS-2026-3344-V',
-    service: 'Justice',
-    date: '05/10/2026',
-    statut: 'EN ATTENTE',
-  ),
-];
-
-// ───────────────────────────────────────────────────────────────────────────
 class AdminDemandesPage extends StatefulWidget {
   const AdminDemandesPage({super.key});
 
@@ -121,7 +34,7 @@ class AdminDemandesPage extends StatefulWidget {
 
 class _AdminDemandesPageState extends State<AdminDemandesPage> {
   String _selectedService = 'Tous';
-  String _selectedStatut  = 'Tout';
+  String _selectedStatus  = 'TOUS';
   String _searchQuery     = '';
 
   final _searchCtrl = TextEditingController();
@@ -133,6 +46,13 @@ class _AdminDemandesPageState extends State<AdminDemandesPage> {
   void initState() {
     super.initState();
     _searchCtrl.addListener(() => setState(() => _searchQuery = _searchCtrl.text));
+    
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final token = context.read<AuthProvider>().token;
+      if (token != null) {
+        context.read<DemandeProvider>().fetchAllDemandes(token: token);
+      }
+    });
   }
 
   @override
@@ -141,92 +61,103 @@ class _AdminDemandesPageState extends State<AdminDemandesPage> {
     super.dispose();
   }
 
-  // ── Filtrage ──────────────────────────────────────────────────────────────
-  List<_Demande> get _filtered {
-    var list = List<_Demande>.from(_allDemandes);
+  // Suppression de l'ancien getter _filtered car remplacé par _filter(...)
 
-    if (_selectedService != 'Tous') {
-      list = list.where((d) =>
-          d.service.toLowerCase() == _selectedService.toLowerCase()).toList();
-    }
-
-    final statutMap = {
-      'En attente': 'EN ATTENTE',
-      'Validée':    'VALIDÉE',
-      'Rejetée':    'REJETÉE',
-    };
-    if (_selectedStatut != 'Tout') {
-      final target = statutMap[_selectedStatut];
-      list = list.where((d) => d.statut == target).toList();
-    }
-
-    if (_searchQuery.isNotEmpty) {
-      final q = _searchQuery.toLowerCase();
-      list = list.where((d) =>
-          d.type.toLowerCase().contains(q) ||
-          d.citoyen.toLowerCase().contains(q) ||
-          d.reference.toLowerCase().contains(q)).toList();
-    }
-
-    return list;
+  List<DemandeModel> _filter(List<DemandeModel> demandes) {
+    return demandes.where((d) {
+      final bool matchesSearch = d.reference.toLowerCase().contains(_searchQuery.toLowerCase()) ||
+          d.citoyenNom.toLowerCase().contains(_searchQuery.toLowerCase()) ||
+          d.typeDocument.toLowerCase().contains(_searchQuery.toLowerCase());
+      
+      final bool matchesService = _selectedService == 'Tous' || 
+          d.service.toLowerCase() == _selectedService.toLowerCase();
+      
+      final bool matchesStatus = _selectedStatus == 'TOUS' || 
+          d.statut.toUpperCase() == _selectedStatus.toUpperCase();
+          
+      return matchesSearch && matchesService && matchesStatus;
+    }).toList();
   }
 
-  int get _enAttenteCount =>
-      _allDemandes.where((d) => d.statut == 'EN ATTENTE').length;
+  int get _enAttenteCount {
+    final allDemandes = context.read<DemandeProvider>().demandes;
+    return allDemandes.where((d) {
+      final st = d.statut.toUpperCase();
+      return st == 'EN ATTENTE' || st == 'EN_ATTENTE';
+    }).length;
+  }
 
   int _countByStatut(String key) {
-    final statutMap = {
-      'En attente': 'EN ATTENTE',
-      'Validée':    'VALIDÉE',
-      'Rejetée':    'REJETÉE',
-    };
-    return _allDemandes.where((d) => d.statut == statutMap[key]).length;
+    final allDemandes = context.read<DemandeProvider>().demandes;
+    if (key == 'Tout') return allDemandes.length;
+    
+    // Normalisation de la clé
+    final normalizedKey = (key == 'En attente' ? 'EN ATTENTE' : key.toUpperCase()).replaceAll('É', 'E');
+    
+    return allDemandes.where((d) {
+       final st = d.statut.toUpperCase().replaceAll('É', 'E');
+       return st == normalizedKey || st == normalizedKey.replaceAll(' ', '_');
+    }).length;
   }
 
-  // ── BUILD ─────────────────────────────────────────────────────────────────
+  void _showDetail(DemandeModel d) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => AgentDetailDemandePage(
+          initialDemande: d,
+          isAdmin: true,
+          readOnly: true,
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    final filtered = _filtered;
-
+    final filteredList = _filter(context.watch<DemandeProvider>().demandes);
+    
     return Scaffold(
       backgroundColor: _kBg,
-      appBar: _appBar(),
-      body: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _header(filtered.length),
-            _searchBar(),
-            _filterSection('SERVICES ADMINISTRATIFS', _services, _selectedService,
-                (v) => setState(() => _selectedService = v)),
-            _filterSection('FILTRER PAR STATUT', _statuts, _selectedStatut,
-                (v) => setState(() => _selectedStatut = v),
-                showCounts: true),
-            const SizedBox(height: 8),
-            if (filtered.isEmpty)
-              SizedBox(height: 300, child: _emptyState())
-            else
-              ListView.separated(
-                physics: const NeverScrollableScrollPhysics(),
-                shrinkWrap: true,
-                padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
-                itemCount: filtered.length,
-                separatorBuilder: (_, __) => const SizedBox(height: 16),
-                itemBuilder: (_, i) => _RequestCard(demande: filtered[i]),
-              ),
-          ],
-        ),
+      appBar: const EgovMainAppBar(title: 'GESTION DES DEMANDES'),
+      body: Consumer<DemandeProvider>(
+        builder: (context, demandeProvider, _) {
+          if (demandeProvider.isLoading && demandeProvider.demandes.isEmpty) {
+            return const Center(child: CircularProgressIndicator(color: _kNavy));
+          }
+          
+          return SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _header(filteredList.length),
+                _searchBar(),
+                _filterSection('SERVICES ADMINISTRATIFS', _services, _selectedService,
+                    (v) => setState(() => _selectedService = v)),
+                _filterSection('FILTRER PAR STATUT', _statuts, _selectedStatus,
+                    (v) => setState(() => _selectedStatus = v),
+                    showCounts: true),
+                const SizedBox(height: 8),
+                if (filteredList.isEmpty)
+                  SizedBox(height: 300, child: _emptyState())
+                else
+                  ListView.separated(
+                    physics: const NeverScrollableScrollPhysics(),
+                    shrinkWrap: true,
+                    padding: const EdgeInsets.fromLTRB(16, 8, 16, 120),
+                    itemCount: filteredList.length,
+                    separatorBuilder: (_, __) => const SizedBox(height: 16),
+                    itemBuilder: (_, i) => _RequestCard(demande: filteredList[i]),
+                  ),
+              ],
+            ),
+          );
+        },
       ),
       bottomNavigationBar: const AdminBottomNav(currentIndex: 1),
     );
   }
 
-  // ── AppBar ────────────────────────────────────────────────────────────────
-  PreferredSizeWidget _appBar() {
-    return const EgovMainAppBar(title: 'GESTION DES DEMANDES');
-  }
-
-  // ── Header ────────────────────────────────────────────────────────────────
   Widget _header(int total) {
     return Container(
       color: Colors.white,
@@ -272,27 +203,23 @@ class _AdminDemandesPageState extends State<AdminDemandesPage> {
     );
   }
 
-  // ── Search bar ────────────────────────────────────────────────────────────
   Widget _searchBar() {
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
       child: Container(
         height: 52,
         decoration: BoxDecoration(
-          color: _kBg,
+          color: Colors.white,
           borderRadius: BorderRadius.circular(14),
+          border: Border.all(color: _kBorderGray),
         ),
         child: TextField(
           controller: _searchCtrl,
           style: GoogleFonts.publicSans(fontSize: 14, color: _kDark),
           decoration: InputDecoration(
-            hintText: 'Rechercher...',
+            hintText: 'Rechercher par référence, citoyen...',
             hintStyle: GoogleFonts.publicSans(fontSize: 14, color: _kGray),
-            prefixIcon: const Padding(
-              padding: EdgeInsets.only(left: 16, right: 10),
-              child: Icon(Icons.search_rounded, color: _kGray, size: 22),
-            ),
-            prefixIconConstraints: const BoxConstraints(minWidth: 0, minHeight: 0),
+            prefixIcon: const Icon(Icons.search_rounded, color: _kGray, size: 22),
             border: InputBorder.none,
             contentPadding: const EdgeInsets.symmetric(vertical: 16),
           ),
@@ -301,14 +228,7 @@ class _AdminDemandesPageState extends State<AdminDemandesPage> {
     );
   }
 
-  // ── Filtre générique ──────────────────────────────────────────────────────
-  Widget _filterSection(
-    String label,
-    List<String> options,
-    String current,
-    void Function(String) onSelect, {
-    bool showCounts = false,
-  }) {
+  Widget _filterSection(String label, List<String> options, String current, void Function(String) onSelect, {bool showCounts = false}) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -347,12 +267,11 @@ class _AdminDemandesPageState extends State<AdminDemandesPage> {
 
   String _chipLabel(String opt, bool showCounts) {
     if (!showCounts) return opt;
-    if (opt == 'Tout') return 'Tout ${_allDemandes.length}';
+    if (opt == 'Tout') return 'Tout ${context.read<DemandeProvider>().demandes.length}';
     final count = _countByStatut(opt);
     return '$opt $count';
   }
 
-  // ── Empty state ───────────────────────────────────────────────────────────
   Widget _emptyState() {
     return Center(
       child: Column(
@@ -370,17 +289,12 @@ class _AdminDemandesPageState extends State<AdminDemandesPage> {
   }
 }
 
-// ─── Chip réutilisable ────────────────────────────────────────────────────────
 class _Chip extends StatelessWidget {
   final String label;
   final bool active;
   final VoidCallback onTap;
 
-  const _Chip({
-    required this.label,
-    required this.active,
-    required this.onTap,
-  });
+  const _Chip({required this.label, required this.active, required this.onTap});
 
   @override
   Widget build(BuildContext context) {
@@ -391,9 +305,7 @@ class _Chip extends StatelessWidget {
         decoration: BoxDecoration(
           color: active ? _kNavy : Colors.white,
           borderRadius: BorderRadius.circular(20),
-          border: active
-              ? null
-              : Border.all(color: _kBorderGray, width: 1.5),
+          border: active ? null : Border.all(color: _kBorderGray, width: 1.5),
         ),
         child: Text(
           label,
@@ -408,27 +320,20 @@ class _Chip extends StatelessWidget {
   }
 }
 
-// ─── Card de demande ──────────────────────────────────────────────────────────
 class _RequestCard extends StatelessWidget {
-  final _Demande demande;
+  final DemandeModel demande;
   const _RequestCard({required this.demande});
 
   @override
   Widget build(BuildContext context) {
     final isEnAttente = demande.statut == 'EN ATTENTE';
-    final isValidee   = demande.statut == 'VALIDÉE';
+    final isValidee   = demande.statut == 'VALIDEE';
 
     final Color badgeBg  = isValidee ? _kValidBg  : _kPendingBg;
     final Color badgeFg  = isValidee ? _kValidFg  : _kPendingFg;
-    final Color btnBg    = isEnAttente ? _kNavy
-                         : isValidee  ? const Color(0xFFe2e8f0)
-                                      : _kPendingBg;
-    final Color btnFg    = isEnAttente ? Colors.white
-                         : isValidee  ? _kText
-                                      : _kPendingFg;
-    final String btnText = isEnAttente ? 'Traiter'
-                         : isValidee  ? 'Détails'
-                                      : 'Motif';
+    final Color btnBg    = isEnAttente ? _kNavy : isValidee ? const Color(0xFFe2e8f0) : _kPendingBg;
+    final Color btnFg    = isEnAttente ? Colors.white : isValidee ? _kText : _kPendingFg;
+    final String btnText = isEnAttente ? 'Traiter' : isValidee ? 'Détails' : 'Motif';
 
     return Container(
       padding: const EdgeInsets.all(20),
@@ -436,108 +341,53 @@ class _RequestCard extends StatelessWidget {
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
         boxShadow: const [
-          BoxShadow(
-            color: Color(0x0F000000),
-            blurRadius: 8,
-            offset: Offset(0, 2),
-          ),
+          BoxShadow(color: Color(0x0F000000), blurRadius: 8, offset: Offset(0, 2)),
         ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // ROW 1 — Type + badge statut
           Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      demande.type,
-                      style: GoogleFonts.publicSans(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                        color: _kDark,
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      demande.citoyen,
-                      style: GoogleFonts.publicSans(
-                        fontSize: 14,
-                        fontWeight: FontWeight.bold,
-                        color: _kNavy,
-                      ),
-                    ),
-                  ],
+                child: Text(
+                  demande.typeDocument,
+                  style: GoogleFonts.publicSans(fontSize: 18, fontWeight: FontWeight.bold, color: _kDark),
+                  overflow: TextOverflow.ellipsis,
                 ),
               ),
-              const SizedBox(width: 12),
               Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
-                decoration: BoxDecoration(
-                  color: badgeBg,
-                  borderRadius: BorderRadius.circular(8),
-                ),
+                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                decoration: BoxDecoration(color: badgeBg, borderRadius: BorderRadius.circular(20)),
                 child: Text(
                   demande.statut,
-                  style: GoogleFonts.publicSans(
-                    fontSize: 11,
-                    fontWeight: FontWeight.bold,
-                    color: badgeFg,
-                    letterSpacing: 0.5,
-                  ),
+                  style: GoogleFonts.publicSans(fontSize: 10, fontWeight: FontWeight.bold, color: badgeFg),
                 ),
               ),
             ],
           ),
-
-          const SizedBox(height: 14),
-
-          // ROW 2 — Référence + service sur fond gris
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-            decoration: BoxDecoration(
-              color: _kBg,
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Row(
-              children: [
-                Expanded(
-                  child: _InfoCell(
-                    label: 'RÉFÉRENCE',
-                    value: demande.reference,
-                    mono: true,
-                  ),
-                ),
-                Expanded(
-                  child: _InfoCell(
-                    label: 'SERVICE',
-                    value: demande.service.toUpperCase(),
-                  ),
-                ),
-              ],
-            ),
+          const SizedBox(height: 16),
+          Row(
+            children: [
+               _InfoCell(label: 'CITOYEN', value: demande.citoyenNom),
+              const SizedBox(width: 40),
+              _InfoCell(label: 'RÉFÉRENCE', value: demande.reference, mono: true),
+            ],
           ),
-
-          const SizedBox(height: 12),
-
-          // ROW 3 — Date + bouton action
+          const SizedBox(height: 20),
+          const Divider(height: 1, color: _kBorderGray),
+          const SizedBox(height: 16),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Row(
                 children: [
-                  const Icon(Icons.calendar_today_rounded,
-                      size: 14, color: _kGray),
+                  const Icon(Icons.calendar_today_rounded, size: 14, color: _kGray),
                   const SizedBox(width: 4),
                   Text(
-                    demande.date,
-                    style: GoogleFonts.publicSans(
-                        fontSize: 13, color: _kGray),
+                    "${demande.dateSoumission.day}/${demande.dateSoumission.month}/${demande.dateSoumission.year}",
+                    style: GoogleFonts.publicSans(fontSize: 13, color: _kGray),
                   ),
                 ],
               ),
@@ -546,39 +396,20 @@ class _RequestCard extends StatelessWidget {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      settings: RouteSettings(
-                        arguments: {
-                          'readOnly': false,
-                          'isAdmin': true,
-                          'id': demande.reference,
-                          'citoyenId': {
-                            'nom': demande.citoyen.split(' ').last,
-                            'prenom': demande.citoyen.split(' ').first,
-                          },
-                          'documentTypeId': {
-                            'nom': demande.type,
-                          },
-                          'status': demande.statut,
-                        },
+                      builder: (_) => AgentDetailDemandePage(
+                        initialDemande: demande,
+                        isAdmin: true,
+                        readOnly: true,
                       ),
-                      builder: (_) => const AgentDetailDemandePage(),
                     ),
                   );
                 },
                 child: Container(
-                  padding: const EdgeInsets.symmetric(
-                      horizontal: 24, vertical: 10),
-                  decoration: BoxDecoration(
-                    color: btnBg,
-                    borderRadius: BorderRadius.circular(20),
-                  ),
+                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 10),
+                  decoration: BoxDecoration(color: btnBg, borderRadius: BorderRadius.circular(20)),
                   child: Text(
                     btnText,
-                    style: GoogleFonts.publicSans(
-                      fontSize: 14,
-                      fontWeight: FontWeight.bold,
-                      color: btnFg,
-                    ),
+                    style: GoogleFonts.publicSans(fontSize: 14, fontWeight: FontWeight.bold, color: btnFg),
                   ),
                 ),
               ),
@@ -590,17 +421,12 @@ class _RequestCard extends StatelessWidget {
   }
 }
 
-// ─── Cellule info (RÉFÉRENCE / SERVICE) ──────────────────────────────────────
 class _InfoCell extends StatelessWidget {
   final String label;
   final String value;
   final bool mono;
 
-  const _InfoCell({
-    required this.label,
-    required this.value,
-    this.mono = false,
-  });
+  const _InfoCell({required this.label, required this.value, this.mono = false});
 
   @override
   Widget build(BuildContext context) {
@@ -609,31 +435,15 @@ class _InfoCell extends StatelessWidget {
       children: [
         Text(
           label,
-          style: GoogleFonts.publicSans(
-            fontSize: 10,
-            fontWeight: FontWeight.w700,
-            color: _kGray,
-            letterSpacing: 0.8,
-          ),
+          style: GoogleFonts.publicSans(fontSize: 10, fontWeight: FontWeight.w700, color: _kGray, letterSpacing: 0.8),
         ),
         const SizedBox(height: 4),
-        mono
-            ? Text(
-                value,
-                style: GoogleFonts.jetBrainsMono(
-                  fontSize: 13,
-                  fontWeight: FontWeight.bold,
-                  color: _kDark,
-                ),
-              )
-            : Text(
-                value,
-                style: GoogleFonts.publicSans(
-                  fontSize: 13,
-                  fontWeight: FontWeight.bold,
-                  color: _kDark,
-                ),
-              ),
+        Text(
+          value,
+          style: mono 
+            ? GoogleFonts.jetBrainsMono(fontSize: 13, fontWeight: FontWeight.bold, color: _kDark)
+            : GoogleFonts.publicSans(fontSize: 13, fontWeight: FontWeight.bold, color: _kDark),
+        ),
       ],
     );
   }

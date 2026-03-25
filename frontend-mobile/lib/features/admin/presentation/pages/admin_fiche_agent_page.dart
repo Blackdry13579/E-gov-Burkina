@@ -1,12 +1,12 @@
+import 'package:egov_mobile/core/providers/auth_provider.dart';
+import 'package:egov_mobile/core/providers/user_management_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
 import 'agent_model.dart';
-import 'admin_users_page.dart';
 import 'admin_home_page.dart';
 import 'admin_demandes_page.dart';
 import 'admin_documents_page.dart';
-import '../../../../core/providers/user_management_provider.dart';
-import 'package:provider/provider.dart';
 
 // ─── Couleurs ──────────────────────────────────────────────────────────────────
 const _kNavy    = Color(0xFF1a237e);
@@ -328,9 +328,9 @@ class _AdminFicheAgentPageState extends State<AdminFicheAgentPage> {
                   label: 'VALIDÉES',
                   value: '${agent.validees}',
                   valueColor: _kGreen,
-                  bottom: Row(
+                  bottom: const Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: const [
+                    children: [
                       Spacer(),
                       Icon(Icons.check_circle_rounded,
                           color: _kGreen, size: 28),
@@ -344,9 +344,9 @@ class _AdminFicheAgentPageState extends State<AdminFicheAgentPage> {
                   label: 'REJETÉES',
                   value: '${agent.rejetees}',
                   valueColor: _kRed,
-                  bottom: Row(
+                  bottom: const Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: const [
+                    children: [
                       Spacer(),
                       Icon(Icons.cancel_rounded,
                           color: _kRed, size: 28),
@@ -574,7 +574,8 @@ class _AdminFicheAgentPageState extends State<AdminFicheAgentPage> {
                   Expanded(
                     child: GestureDetector(
                       onTap: () {
-                        context.read<UserManagementProvider>().toggleAgentStatus(agent.matricule);
+                        final token = context.read<AuthProvider>().token ?? '';
+                        context.read<UserManagementProvider>().toggleAgentStatus(agent.id, token);
                         Navigator.pop(ctx);
                       },
                       child: Container(

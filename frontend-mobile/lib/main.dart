@@ -8,20 +8,20 @@ import 'core/providers/document_provider.dart';
 import 'core/providers/request_provider.dart';
 import 'core/providers/user_management_provider.dart';
 import 'core/providers/stats_provider.dart';
+import 'core/providers/agent_provider.dart';
+import 'core/providers/notification_provider.dart';
 
 import 'features/splash/presentation/pages/splash_page.dart';
 import 'features/landing/landing_page.dart';
 import 'features/auth/presentation/pages/citizen_auth_page.dart';
 import 'features/auth/presentation/pages/agent_auth_page.dart';
-import 'features/home/presentation/pages/home_page_design.dart';
+import 'features/home/presentation/pages/home_page.dart';
 import 'features/agent/presentation/pages/detail_demande_page.dart';
 import 'features/agent/presentation/pages/agent_validation_success_page.dart';
 import 'scaffolds/agent_main_scaffold.dart';
 import 'features/shared/domain/models/demande_model.dart';
 import 'features/agent/domain/models/agent_config.dart';
 import 'features/notifications/presentation/pages/notifications_page.dart';
-import 'features/profile/presentation/pages/profile_page.dart';
-import 'features/catalogue/presentation/pages/catalogue_page.dart';
 
 import 'scaffolds/citizen_main_scaffold.dart';
 import 'features/admin/presentation/pages/admin_home_page.dart';
@@ -48,6 +48,8 @@ class EGovApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => RequestProvider()),
         ChangeNotifierProvider(create: (_) => UserManagementProvider()),
         ChangeNotifierProvider(create: (_) => StatsProvider()),
+        ChangeNotifierProvider(create: (_) => AgentProvider()),
+        ChangeNotifierProvider(create: (_) => NotificationProvider()),
       ],
       child: MaterialApp(
         title: 'E-Gov Burkina',
@@ -59,11 +61,11 @@ class EGovApp extends StatelessWidget {
           LandingPage.routeName: (_) => const LandingPage(),
           CitizenAuthPage.routeName: (_) => const CitizenAuthPage(),
           AgentAuthPage.routeName: (_) => const AgentAuthPage(),
-          HomePageSimple.routeName: (_) => const CitizenMainScaffold(initialIndex: 0),
+          HomePage.routeName: (_) => const CitizenMainScaffold(initialIndex: 0),
           '/citizen-catalogue': (_) => const CitizenMainScaffold(initialIndex: 1),
           '/citizen-demandes': (_) => const CitizenMainScaffold(initialIndex: 2),
           '/citizen-profile': (_) => const CitizenMainScaffold(initialIndex: 3),
-          AgentMainScaffold.routeName: (_) => const AgentMainScaffold(),
+          // AgentMainScaffold.routeName est géré par onGenerateRoute pour supporter les arguments
           AgentDetailDemandePage.routeName: (_) => const AgentDetailDemandePage(),
           NotificationsPage.routeName: (_) => const NotificationsPage(),
           AdminProfilePage.routeName: (_) => const AdminProfilePage(),
@@ -74,16 +76,22 @@ class EGovApp extends StatelessWidget {
         },
         onGenerateRoute: (settings) {
           if (settings.name == '/agent-validation-success') {
-          final args = settings.arguments as Map<String, dynamic>;
-          final model = DemandeModel.fromMap(args);
-          return MaterialPageRoute(
-            builder: (context) => AgentValidationSuccessPage(demande: model),
-          );
-        }
+            final args = settings.arguments;
+            if (args is! Map<String, dynamic>) {
+              return MaterialPageRoute(builder: (_) => const LandingPage());
+            }
+            final model = DemandeModel.fromMap(args);
+            return MaterialPageRoute(
+              builder: (context) => AgentValidationSuccessPage(demande: model),
+            );
+          }
           
           if (settings.name == AgentMainScaffold.routeName) {
-            final args = settings.arguments as Map<String, dynamic>?;
-            final role = args?['role'] as AgentRole? ?? AgentRole.justice;
+            final args = settings.arguments;
+            AgentRole role = AgentRole.justice;
+            if (args is Map<String, dynamic>) {
+              role = args['role'] as AgentRole? ?? AgentRole.justice;
+            }
             return MaterialPageRoute(
               builder: (_) => AgentMainScaffold(role: role),
             );

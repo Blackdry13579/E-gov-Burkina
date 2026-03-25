@@ -1,18 +1,19 @@
-import 'package:egov_mobile/features/shared/presentation/widgets/egov_sub_app_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:egov_mobile/core/constants/app_colors.dart';
+import '../../../../core/constants/app_colors.dart';
 
 class EgovSubAppBar extends StatelessWidget implements PreferredSizeWidget {
   final String title;
   final String? subtitle;
   final VoidCallback? onNotificationTap;
+  final List<Widget>? actions;
 
   const EgovSubAppBar({
     super.key,
     required this.title,
     this.subtitle,
     this.onNotificationTap,
+    this.actions,
   });
 
   @override
@@ -72,7 +73,7 @@ class EgovSubAppBar extends StatelessWidget implements PreferredSizeWidget {
           ),
         ],
       ),
-      actions: [
+      actions: actions ?? [
         IconButton(
           icon: const Icon(Icons.notifications_none_rounded, color: AppColors.primary, size: 22),
           onPressed: onNotificationTap ?? () => Navigator.pushNamed(context, '/notifications'),

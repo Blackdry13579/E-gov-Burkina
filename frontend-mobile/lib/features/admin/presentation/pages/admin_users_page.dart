@@ -1,11 +1,9 @@
+import 'package:egov_mobile/core/providers/auth_provider.dart';
 import 'package:egov_mobile/features/shared/presentation/widgets/egov_main_app_bar.dart';
 import 'package:egov_mobile/features/shared/presentation/widgets/admin_bottom_nav.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'admin_fiche_agent_page.dart';
-import 'admin_demandes_page.dart';
-import 'admin_documents_page.dart';
-import 'admin_home_page.dart';
 import 'admin_ajouter_agent_page.dart';
 import 'agent_model.dart';
 import 'citizen_model.dart';
@@ -16,11 +14,9 @@ import 'package:provider/provider.dart';
 // ─── Couleurs ─────────────────────────────────────────────────────────────────
 const _kNavy    = Color(0xFF1a237e);
 const _kBg      = Color(0xFFf0f4f8);
-const _kDark    = Color(0xFF1e293b);
 const _kGray    = Color(0xFF94a3b8);
 const _kText    = Color(0xFF475569);
 const _kBorder  = Color(0xFFe2e8f0);
-const _kGreen   = Color(0xFF16a34a);
 
 const _serviceFilters = ['Tous', 'Mairie', 'Justice', 'Police', 'Santé'];
 
@@ -44,6 +40,13 @@ class _AdminUsersPageState extends State<AdminUsersPage> with SingleTickerProvid
     super.initState();
     _tabController = TabController(length: 2, vsync: this, initialIndex: widget.initialIndex);
     _searchCtrl.addListener(() => setState(() => _searchQuery = _searchCtrl.text));
+    
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final token = context.read<AuthProvider>().token;
+      if (token != null) {
+        context.read<UserManagementProvider>().fetchUsers(token);
+      }
+    });
   }
 
   @override
@@ -302,16 +305,19 @@ class _AgentCard extends StatelessWidget {
             Switch(
               value: agent.actif,
               onChanged: (val) {
-                context.read<UserManagementProvider>().toggleAgentStatus(agent.matricule);
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text("${agent.name} ${val ? 'activé' : 'désactivé'}"),
-                    duration: const Duration(seconds: 1),
-                    behavior: SnackBarBehavior.floating,
-                  ),
-                );
+                final token = context.read<AuthProvider>().token;
+                if (token != null) {
+                  context.read<UserManagementProvider>().toggleUserStatus(agent.id, token);
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text("${agent.name} ${val ? 'activé' : 'désactivé'}"),
+                      duration: const Duration(seconds: 1),
+                      behavior: SnackBarBehavior.floating,
+                    ),
+                  );
+                }
               },
-              activeColor: _kNavy,
+              activeThumbColor: _kNavy,
               activeTrackColor: _kNavy.withOpacity(0.3),
             ),
             const Icon(Icons.chevron_right_rounded, color: _kGray),

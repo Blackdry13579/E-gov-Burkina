@@ -4,11 +4,14 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/providers/demande_provider.dart';
+import '../../../../core/providers/auth_provider.dart';
 import 'suivi_dossier_page.dart';
 import 'suivi_dossier_rejete_page.dart';
 import 'dossier_approuve_page.dart';
 import '../../../catalogue/presentation/pages/catalogue_page.dart';
 import '../../../../scaffolds/citizen_main_scaffold.dart';
+import '../../../shared/domain/models/demande_model.dart';
+
 
 class MesDemandesPage extends StatefulWidget {
   const MesDemandesPage({super.key});
@@ -25,9 +28,9 @@ class _MesDemandesPageState extends State<MesDemandesPage> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      final provider = context.read<DemandeProvider>();
-      if (provider.demandes.isEmpty) {
-        provider.fetchDemandes();
+      final token = context.read<AuthProvider>().token;
+      if (token != null) {
+        context.read<DemandeProvider>().fetchDemandes(token: token);
       }
     });
   }
@@ -40,10 +43,10 @@ class _MesDemandesPageState extends State<MesDemandesPage> {
     final filteredDemandes = allDemandes.where((d) {
       if (_selectedFilter == 0) return true; // Tout
       
-      final st = (d['statut'] ?? '').toString().toUpperCase();
+      final st = d.statut.toUpperCase();
       if (_selectedFilter == 1) return st == 'EN_ATTENTE'; // En attente
-      if (_selectedFilter == 2) return st == 'VALIDEE'; // Validé
-      if (_selectedFilter == 3) return st == 'REJETEE'; // Rejeté
+      if (_selectedFilter == 2) return st == 'VALIDEE' || st == 'VALIDÉE'; // Validé
+      if (_selectedFilter == 3) return st == 'REJETEE' || st == 'REJETÉE'; // Rejeté
       return true;
     }).toList();
     
@@ -53,9 +56,36 @@ class _MesDemandesPageState extends State<MesDemandesPage> {
         title: 'SUIVI DEMANDES',
         onProfileTap: () => CitizenMainScaffold.of(context)?.switchTab(3),
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.fromLTRB(16, 24, 16, 24),
-        child: Column(
+      floatingActionButton: FloatingActionButton(
+        heroTag: 'mes_demandes_fab',
+        onPressed: () {
+          final scaffold = CitizenMainScaffold.of(context);
+          if (scaffold != null) {
+            scaffold.switchTab(1);
+          } else {
+            Navigator.of(context).pushNamed(CataloguePage.routeName);
+          }
+        },
+        backgroundColor: AppColors.primary,
+        shape: const CircleBorder(),
+        child: const Icon(
+          Icons.add,
+          color: Colors.white,
+          size: 28,
+        ),
+      ),
+      body: RefreshIndicator(
+        onRefresh: () async {
+          final token = context.read<AuthProvider>().token;
+          if (token != null) {
+            await context.read<DemandeProvider>().fetchDemandes(token: token);
+          }
+        },
+        color: AppColors.primary,
+        child: SingleChildScrollView(
+          physics: const AlwaysScrollableScrollPhysics(),
+          padding: const EdgeInsets.fromLTRB(16, 24, 16, 24),
+          child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // B. FILTRES HORIZONTAUX
@@ -139,24 +169,24 @@ class _MesDemandesPageState extends State<MesDemandesPage> {
               )
             else
               ...filteredDemandes.map((d) {
-                final st = (d['statut'] ?? '').toString().toUpperCase();
+                final st = d.statut.toUpperCase();
                 String displayStatut = "EN ATTENTE";
                 Color statutColor = AppColors.warning;
                 
-                if (st == 'VALIDEE') {
+                if (st == 'VALIDEE' || st == 'VALIDÉE') {
                   displayStatut = "VALIDÉ";
                   statutColor = AppColors.success;
-                } else if (st == 'REJETEE') {
+                } else if (st == 'REJETEE' || st == 'REJETÉE') {
                   displayStatut = "REJETÉ";
                   statutColor = AppColors.error;
                 }
 
                 IconData icon = Icons.description_outlined;
-                final docName = (d['documentTypeId']?['nom'] ?? '').toString().toLowerCase();
+                final docName = d.typeDocument.toLowerCase();
                 if (docName.contains('nationalité')) icon = Icons.badge_outlined;
                 if (docName.contains('casier')) icon = Icons.gavel_rounded;
 
-                String rawDate = d['dateSoumission'] ?? '';
+                String rawDate = d.dateSoumissionRaw;
                 String formattedDate = rawDate;
                 if (rawDate.length >= 10) {
                    try {
@@ -165,65 +195,55 @@ class _MesDemandesPageState extends State<MesDemandesPage> {
                    } catch (_) {}
                 }
 
+                void handleTap() {
+                  final model = d;
+
+                  final title = model.typeDocument;
+                  final reference = model.reference;
+                  
+                  if (st == 'VALIDEE' || st == 'VALIDÉE') {
+                    Navigator.push(context, MaterialPageRoute(builder: (_) => DossierApprouvePage(
+                        reference: reference,
+                        nomFichier: title,
+                        tailleFichier: "2.4 MB",
+                        delivrePar: "Mairie Centrale de Ouagadougou",
+                        validite: "Permanente",
+                        documentUrl: model.documentUrl,
+                    )));
+                  } else if (st == 'REJETEE' || st == 'REJETÉE') {
+                    Navigator.push(context, MaterialPageRoute(builder: (_) => SuiviDossierRejetePage(
+                        reference: reference,
+                        titreDemande: title,
+                        dateDepot: formattedDate,
+                        direction: "Mairie Centrale de Ouagadougou",
+                        motifRejet: model.motifRejet ?? "Document non-conforme aux exigences.",
+                        noteInstructeur: "Veuillez fournir une copie numérisée lisible.",
+                    )));
+                  } else {
+                    Navigator.push(context, MaterialPageRoute(builder: (_) => SuiviDossierPage(
+                        demande: model,
+                    )));
+                  }
+                }
+
                 return Padding(
                   padding: const EdgeInsets.only(bottom: 14.0),
                   child: GestureDetector(
-                    onTap: () {
-                      final title = d['documentTypeId']?['nom'] ?? 'Document';
-                      final reference = d['reference'] ?? '...';
-                      if (st == 'VALIDEE') {
-                        Navigator.push(context, MaterialPageRoute(builder: (_) => DossierApprouvePage(
-                            reference: reference,
-                            nomFichier: title,
-                            tailleFichier: "2.4 MB",
-                            delivrePar: "Mairie Centrale de Ouagadougou",
-                            validite: "Permanente",
-                        )));
-                      } else if (st == 'REJETEE') {
-                        Navigator.push(context, MaterialPageRoute(builder: (_) => SuiviDossierRejetePage(
-                            reference: reference,
-                            titreDemande: title,
-                            dateDepot: formattedDate,
-                            direction: "Mairie Centrale de Ouagadougou",
-                            motifRejet: d['agentComment'] ?? "Document non-conforme aux exigences.",
-                            noteInstructeur: "Veuillez fournir une copie numérisée lisible.",
-                        )));
-                      } else {
-                        Navigator.push(context, MaterialPageRoute(builder: (_) => SuiviDossierPage(
-                            reference: reference,
-                            statut: displayStatut,
-                        )));
-                      }
-                    },
+                    onTap: handleTap,
                     child: _buildDemandeCard(
                       statut: displayStatut,
                       statutColor: statutColor,
-                      titre: d['documentTypeId']?['nom'] ?? 'Document',
-                      reference: d['reference'] ?? '...',
+                      titre: d.typeDocument,
+                      reference: d.reference,
                       date: formattedDate,
                       icon: icon,
+                      onTap: handleTap,
                     ),
                   ),
                 );
-              }),
-          ],
-        ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          final scaffold = CitizenMainScaffold.of(context);
-          if (scaffold != null) {
-            scaffold.switchTab(1);
-          } else {
-            Navigator.of(context).pushNamed(CataloguePage.routeName);
-          }
-        },
-        backgroundColor: AppColors.primary,
-        shape: const CircleBorder(),
-        child: const Icon(
-          Icons.add,
-          color: Colors.white,
-          size: 28,
+              }).toList(),
+            ],
+          ),
         ),
       ),
     );
@@ -239,6 +259,8 @@ class _MesDemandesPageState extends State<MesDemandesPage> {
     required String reference,
     required String date,
     required IconData icon,
+
+    required VoidCallback onTap,
   }) {
     return Container(
       width: double.infinity,
@@ -347,37 +369,8 @@ class _MesDemandesPageState extends State<MesDemandesPage> {
           Align(
             alignment: Alignment.centerRight,
             child: ElevatedButton.icon(
-              onPressed: () {
-                if (statut == "VALIDÉ") {
-                  Navigator.of(context).push(MaterialPageRoute(
-                    builder: (_) => DossierApprouvePage(
-                      reference: reference,
-                      nomFichier: titre,
-                      tailleFichier: "2.4 MB",
-                      delivrePar: "Mairie Centrale de Ouagadougou",
-                      validite: "Permanente",
-                    ),
-                  ));
-                } else if (statut == "REJETÉ") {
-                  Navigator.of(context).push(MaterialPageRoute(
-                    builder: (_) => SuiviDossierRejetePage(
-                      reference: reference,
-                      titreDemande: titre,
-                      dateDepot: date,
-                      direction: "Mairie Centrale de Ouagadougou",
-                      motifRejet: "Document expiré ou illisible",
-                      noteInstructeur: "Veuillez fournir une copie numérisée en bonne qualité de la pièce demandée.",
-                    ),
-                  ));
-                } else {
-                  Navigator.of(context).push(MaterialPageRoute(
-                    builder: (_) => SuiviDossierPage(
-                      reference: reference,
-                      statut: "EN ATTENTE",
-                    ),
-                  ));
-                }
-              },
+              onPressed: onTap,
+
               icon: const Icon(Icons.chevron_right_rounded, size: 18),
               iconAlignment: IconAlignment.end,
               label: Text(

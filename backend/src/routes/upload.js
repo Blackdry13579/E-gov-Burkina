@@ -6,7 +6,14 @@ const router = express.Router();
 
 router.use(protect);
 
-router.post('/', upload.single('file'), uploadFile);
+router.post('/', (req, res, next) => {
+  upload.single('file')(req, res, (err) => {
+    if (err) {
+      return next(err);
+    }
+    uploadFile(req, res, next);
+  });
+});
 router.delete('/', deleteFile);
 
 module.exports = router;

@@ -1,0 +1,198 @@
+la m├¿re, Maternit├® / Lieu 
+de naissance, Type de copie
+    at C:\Users\zongo\Desktop
+\E-gov-Document-Request-API-\
+backend\src\controllers\deman
+deController.js:30:17
+    at process.processTicksAn
+dRejections (node:internal/pr
+ocess/task_queues:103:5)
+[2026-03-24T12:16:49.519Z] [INFO] [2026-03-24T12:16:49.519Z] POST /api/upload
+[2026-03-24T12:16:50.935Z] [INFO] [2026-03-24T12:16:50.935Z] POST /api/demandes
+[2026-03-24T12:16:50.940Z] 
+[ERROR] Error: Champs 
+obligatoires manquants : 
+Pr├®nom du p├¿re, Pr├®nom de 
+la m├¿re, Maternit├® / Lieu 
+de naissance, Type de copie
+    at C:\Users\zongo\Desktop
+\E-gov-Document-Request-API-\
+backend\src\controllers\deman
+deController.js:30:17
+    at process.processTicksAn
+dRejections (node:internal/pr
+ocess/task_queues:103:5)
+[2026-03-24T12:17:55.278Z] [INFO] [2026-03-24T12:17:55.278Z] POST /api/upload
+[2026-03-24T12:17:56.838Z] [INFO] [2026-03-24T12:17:56.838Z] POST /api/demandes
+[2026-03-24T12:17:56.843Z] 
+[ERROR] Error: Champs 
+obligatoires manquants : 
+Pr├®nom du p├¿re, Pr├®nom de 
+la m├¿re, Maternit├® / Lieu 
+de naissance, Type de copie
+    at C:\Users\zongo\Desktop
+\E-gov-Document-Request-API-\
+backend\src\controllers\deman
+deController.js:30:17
+    at process.processTicksAn
+dRejections (node:internal/pr
+ocess/task_queues:103:5)
+[2026-03-24T12:18:02.802Z] [INFO] [2026-03-24T12:18:02.802Z] POST /api/upload
+[2026-03-24T12:18:04.337Z] [INFO] [2026-03-24T12:18:04.337Z] POST /api/demandes
+[2026-03-24T12:18:04.341Z] 
+[ERROR] Error: Champs 
+obligatoires manquants : 
+Pr├®nom du p├¿re, Pr├®nom de 
+la m├¿re, Maternit├® / Lieu 
+de naissance, Type de copie
+    at C:\Users\zongo\Desktop
+\E-gov-Document-Request-API-\
+backend\src\controllers\deman
+deController.js:30:17
+    at process.processTicksAn
+dRejections (node:internal/pr
+ocess/task_queues:103:5)
+[2026-03-24T12:18:11.061Z] [INFO] [2026-03-24T12:18:11.061Z] POST /api/upload
+[2026-03-24T12:18:12.664Z] [INFO] [2026-03-24T12:18:12.664Z] POST /api/demandes
+[2026-03-24T12:18:12.668Z] 
+[ERROR] Error: Champs 
+obligatoires manquants : 
+Pr├®nom du p├¿re, Pr├®nom de 
+la m├¿re, Maternit├® / Lieu 
+de naissance, Type de copie
+    at C:\Users\zongo\Desktop
+\E-gov-Document-Request-API-\
+backend\src\controllers\deman
+deController.js:30:17
+    at process.processTicksAn
+dRejections (node:internal/pr
+ocess/task_queues:103:5)
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `node src/server.js`[39m
+[2026-03-24T12:19:41.333Z] [INFO] Ô£à Images officielles charg├®es
+[2026-03-24T12:19:41.364Z] [INFO] ­ƒÜÇ Serveur d├®marr├® en mode development sur le port 5000 (Accessible sur le r├®seau)
+[2026-03-24T12:19:41.383Z] [INFO] Ô£à MongoDB connect├® : localhost
+[2026-03-24T12:19:41.445Z] [INFO] Ô£à Catalogue officiel synchronis├® : Mairie (Naissance) + Justice (Casier, Nationalit├®)
+[2026-03-24T12:20:35.743Z] [INFO] [2026-03-24T12:20:35.743Z] POST /api/upload
+ValidationError: The 
+'X-Forwarded-For' header is 
+set but the Express 'trust 
+proxy' setting is false 
+(default). This could 
+indicate a misconfiguration 
+which would prevent 
+express-rate-limit from 
+accurately identifying 
+users. See https://express-ra
+te-limit.github.io/ERR_ERL_UN
+EXPECTED_X_FORWARDED_FOR/ 
+for more information.
+    at 
+Object.xForwardedForHeader (C
+:\Users\zongo\Desktop\E-gov-D
+ocument-Request-API-\backend\
+node_modules\express-rate-lim
+it\dist\index.cjs:185:13)
+    at wrappedValidations.<co
+mputed> [as 
+xForwardedForHeader] (C:\User
+s\zongo\Desktop\E-gov-Documen
+t-Request-API-\backend\node_m
+odules\express-rate-limit\dis
+t\index.cjs:397:22)
+    at Object.keyGenerator (C
+:\Users\zongo\Desktop\E-gov-D
+ocument-Request-API-\backend\
+node_modules\express-rate-lim
+it\dist\index.cjs:658:20)
+    at C:\Users\zongo\Desktop
+\E-gov-Document-Request-API-\
+backend\node_modules\express-
+rate-limit\dist\index.cjs:710
+:32
+    at process.processTicksAn
+dRejections (node:internal/pr
+ocess/task_queues:103:5)
+    at async C:\Users\zongo\D
+esktop\E-gov-Document-Request
+-API-\backend\node_modules\ex
+press-rate-limit\dist\index.c
+js:691:5 {
+  code: 'ERR_ERL_UNEXPECTED_X
+_FORWARDED_FOR',
+  help: 'https://express-rate
+-limit.github.io/ERR_ERL_UNEX
+PECTED_X_FORWARDED_FOR/'
+}
+[2026-03-24T12:20:37.195Z] [INFO] [2026-03-24T12:20:37.195Z] POST /api/demandes
+Champs obligatoires manquants (ignor├®s pour d├®mo) : Pr├®nom du p├¿re, Pr├®nom de la m├¿re, Maternit├® / Lieu de naissance, Type de copie
+Justificatifs obligatoires manquants (ignor├®s pour d├®mo) : Ancien Extrait de Naissance
+[2026-03-24T12:20:37.978Z] [INFO] [2026-03-24T12:20:37.978Z] GET /api/demandes
+[2026-03-24T12:27:02.775Z] [INFO] [2026-03-24T12:27:02.775Z] POST /api/upload
+[2026-03-24T12:27:04.272Z] [INFO] [2026-03-24T12:27:04.272Z] POST /api/demandes
+Champs obligatoires manquants (ignor├®s pour d├®mo) : Pr├®nom du p├¿re, Pr├®nom de la m├¿re, Maternit├® / Lieu de naissance, Type de copie
+Justificatifs obligatoires manquants (ignor├®s pour d├®mo) : Ancien Extrait de Naissance
+[2026-03-24T12:27:05.111Z] [INFO] [2026-03-24T12:27:05.111Z] GET /api/demandes
+[2026-03-24T12:34:55.684Z] [INFO] [2026-03-24T12:34:55.684Z] POST /api/upload
+[2026-03-24T12:34:57.077Z] [INFO] [2026-03-24T12:34:57.077Z] POST /api/demandes
+Champs obligatoires manquants (ignor├®s pour d├®mo) : Pr├®nom du p├¿re, Pr├®nom de la m├¿re, Maternit├® / Lieu de naissance, Type de copie
+Justificatifs obligatoires manquants (ignor├®s pour d├®mo) : Ancien Extrait de Naissance
+[2026-03-24T12:34:57.939Z] [INFO] [2026-03-24T12:34:57.939Z] GET /api/demandes
+[2026-03-24T12:42:06.083Z] [INFO] [2026-03-24T12:42:06.083Z] POST /api/auth/login
+ValidationError: The 
+'X-Forwarded-For' header is 
+set but the Express 'trust 
+proxy' setting is false 
+(default). This could 
+indicate a misconfiguration 
+which would prevent 
+express-rate-limit from 
+accurately identifying 
+users. See https://express-ra
+te-limit.github.io/ERR_ERL_UN
+EXPECTED_X_FORWARDED_FOR/ 
+for more information.
+    at 
+Object.xForwardedForHeader (C
+:\Users\zongo\Desktop\E-gov-D
+ocument-Request-API-\backend\
+node_modules\express-rate-lim
+it\dist\index.cjs:185:13)
+    at wrappedValidations.<co
+mputed> [as 
+xForwardedForHeader] (C:\User
+s\zongo\Desktop\E-gov-Documen
+t-Request-API-\backend\node_m
+odules\express-rate-limit\dis
+t\index.cjs:397:22)
+    at Object.keyGenerator (C
+:\Users\zongo\Desktop\E-gov-D
+ocument-Request-API-\backend\
+node_modules\express-rate-lim
+it\dist\index.cjs:658:20)
+    at C:\Users\zongo\Desktop
+\E-gov-Document-Request-API-\
+backend\node_modules\express-
+rate-limit\dist\index.cjs:710
+:32
+    at process.processTicksAn
+dRejections (node:internal/pr
+ocess/task_queues:103:5)
+    at async C:\Users\zongo\D
+esktop\E-gov-Document-Request
+-API-\backend\node_modules\ex
+press-rate-limit\dist\index.c
+js:691:5 {
+  code: 'ERR_ERL_UNEXPECTED_X
+_FORWARDED_FOR',
+  help: 'https://express-rate
+-limit.github.io/ERR_ERL_UNEX
+PECTED_X_FORWARDED_FOR/'
+}
+[2026-03-24T12:43:28.403Z] [INFO] [2026-03-24T12:43:28.403Z] GET /api/notifications
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `node src/server.js`[39m
+[2026-03-24T14:03:49.387Z] [INFO] Ô£à Images officielles charg├®es
+[2026-03-24T14:03:49.433Z] [INFO] ­ƒÜÇ Serveur d├®marr├® en mode development sur le port 5000 (Accessible sur le r├®seau)
+[2026-03-24T14:03:49.456Z] [INFO] Ô£à MongoDB connect├® : localhost
+[2026-03-24T14:03:49.506Z] [INFO] Ô£à Catalogue officiel synchronis├® : Mairie (Naissance) + Justice (Casier, Nationalit├®)

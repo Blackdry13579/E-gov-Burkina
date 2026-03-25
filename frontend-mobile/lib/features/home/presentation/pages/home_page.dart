@@ -6,23 +6,37 @@ import 'package:provider/provider.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/providers/auth_provider.dart';
 import '../../../citizen/presentation/pages/dossier_approuve_page.dart';
-import '../../../citizen/presentation/pages/suivi_dossier_page.dart';
 import '../../../citizen/presentation/pages/suivi_dossier_rejete_page.dart';
 import '../../../citizen/presentation/pages/mes_demandes_page.dart';
 import '../../../catalogue/presentation/pages/catalogue_page.dart';
-import '../../../shared/presentation/widgets/citizen_bottom_nav.dart';
-import '../../../notifications/presentation/pages/notifications_page.dart';
+import '../../../../core/providers/demande_provider.dart';
+import '../../../../core/providers/notification_provider.dart';
 import '../../../../scaffolds/citizen_main_scaffold.dart';
-class HomePageSimple extends StatefulWidget {
-  const HomePageSimple({super.key});
 
-  static const routeName = '/home-simple';
+class HomePage extends StatefulWidget {
+  const HomePage({super.key});
+
+  static const routeName = '/home';
 
   @override
-  State<HomePageSimple> createState() => _HomePageSimpleState();
+  State<HomePage> createState() => _HomePageState();
 }
 
-class _HomePageSimpleState extends State<HomePageSimple> {
+class _HomePageState extends State<HomePage> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final auth = context.read<AuthProvider>();
+      if (auth.token != null) {
+        context.read<DemandeProvider>().fetchDemandes(token: auth.token);
+      }
+      if (auth.token != null) {
+        context.read<NotificationProvider>().fetchNotifications(auth.token);
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final authProvider = context.watch<AuthProvider>();
@@ -31,82 +45,105 @@ class _HomePageSimpleState extends State<HomePageSimple> {
 
     return Scaffold(
       backgroundColor: AppColors.background,
-
       appBar: EgovMainAppBar(
         title: 'PORTAIL CITOYEN',
         onProfileTap: () => CitizenMainScaffold.of(context)?.switchTab(3),
       ),
+      body: RefreshIndicator(
+        onRefresh: () async {
+          final auth = context.read<AuthProvider>();
+          await Future.wait([
+            auth.token != null ? context.read<DemandeProvider>().fetchDemandes(token: auth.token) : Future.value(),
+            context.read<NotificationProvider>().fetchNotifications(auth.token),
+          ]);
+        },
+        color: AppColors.primary,
+        child: SingleChildScrollView(
+          physics: const AlwaysScrollableScrollPhysics(),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _buildHeroBanner(userName),
+              const SizedBox(height: 16),
+              _buildNewRequestButton(),
+              const SizedBox(height: 24),
+              _buildSectionHeader('Services Populaires'),
+              const SizedBox(height: 16),
+              _buildServicesGrid(),
+              const SizedBox(height: 24),
+              _buildSectionHeader('Demandes Récentes', showVoirTout: true),
+              const SizedBox(height: 16),
+              Consumer<DemandeProvider>(
+                builder: (context, provider, child) {
+                  if (provider.isLoading) {
+                    return const Center(
+                      child: Padding(
+                        padding: EdgeInsets.all(20.0),
+                        child: CircularProgressIndicator(color: AppColors.primary),
+                      ),
+                    );
+                  }
 
-      // ============================================================
-      // BODY
-      // ============================================================
-      body: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // --------------------------------------------------
-            // HERO BANNER avec photo de bâtiment
-            // --------------------------------------------------
-            _buildHeroBanner(userName),
-            const SizedBox(height: 16),
+                  final recentDemandes = provider.demandes.take(3).toList();
 
-            // --------------------------------------------------
-            // BOUTON NOUVELLE DEMANDE
-            // --------------------------------------------------
-            _buildNewRequestButton(),
-            const SizedBox(height: 24),
+                  if (recentDemandes.isEmpty) {
+                    return _buildEmptyState();
+                  }
 
-            // --------------------------------------------------
-            // SERVICES POPULAIRES
-            // --------------------------------------------------
-            _buildSectionHeader('Services Populaires'),
-            const SizedBox(height: 16),
-            _buildServicesGrid(),
-            const SizedBox(height: 24),
+                  return Column(
+                    children: recentDemandes.map((d) {
+                      final st = d.statut.toUpperCase();
+                      
+                      String statusText = 'EN ATTENTE';
+                      Color statusColor = AppColors.warning;
+                      IconData actionIcon = Icons.history_rounded;
+                      String actionLabel = 'Suivre';
 
-            // --------------------------------------------------
-            // DEMANDES RÉCENTES
-            // --------------------------------------------------
-            _buildSectionHeader('Demandes Récentes', showVoirTout: true),
-            const SizedBox(height: 16),
-            _buildRequestCard(
-              title: 'Acte de Naissance',
-              reference: 'CDB-2026-004521',
-              date: 'Effectué le 12 Mai 2026',
-              statusText: 'VALIDÉE',
-              statusColor: AppColors.success,
-              actionLabel: 'Détails',
-              actionIcon: Icons.open_in_new_rounded,
-            ),
-            _buildRequestCard(
-              title: 'Renouvellement CNI',
-              reference: 'CDB-2026-008912',
-              date: 'Effectué le 18 Mai 2026',
-              statusText: 'EN ATTENTE',
-              statusColor: AppColors.warning,
-              actionLabel: 'Suivre',
-              actionIcon: Icons.history_rounded,
-            ),
-            _buildRequestCard(
-              title: 'Casier Judiciaire',
-              reference: 'CDB-2026-003301',
-              date: 'Effectué le 05 Mai 2026',
-              statusText: 'REJETÉE',
-              statusColor: AppColors.error,
-              actionLabel: 'Motif',
-              actionIcon: Icons.info_outline_rounded,
-            ),
-            const SizedBox(height: 24),
-          ],
+                      if (st == 'VALIDEE' || st == 'VALIDÉE') {
+                        statusText = 'VALIDÉE';
+                        statusColor = AppColors.success;
+                        actionIcon = Icons.open_in_new_rounded;
+                        actionLabel = 'Détails';
+                      } else if (st == 'REJETEE' || st == 'REJETÉE') {
+                        statusText = 'REJETÉE';
+                        statusColor = AppColors.error;
+                        actionIcon = Icons.info_outline_rounded;
+                        actionLabel = 'Motif';
+                      }
+
+                      String rawDate = d.dateSoumissionRaw;
+                      String formattedDate = rawDate;
+                      if (rawDate.length >= 10) {
+                        try {
+                          DateTime dt = DateTime.parse(rawDate);
+                          formattedDate = "Effectué le ${dt.day.toString().padLeft(2, '0')}/${dt.month.toString().padLeft(2, '0')}/${dt.year}";
+                        } catch (_) {}
+                      }
+
+                      return _buildRequestCard(
+                        title: d.typeDocument,
+                        reference: d.reference,
+                        date: formattedDate,
+                        statusText: statusText,
+                        statusColor: statusColor,
+                        actionLabel: actionLabel,
+                        actionIcon: actionIcon,
+                        service: d.service,
+                        motif: d.motifRejet,
+                        documentUrl: d.documentUrl,
+                      );
+                    }).toList(),
+                  );
+                },
+              ),
+              const SizedBox(height: 24),
+            ],
+          ),
         ),
       ),
     );
   }
 
-  // ============================================================
-  // HERO BANNER
-  // Card arrondie avec photo de bâtiment + texte de bienvenue
-  // ============================================================
   Widget _buildHeroBanner(String userName) {
     return Container(
       width: double.infinity,
@@ -114,14 +151,13 @@ class _HomePageSimpleState extends State<HomePageSimple> {
       margin: const EdgeInsets.fromLTRB(16, 16, 16, 0),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(20),
-        color: AppColors.primary, // fallback si image absente
+        color: AppColors.primary,
       ),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(20),
         child: Stack(
           fit: StackFit.expand,
           children: [
-            // Photo de bâtiment
             Image.asset(
               'assets/images/building.png',
               fit: BoxFit.cover,
@@ -135,7 +171,6 @@ class _HomePageSimpleState extends State<HomePageSimple> {
                 ),
               ),
             ),
-            // Overlay dégradé sombre en bas pour lisibilité du texte
             Positioned.fill(
               child: DecoratedBox(
                 decoration: BoxDecoration(
@@ -151,7 +186,6 @@ class _HomePageSimpleState extends State<HomePageSimple> {
                 ),
               ),
             ),
-            // Texte de bienvenue en bas à gauche
             Positioned(
               bottom: 20,
               left: 20,
@@ -185,10 +219,6 @@ class _HomePageSimpleState extends State<HomePageSimple> {
     );
   }
 
-  // ============================================================
-  // BOUTON NOUVELLE DEMANDE
-  // Pleine largeur, bleu foncé, icône + flèche
-  // ============================================================
   Widget _buildNewRequestButton() {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16),
@@ -210,23 +240,18 @@ class _HomePageSimpleState extends State<HomePageSimple> {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(14),
           ),
-          padding: EdgeInsets.zero,
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             const Icon(Icons.add_circle_outline, size: 20),
             const SizedBox(width: 10),
-            Flexible(
-              child: Text(
-                'NOUVELLE DEMANDE',
-                style: GoogleFonts.inter(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w700,
-                  letterSpacing: 1.2,
-                ),
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
+            Text(
+              'NOUVELLE DEMANDE',
+              style: GoogleFonts.inter(
+                fontSize: 14,
+                fontWeight: FontWeight.w700,
+                letterSpacing: 1.2,
               ),
             ),
             const SizedBox(width: 8),
@@ -237,15 +262,11 @@ class _HomePageSimpleState extends State<HomePageSimple> {
     );
   }
 
-  // ============================================================
-  // EN-TÊTE DE SECTION (barre jaune + titre + "Voir tout" optionnel)
-  // ============================================================
   Widget _buildSectionHeader(String title, {bool showVoirTout = false}) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Row(
         children: [
-          // Barre jaune verticale
           Container(
             width: 4,
             height: 20,
@@ -263,8 +284,6 @@ class _HomePageSimpleState extends State<HomePageSimple> {
                 fontWeight: FontWeight.w700,
                 color: AppColors.textDark,
               ),
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
             ),
           ),
           if (showVoirTout) ...[
@@ -289,9 +308,6 @@ class _HomePageSimpleState extends State<HomePageSimple> {
     );
   }
 
-  // ============================================================
-  // GRILLE SERVICES POPULAIRES (2 colonnes)
-  // ============================================================
   Widget _buildServicesGrid() {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -317,48 +333,44 @@ class _HomePageSimpleState extends State<HomePageSimple> {
       },
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.06),
-            blurRadius: 10,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Container(
-            width: 52,
-            height: 52,
-            decoration: BoxDecoration(
-              color: const Color(0xFFF0F2F5),
-              borderRadius: BorderRadius.circular(12),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(16),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.06),
+              blurRadius: 10,
+              offset: const Offset(0, 2),
             ),
-            child: Icon(icon, color: AppColors.primary, size: 26),
-          ),
-          const SizedBox(height: 12),
-          Text(
-            label,
-            style: GoogleFonts.inter(
-              fontSize: 14,
-              fontWeight: FontWeight.w500,
-              color: AppColors.textDark,
+          ],
+        ),
+        child: Column(
+          children: [
+            Container(
+              width: 52,
+              height: 52,
+              decoration: BoxDecoration(
+                color: const Color(0xFFF0F2F5),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Icon(icon, color: AppColors.primary, size: 26),
             ),
-            textAlign: TextAlign.center,
-          ),
-        ],
+            const SizedBox(height: 12),
+            Text(
+              label,
+              style: GoogleFonts.inter(
+                fontSize: 14,
+                fontWeight: FontWeight.w500,
+                color: AppColors.textDark,
+              ),
+              textAlign: TextAlign.center,
+            ),
+          ],
+        ),
       ),
-    ));
+    );
   }
 
-  // ============================================================
-  // CARTE DE DEMANDE
-  // Bordure gauche colorée selon statut — structure correcte
-  // ============================================================
   Widget _buildRequestCard({
     required String title,
     required String reference,
@@ -367,6 +379,9 @@ class _HomePageSimpleState extends State<HomePageSimple> {
     required Color statusColor,
     required String actionLabel,
     required IconData actionIcon,
+    String service = 'Mairie Centrale',
+    String? motif,
+    String? documentUrl,
   }) {
     return GestureDetector(
       onTap: () {
@@ -378,6 +393,7 @@ class _HomePageSimpleState extends State<HomePageSimple> {
               tailleFichier: "2.4 MB",
               delivrePar: "Mairie Centrale de Ouagadougou",
               validite: "Permanente",
+              documentUrl: documentUrl,
             ),
           ));
         } else if (statusText == "REJETÉE") {
@@ -386,18 +402,20 @@ class _HomePageSimpleState extends State<HomePageSimple> {
               reference: reference,
               titreDemande: title,
               dateDepot: date,
-              direction: "Mairie Centrale de Ouagadougou",
-              motifRejet: "Document expiré ou illisible",
-              noteInstructeur: "Veuillez fournir une copie numérisée en bonne qualité de la pièce demandée.",
+              direction: service,
+              motifRejet: motif ?? "Document non conforme",
+              noteInstructeur: "Veuillez consulter les détails.",
             ),
           ));
         } else {
-          Navigator.of(context).push(MaterialPageRoute(
-            builder: (_) => SuiviDossierPage(
-              reference: reference,
-              statut: statusText,
-            ),
-          ));
+          final scaffold = CitizenMainScaffold.of(context);
+          if (scaffold != null) {
+            scaffold.switchTab(2);
+          } else {
+            Navigator.of(context).push(MaterialPageRoute(
+              builder: (_) => const MesDemandesPage(),
+            ));
+          }
         }
       },
       child: Container(
@@ -405,10 +423,7 @@ class _HomePageSimpleState extends State<HomePageSimple> {
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(14),
-          // ⚠️ Bordure gauche colorée directement sur le container extérieur
-          border: Border(
-            left: BorderSide(color: statusColor, width: 4),
-          ),
+          border: Border(left: BorderSide(color: statusColor, width: 4)),
           boxShadow: [
             BoxShadow(
               color: Colors.black.withOpacity(0.05),
@@ -418,11 +433,10 @@ class _HomePageSimpleState extends State<HomePageSimple> {
           ],
         ),
         child: Padding(
-          padding: const EdgeInsets.fromLTRB(16, 14, 16, 14),
+          padding: const EdgeInsets.all(16),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Ligne 1 : Titre + Badge statut
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -434,68 +448,31 @@ class _HomePageSimpleState extends State<HomePageSimple> {
                         fontWeight: FontWeight.w600,
                         color: AppColors.textDark,
                       ),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
                     ),
                   ),
-                  const SizedBox(width: 8),
                   Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 10,
-                      vertical: 4,
-                    ),
+                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                     decoration: BoxDecoration(
                       color: statusColor.withOpacity(0.12),
                       borderRadius: BorderRadius.circular(20),
                     ),
                     child: Text(
                       statusText,
-                      style: GoogleFonts.outfit(
-                        fontSize: 11,
-                        fontWeight: FontWeight.w700,
-                        color: statusColor,
-                        letterSpacing: 0.4,
-                      ),
+                      style: GoogleFonts.outfit(fontSize: 11, fontWeight: FontWeight.w700, color: statusColor),
                     ),
                   ),
                 ],
               ),
               const SizedBox(height: 4),
-              // Référence
-              Text(
-                reference,
-                style: GoogleFonts.outfit(
-                  fontSize: 12,
-                  color: AppColors.textLight,
-                ),
-              ),
+              Text(reference, style: GoogleFonts.outfit(fontSize: 12, color: AppColors.textLight)),
               const SizedBox(height: 10),
-              // Ligne 2 : Date + Action
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Expanded(
-                    child: Text(
-                      date,
-                      style: GoogleFonts.outfit(
-                        fontSize: 12,
-                        color: AppColors.textLight,
-                      ),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ),
-                  const SizedBox(width: 8),
+                  Text(date, style: GoogleFonts.outfit(fontSize: 12, color: AppColors.textLight)),
                   Row(
                     children: [
-                      Text(
-                        actionLabel,
-                        style: GoogleFonts.outfit(
-                          fontSize: 13,
-                          fontWeight: FontWeight.w600,
-                          color: AppColors.primary,
-                        ),
-                      ),
+                      Text(actionLabel, style: GoogleFonts.outfit(fontSize: 13, fontWeight: FontWeight.w600, color: AppColors.primary)),
                       const SizedBox(width: 4),
                       Icon(actionIcon, size: 14, color: AppColors.primary),
                     ],
@@ -505,6 +482,39 @@ class _HomePageSimpleState extends State<HomePageSimple> {
             ],
           ),
         ),
+      ),
+    );
+  }
+
+  Widget _buildEmptyState() {
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 16),
+      padding: const EdgeInsets.all(32),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: AppColors.divider, width: 1),
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(
+            Icons.folder_open_rounded,
+            size: 48,
+            color: AppColors.textLight.withOpacity(0.5),
+          ),
+          const SizedBox(height: 16),
+          Text(
+            'Aucune demande récente',
+            style: GoogleFonts.inter(fontSize: 15, fontWeight: FontWeight.w600, color: AppColors.textLight),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            'Vos dossiers apparaîtront ici après avoir soumis une demande.',
+            textAlign: TextAlign.center,
+            style: GoogleFonts.inter(fontSize: 13, color: AppColors.textLight.withOpacity(0.8)),
+          ),
+        ],
       ),
     );
   }

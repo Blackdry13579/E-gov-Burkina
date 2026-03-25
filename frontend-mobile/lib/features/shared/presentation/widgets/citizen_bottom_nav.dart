@@ -2,10 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import '../../../../core/constants/app_colors.dart';
-import '../../../home/presentation/pages/home_page_design.dart';
-import '../../../catalogue/presentation/pages/catalogue_page.dart';
-import '../../../citizen/presentation/pages/mes_demandes_page.dart';
-import '../../../profile/presentation/pages/profile_page.dart';
+import '../../../home/presentation/pages/home_page.dart';
 import '../../../../scaffolds/citizen_main_scaffold.dart';
 
 class CitizenBottomNav extends StatelessWidget {
@@ -24,7 +21,7 @@ class CitizenBottomNav extends StatelessWidget {
 
     String routeName;
     switch (index) {
-      case 0: routeName = HomePageSimple.routeName; break;
+      case 0: routeName = HomePage.routeName; break;
       case 1: routeName = '/citizen-catalogue'; break;
       case 2: routeName = '/citizen-demandes'; break;
       case 3: default: routeName = '/citizen-profile'; break;

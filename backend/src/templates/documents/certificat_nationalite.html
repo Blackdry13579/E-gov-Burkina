@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Certificat de Nationalité Burkinabè</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&display=swap');
+        
+        body {
+            background: #f0f2f5;
+            margin: 0;
+            padding: 0;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+        }
+
+        .document-page {
+            background: white;
+            width: 210mm;
+            min-height: 297mm;
+            padding: 15mm 25mm;
+            font-family: "Times New Roman", Times, serif;
+            color: #000;
+            position: relative;
+            margin: 20px auto;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            box-sizing: border-box;
+            text-align: justify;
+        }
+
+        .nat-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 25px;
+        }
+
+        .header-left {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            font-size: 11px;
+            font-weight: bold;
+            text-transform: uppercase;
+            text-align: center;
+            line-height: 1.5;
+        }
+
+        .dotted-line {
+            border-bottom: 1px dotted #000;
+            display: inline-block;
+            min-width: 130px;
+            text-align: center;
+            font-weight: normal;
+            text-transform: none;
+        }
+
+        .header-right {
+            text-align: right;
+        }
+
+        .country-name {
+            font-size: 15px;
+            font-weight: bold;
+            text-transform: uppercase;
+            margin: 0;
+        }
+
+        .devise {
+            font-size: 11px;
+            font-style: italic;
+            margin: 3px 0 0 0;
+        }
+
+        .nat-title {
+            font-size: 24px;
+            font-weight: bold;
+            text-align: center;
+            margin: 25px 0;
+            text-transform: uppercase;
+        }
+
+        .bf-flag {
+            width: 90px;
+            height: 60px;
+            margin: 0 auto 15px auto;
+            display: block;
+        }
+
+        .doc-reference {
+            text-align: center;
+            font-size: 14px;
+            margin: 10px 0 25px 0;
+            font-weight: bold;
+        }
+
+        .doc-reference span {
+            border-bottom: 1px dotted #000;
+            padding: 0 10px;
+        }
+
+        .president-line {
+            font-size: 13px;
+            font-weight: bold;
+            text-transform: uppercase;
+            margin-bottom: 5px;
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        .certifie-line {
+            font-size: 13px;
+            font-weight: bold;
+            text-decoration: underline;
+            margin: 20px 0 15px 0;
+        }
+
+        .pieces-list {
+            font-size: 12px;
+            line-height: 1.8;
+            margin-bottom: 20px;
+        }
+
+        .piece-item {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .piece-number {
+            font-weight: bold;
+            min-width: 25px;
+        }
+
+        .piece-text {
+            flex: 1;
+        }
+
+        .conclusion-paragraph {
+            font-size: 13px;
+            font-weight: bold;
+            line-height: 1.8;
+            margin: 25px 0;
+            text-indent: 30px;
+        }
+
+        .fait-delivre {
+            text-align: center;
+            font-size: 13px;
+            font-weight: bold;
+            margin: 20px 0 10px 0;
+        }
+
+        .date-line {
+            text-align: center;
+            font-size: 13px;
+            margin-bottom: 30px;
+        }
+
+        .date-line span {
+            border-bottom: 1px dotted #000;
+            padding: 0 15px;
+        }
+
+        .footer-bottom {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            margin-top: 30px;
+        }
+
+        .qr-code-zone {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 4px;
+            background: #fff;
+            border: 1px solid #94a3b8;
+            border-radius: 3px;
+        }
+
+        .signature-block {
+            text-align: center;
+            width: 250px;
+            position: relative;
+        }
+
+        .official-stamp {
+            width: 110px;
+            height: 110px;
+            border-radius: 50%;
+            border: 3px solid #1a1a8e;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto;
+            opacity: 0.8;
+        }
+
+        .stamp-inner {
+            width: 90px;
+            height: 90px;
+            border-radius: 50%;
+            border: 1px solid #1a1a8e;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: #1a1a8e;
+            font-size: 7px;
+            font-weight: bold;
+        }
+
+        .signature-cursive {
+            font-family: "Dancing Script", cursive;
+            font-size: 34px;
+            color: #1a1a5e;
+            position: absolute;
+            top: 25px;
+            right: 0;
+            transform: rotate(-5deg);
+        }
+
+        .magistrat-name {
+            font-size: 14px;
+            font-weight: bold;
+            margin-top: 10px;
+            text-transform: uppercase;
+        }
+
+        .magistrat-role {
+            font-size: 11px;
+            font-style: italic;
+            text-decoration: underline;
+        }
+
+        @media print {
+            @page { size: A4; margin: 0; }
+            .document-page { margin: 0; box-shadow: none; padding: 10mm 15mm; min-height: 296mm; }
+            body { background: white; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="document-page">
+    <header class="nat-header">
+        <div class="header-left">
+            <p>COUR D'APPEL</p>
+            <div>de <span class="dotted-line">{{courtCity}}</span></div>
+            <p style="margin-top: 10px;">TRIBUNAL DE GRANDE INSTANCE</p>
+            <div>de <span class="dotted-line">{{courtCity}}</span></div>
+        </div>
+
+        <div class="header-right">
+            <h2 class="country-name">BURKINA FASO</h2>
+            <p class="devise">Unité-Progrès-Justice</p>
+        </div>
+    </header>
+
+    <div class="nat-title">CERTIFICAT DE NATIONALITÉ BURKINABÈ</div>
+
+    <svg class="bf-flag" viewBox="0 0 120 80">
+        <rect x="0" y="0" width="120" height="40" fill="#EF2B2D" />
+        <rect x="0" y="40" width="120" height="40" fill="#009A00" />
+        <polygon points="60,25 65,35 75,35 67,42 70,52 60,45 50,52 53,42 45,35 55,35" fill="#FCD116" />
+    </svg>
+
+    <div class="doc-reference">
+        N° <span>{{reference}}</span>
+    </div>
+
+    <div class="president-line">
+        <span>LE PRÉSIDENT DU TRIBUNAL DE</span>
+        <span>{{tribunalName}}</span>
+    </div>
+
+    <div class="certifie-line">CERTIFIE AU VU DES PIÈCES SUIVANTES :</div>
+
+    <div class="pieces-list">
+        <div class="piece-item">
+            <div class="piece-number">1°</div>
+            <div class="piece-text">
+                Extrait d'acte de naissance n°{{birthActeRef}} du {{birthActeDate}}, 
+                délivré par l'officier de l'état civil de {{birthCommune}}, 
+                attestant que <span style="font-weight: bold; text-transform: uppercase;">{{fullName}}</span>, {{gender}} de {{fatherName}} et de {{motherName}}, 
+                est né(e) à {{birthPlace}}, le {{birthDate}} ;
+            </div>
+        </div>
+    </div>
+
+    <div class="conclusion-paragraph">
+        Que <span style="font-weight: bold; text-transform: uppercase;">{{fullName}}</span>, 
+        {{gender}} de {{fatherName}} et de {{motherName}}, 
+        né(e) à {{birthPlace}}, le {{birthDate}}, possède la Nationalité Burkinabè 
+        comme étant né(e) au Burkina Faso d'un père qui y est lui-même né 
+        (Art 144 du Code des Personnes et de la Famille).
+    </div>
+
+    <div class="fait-delivre">Fait et délivré au Palais de Justice</div>
+    <div class="date-line">Le <span>{{deliveryDate}}</span></div>
+
+    <div class="footer-bottom">
+        <div class="footer-left" style="width: 40%;">
+            <div style="font-size: 13px; font-weight: bold; margin-bottom: 20px;">
+                {{courtCity}}, Le Président du Tribunal
+            </div>
+            <div class="qr-code-zone">
+                <img src="{{qrCode}}" alt="Verif" style="width: 70px; height: 70px;">
+                <p style="font-size: 7px; margin-top: 3px; color: #475569; font-weight: bold;">VERIFICATION NUMERIQUE</p>
+            </div>
+        </div>
+
+        <div class="signature-block">
+            <img src="{{cachet}}" alt="Cachet Officiel" style="width: 100px; height: 100px; object-fit: contain; opacity: 0.85; margin: 0 auto; display: block;">
+            <img src="{{signature}}" alt="Signature" style="width: 130px; height: 55px; object-fit: contain; display: block; margin: 6px auto;">
+            <div class="magistrat-name">{{magistratName}}</div>
+            <div class="magistrat-role">{{magistratRole}}</div>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import '../../../catalogue/presentation/pages/catalogue_page.dart';
 import '../../../shared/presentation/widgets/citizen_bottom_nav.dart';
 class SuiviDossierRejetePage extends StatelessWidget {
   static const routeName = '/suivi-dossier-rejete';
@@ -43,11 +42,11 @@ class SuiviDossierRejetePage extends StatelessWidget {
         leadingWidth: 50,
         leading: IconButton(
           icon: const Icon(
-            Icons.menu_rounded,
+            Icons.arrow_back_rounded,
             color: primaryBlue,
             size: 26,
           ),
-          onPressed: () {},
+          onPressed: () => Navigator.of(context).pop(),
         ),
         title: Text(
           "E-Gov Burkina",
@@ -285,7 +284,7 @@ class SuiviDossierRejetePage extends StatelessWidget {
               height: 60,
               child: ElevatedButton.icon(
                 onPressed: () {
-                  Navigator.of(context).pushNamed(CataloguePage.routeName);
+                  Navigator.of(context).pushNamed('/citizen-catalogue');
                 },
                 icon: const Icon(Icons.add_circle_outline_rounded, size: 22),
                 label: Text(

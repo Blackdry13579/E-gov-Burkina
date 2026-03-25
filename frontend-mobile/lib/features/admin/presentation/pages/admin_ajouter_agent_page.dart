@@ -241,7 +241,7 @@ class _AdminAjouterAgentPageState extends State<AdminAjouterAgentPage> {
         ),
         const SizedBox(height: 8),
         DropdownButtonFormField<String>(
-          value: value,
+          initialValue: value,
           onChanged: onChanged,
           items: items.map((e) => DropdownMenuItem(value: e, child: Text(e, style: GoogleFonts.publicSans(fontSize: 14)))).toList(),
           decoration: InputDecoration(

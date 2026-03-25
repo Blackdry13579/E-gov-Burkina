@@ -24,6 +24,7 @@ class _FormulaireEtape1PageState extends State<FormulaireEtape1Page> {
   final _lieuNaissanceController = TextEditingController();
   final _nomPereController = TextEditingController();
   final _nomMereController = TextEditingController();
+  String _sexe = 'Masculin';
 
   @override
   void dispose() {
@@ -217,6 +218,8 @@ class _FormulaireEtape1PageState extends State<FormulaireEtape1Page> {
               validator: (v) => v!.isEmpty ? 'Champ requis' : null,
             ),
             const SizedBox(height: 16),
+            _buildSexeField(),
+            const SizedBox(height: 16),
             _buildDateField(),
             const SizedBox(height: 16),
             _buildField(
@@ -387,6 +390,57 @@ class _FormulaireEtape1PageState extends State<FormulaireEtape1Page> {
     );
   }
 
+  Widget _buildSexeField() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Genre / Sexe',
+          style: GoogleFonts.publicSans(
+            color: const Color(0xFF1e293b),
+            fontSize: 14,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+        const SizedBox(height: 8),
+        DropdownButtonFormField<String>(
+          initialValue: _sexe,
+          onChanged: (v) => setState(() => _sexe = v!),
+          items: ['Masculin', 'Féminin']
+              .map((s) => DropdownMenuItem(value: s, child: Text(s)))
+              .toList(),
+          style: GoogleFonts.publicSans(
+            color: const Color(0xFF1e293b),
+            fontSize: 14,
+          ),
+          decoration: InputDecoration(
+            filled: true,
+            fillColor: Colors.white,
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: 16,
+              vertical: 16,
+            ),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10),
+              borderSide: const BorderSide(color: Color(0xFFe2e8f0)),
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10),
+              borderSide: const BorderSide(color: Color(0xFFe2e8f0)),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10),
+              borderSide: const BorderSide(
+                color: AppColors.primary,
+                width: 2,
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
   // ──────────────────────────────────────────────────────────────────
   // SUIVANT BUTTON
   // ──────────────────────────────────────────────────────────────────
@@ -402,6 +456,7 @@ class _FormulaireEtape1PageState extends State<FormulaireEtape1Page> {
               final etape1Data = {
                 'nom': _nomController.text,
                 'prenom': _prenomController.text,
+                'genre': _sexe,
                 'dateNaissance': _dateNaissanceController.text,
                 'lieuNaissance': _lieuNaissanceController.text,
                 'nomPere': _nomPereController.text,

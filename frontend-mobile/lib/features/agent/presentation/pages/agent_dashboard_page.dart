@@ -2,11 +2,13 @@ import 'package:egov_mobile/features/shared/presentation/widgets/egov_main_app_b
 import 'package:flutter/material.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/providers/auth_provider.dart';
+import '../../../../core/providers/demande_provider.dart';
 import '../../domain/models/agent_config.dart';
+import '../../../shared/domain/models/demande_model.dart';
 import 'package:provider/provider.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-class AgentDashboardPage extends StatelessWidget {
+class AgentDashboardPage extends StatefulWidget {
   final AgentRole role;
   final VoidCallback? onSeeAll;
   final VoidCallback? onNotificationTap;
@@ -21,20 +23,61 @@ class AgentDashboardPage extends StatelessWidget {
   });
 
   @override
+  State<AgentDashboardPage> createState() => _AgentDashboardPageState();
+}
+
+class _AgentDashboardPageState extends State<AgentDashboardPage> {
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final token = context.read<AuthProvider>().token;
+      if (token != null) {
+        context.read<DemandeProvider>().fetchAgentDemandes(token: token);
+      }
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     final agent = context.watch<AuthProvider>().agent;
-    final agentName = agent?.nom ?? 'Agent';
-    final agentService = agent?.service ?? (role == AgentRole.justice ? 'Justice' : 'Mairie');
+    final agentName = agent?.fullName ?? 'Agent';
+    final agentService = agent?.service ?? (widget.role == AgentRole.justice ? 'Justice' : 'Mairie');
+
+    final demandes = context.watch<DemandeProvider>().demandes;
+    
+    final enAttente = demandes.where((d) => d.statut.toLowerCase().contains('attente')).length;
+    final validees = demandes.where((d) => d.statut.toLowerCase().contains('valid')).length;
+    final totalTrainees = demandes.where((d) => d.statut.toLowerCase().contains('valid') || d.statut.toLowerCase().contains('rejet')).length;
+    
+    final successRate = totalTrainees == 0 ? 0 : ((validees / totalTrainees) * 100).round();
+
+    final recentDemandes = List<DemandeModel>.from(demandes.where((d) {
+      final s = d.statut.toLowerCase();
+      return s.contains('valid') || s.contains('rejet');
+    }))
+      ..sort((a, b) => b.dateSoumission.compareTo(a.dateSoumission));
+    final displayRecent = recentDemandes.take(3).toList();
 
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: EgovMainAppBar(
-        title: 'TABLEAU DE BORD',
-        onNotificationTap: onNotificationTap,
-        onProfileTap: onProfileTap,
+        title: 'Tableau de Bord',
+        onNotificationTap: widget.onNotificationTap,
+        onProfileTap: widget.onProfileTap,
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.fromLTRB(20, 24, 20, 32),
+      body: RefreshIndicator(
+        onRefresh: () async {
+          final token = context.read<AuthProvider>().token;
+          if (token != null) {
+            await context.read<DemandeProvider>().fetchAgentDemandes(token: token);
+          }
+        },
+        color: AppColors.primary,
+        child: SingleChildScrollView(
+          physics: const AlwaysScrollableScrollPhysics(),
+          padding: const EdgeInsets.fromLTRB(20, 24, 20, 32),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -100,27 +143,11 @@ class AgentDashboardPage extends StatelessWidget {
                         textBaseline: TextBaseline.alphabetic,
                         children: [
                           Text(
-                            '24',
+                            '$enAttente',
                             style: GoogleFonts.inter(
                               fontSize: 36,
                               fontWeight: FontWeight.w900,
                               color: AppColors.textDark,
-                            ),
-                          ),
-                          const SizedBox(width: 10),
-                          Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                            decoration: BoxDecoration(
-                              color: Colors.red.withOpacity(0.1),
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            child: Text(
-                              '+5%',
-                              style: GoogleFonts.inter(
-                                fontSize: 11,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.red[700],
-                              ),
                             ),
                           ),
                         ],
@@ -145,7 +172,7 @@ class AgentDashboardPage extends StatelessWidget {
                 Expanded(
                   child: _buildStatCard(
                     label: 'Dossiers validés',
-                    value: '142',
+                    value: '$validees',
                     icon: Icons.check_circle_rounded,
                     iconColor: AppColors.success,
                   ),
@@ -154,7 +181,7 @@ class AgentDashboardPage extends StatelessWidget {
                 Expanded(
                   child: _buildStatCard(
                     label: 'Taux de succès',
-                    value: '92%',
+                    value: '$successRate%',
                     icon: Icons.speed_rounded,
                     iconColor: AppColors.primary,
                   ),
@@ -173,41 +200,64 @@ class AgentDashboardPage extends StatelessWidget {
                     color: AppColors.primary,
                   ),
                 ),
-                GestureDetector(
-                  onTap: onSeeAll,
-                  child: Text(
-                    'Tout voir',
-                    style: GoogleFonts.outfit(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
-                      color: AppColors.accent,
+                if (displayRecent.isNotEmpty)
+                  GestureDetector(
+                    onTap: widget.onSeeAll,
+                    child: Text(
+                      'Tout voir',
+                      style: GoogleFonts.outfit(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                        color: AppColors.accent,
+                      ),
                     ),
                   ),
-                ),
               ],
             ),
             const SizedBox(height: 16),
-            _buildActiviteCard(
-              context,
-              icon: Icons.description_outlined,
-              iconBg: AppColors.primary.withOpacity(0.1),
-              iconColor: AppColors.primaryLight,
-              titre: 'Certificat de Nationalité',
-              sousTitre: 'Moussa Traoré • Il y a 10 min',
-              badge: 'URGENT',
-              badgeColor: AppColors.error,
-              demande: {
-                'id': '1',
-                'reference': 'NAT-2024-001',
-                'documentTypeId': {'nom': 'Certificat de Nationalité'},
-                'citoyenId': {'prenom': 'Moussa', 'nom': 'Traoré'},
-                'statut': 'URGENT',
-              },
-            ),
+            if (displayRecent.isEmpty)
+              Center(
+                child: Padding(
+                  padding: const EdgeInsets.all(32.0),
+                  child: Text(
+                    'Aucune activité récente',
+                    style: GoogleFonts.publicSans(color: AppColors.textLight),
+                  ),
+                ),
+              )
+            else
+              ...displayRecent.map((d) => Padding(
+                    padding: const EdgeInsets.only(bottom: 12.0),
+                    child: _buildActiviteCard(
+                      context,
+                      icon: Icons.description_outlined,
+                      iconBg: _getStatusColor(d.statut).withOpacity(0.1),
+                      iconColor: _getStatusColor(d.statut),
+                      titre: d.typeDocument,
+                      sousTitre: '${d.citoyenNom} • ${_formatDate(d.dateSoumission)}',
+                      badge: d.statut.toUpperCase(),
+                      badgeColor: _getStatusColor(d.statut),
+                      demande: d,
+                    ),
+                  )),
           ],
         ),
       ),
+      ),
     );
+  }
+
+
+  Color _getStatusColor(String statut) {
+    final s = statut.toLowerCase();
+    if (s.contains('valid')) return const Color(0xFF16a34a);
+    if (s.contains('rejet')) return const Color(0xFF991b1b);
+    if (s.contains('attente')) return const Color(0xFFf59e0b);
+    return AppColors.primary;
+  }
+
+  String _formatDate(DateTime d) {
+    return '${d.day.toString().padLeft(2, '0')}/${d.month.toString().padLeft(2, '0')}/${d.year}';
   }
 
   Widget _buildStatCard({
@@ -272,13 +322,13 @@ class AgentDashboardPage extends StatelessWidget {
     required String sousTitre,
     required String badge,
     required Color badgeColor,
-    required Map<String, dynamic> demande,
+    required DemandeModel demande,
   }) {
     return InkWell(
       onTap: () => Navigator.pushNamed(
         context, 
         '/agent-detail-demande',
-        arguments: demande,
+        arguments: demande.toMap(),
       ),
       borderRadius: BorderRadius.circular(14),
       child: Container(

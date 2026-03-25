@@ -3,7 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 
 import '../../../shared/presentation/widgets/egov_app_bar.dart';
-import '../../../home/presentation/pages/home_page_design.dart';
+import '../../../home/presentation/pages/home_page.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/providers/auth_provider.dart';
 
@@ -177,18 +177,73 @@ class _CitizenAuthPageState extends State<CitizenAuthPage>
   }
 
   Future<void> _handleLogin() async {
-    // BYPASS TEMPORAIRE : Redirection directe sans validation
-    debugPrint("Bypass de connexion actif.");
-    Navigator.of(context).pushReplacementNamed(HomePageSimple.routeName);
+    final email = _identifierCtrl.text.trim();
+    final password = _passwordCtrl.text;
+
+    if (email.isEmpty || password.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Veuillez remplir tous les champs.')),
+      );
+      return;
+    }
+
+    try {
+      await context.read<AuthProvider>().loginCitoyen(email, password);
+      if (!mounted) return;
+      Navigator.of(context).pushReplacementNamed(HomePage.routeName);
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(e.toString()),
+          backgroundColor: Colors.red.shade700,
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+    }
   }
 
   Future<void> _handleRegister() async {
-    // BYPASS TEMPORAIRE : Inscription simulée
-    debugPrint("Bypass d'inscription actif.");
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Compte créé avec succès (Bypass) !')),
-    );
-    Navigator.of(context).pushReplacementNamed(HomePageSimple.routeName);
+    final fullName = _fullNameCtrl.text.trim();
+    final phone = _phoneCtrl.text.trim();
+    final email = _emailCtrl.text.trim();
+    final password = _regPasswordCtrl.text;
+
+    // Nom / Prénom : on sépare sur l'espace
+    final parts = fullName.split(' ');
+    final prenom = parts.isNotEmpty ? parts.first : fullName;
+    final nom = parts.length > 1 ? parts.sublist(1).join(' ') : '';
+
+    if (email.isEmpty || password.isEmpty || phone.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Veuillez remplir tous les champs obligatoires.')),
+      );
+      return;
+    }
+
+    try {
+      await context.read<AuthProvider>().register(
+        nom: nom.isEmpty ? prenom : nom,
+        prenom: prenom,
+        email: email,
+        telephone: phone,
+        password: password,
+      );
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Compte créé avec succès !'), backgroundColor: Colors.green),
+      );
+      Navigator.of(context).pushReplacementNamed(HomePage.routeName);
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(e.toString()),
+          backgroundColor: Colors.red.shade700,
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+    }
   }
 }
 

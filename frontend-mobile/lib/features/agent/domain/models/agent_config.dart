@@ -22,7 +22,7 @@ class AgentConfig {
       case AgentRole.justice:
         return const AgentConfig(
           title: 'Justice',
-          primaryColor: const Color(0xFF1A237E),
+          primaryColor: Color(0xFF1A237E),
           logoAsset: 'assets/images/embleme.png',
           flagAsset: 'assets/images/embleme.png',
           ministryName: 'Ministère de la Justice',
@@ -30,7 +30,7 @@ class AgentConfig {
       case AgentRole.mairie:
         return const AgentConfig(
           title: 'Mairie',
-          primaryColor: const Color(0xFF1A237E),
+          primaryColor: Color(0xFF1A237E),
           logoAsset: 'assets/images/embleme.png',
           flagAsset: 'assets/images/embleme.png',
           ministryName: 'Mairie de Ouagadougou',

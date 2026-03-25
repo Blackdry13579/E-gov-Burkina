@@ -1,146 +1,57 @@
+import 'package:egov_mobile/core/services/api_service.dart';
+import 'package:egov_mobile/core/models/user_model.dart';
 import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart' show Icons, Color;
+import 'package:flutter/material.dart' show Icons, Color, Colors;
 import 'package:egov_mobile/features/admin/presentation/pages/agent_model.dart';
 import 'package:egov_mobile/features/admin/presentation/pages/citizen_model.dart';
 import 'package:egov_mobile/features/admin/presentation/pages/service_model.dart';
 
 class UserManagementProvider extends ChangeNotifier {
-  // Liste des agents initialisée avec les données mockées précédemment dans la vue
-  final List<AgentData> _agents = [
-    const AgentData(
-      initials: 'SO',
-      avatarBg: Color(0xFFe0e7ff),
-      avatarFg: Color(0xFF4338ca),
-      name: 'Agent Sawadogo',
-      matricule: 'MAI-OUAGA-2024-089',
-      service: 'MAIRIE',
-      serviceBg: Color(0xFF1a237e),
-      dossiersLabel: '42 dossiers traités',
-      actif: true,
-      email: 'sawadogo@egov.bf',
-      phone: '+226 70 00 00 00',
-      dateAjout: '01 Janvier 2026',
-      dossiersTraites: 42,
-      tauxValidation: 87,
-      validees: 38,
-      rejetees: 4,
-      serviceComplet: 'Mairie de Ouagadougou',
-    ),
-    const AgentData(
-      initials: 'CO',
-      avatarBg: Color(0xFFfee2e2),
-      avatarFg: Color(0xFF991b1b),
-      name: 'Agent Compaoré',
-      matricule: 'JUS-OUAGA-2024-045',
-      service: 'JUSTICE',
-      serviceBg: Color(0xFF991b1b),
-      dossiersLabel: '38 dossiers traités',
-      actif: true,
-      email: 'compaore@egov.bf',
-      phone: '+226 71 00 00 00',
-      dateAjout: '15 Février 2026',
-      dossiersTraites: 38,
-      tauxValidation: 82,
-      validees: 31,
-      rejetees: 7,
-      serviceComplet: 'Tribunal de Grande Instance',
-    ),
-    const AgentData(
-      initials: 'TR',
-      avatarBg: Color(0xFFf1f5f9),
-      avatarFg: Color(0xFF64748b),
-      name: 'Agent Traoré',
-      matricule: 'POL-OUAGA-2024-032',
-      service: 'POLICE',
-      serviceBg: Color(0xFF1565c0),
-      dossiersLabel: '31 dossiers traités',
-      actif: true,
-      email: 'traore@egov.bf',
-      phone: '+226 72 00 00 00',
-      dateAjout: '10 Mars 2026',
-      dossiersTraites: 31,
-      tauxValidation: 90,
-      validees: 28,
-      rejetees: 3,
-      serviceComplet: 'Direction Générale de la Police',
-    ),
-  ];
+  final ApiService _apiService = ApiService();
+  
+  List<AgentData> _agents = [];
+  List<CitizenData> _citizens = [];
+  bool _isLoading = false;
+  String? _error;
 
-  // Liste des citoyens
-  final List<CitizenData> _citizens = [
-    const CitizenData(
-      id: 'BUR-001',
-      name: 'OUEDRAOGO Ibrahim',
-      cnib: 'B12345678',
-      email: 'ibrahim.o@email.bf',
-      phone: '+226 70 12 34 56',
-      address: 'Secteur 15',
-      city: 'Ouagadougou',
-      birthDate: '12/05/1990',
-      status: 'VALIDE',
-      registrationDate: '01/01/2026',
-      requestsCount: 5,
-    ),
-    const CitizenData(
-      id: 'BUR-002',
-      name: 'TRAORE Mariam',
-      cnib: 'B87654321',
-      email: 'mariam.t@email.bf',
-      phone: '+226 76 54 32 10',
-      address: 'Koulouba',
-      city: 'Bobo-Dioulasso',
-      birthDate: '22/08/1995',
-      status: 'EN_ATTENTE',
-      registrationDate: '15/02/2026',
-      requestsCount: 2,
-    ),
-    const CitizenData(
-      id: 'BUR-003',
-      name: 'DIALLO Moussa',
-      cnib: 'B11223344',
-      email: 'moussa.d@email.bf',
-      phone: '+226 77 66 55 44',
-      address: 'Paspanga',
-      city: 'Ouagadougou',
-      birthDate: '05/11/1988',
-      status: 'BLOQUE',
-      registrationDate: '20/02/2026',
-      requestsCount: 0,
-    ),
-  ];
+  void clear() {
+    _agents = [];
+    _citizens = [];
+    _error = null;
+    notifyListeners();
+  }
 
-  // Liste des services pour la gestion admin
   final List<ServiceData> _services = [
-    ServiceData(
+    const ServiceData(
       id: '1',
       name: 'MAIRIE',
       description: 'Actes de naissance, mariage, décès et documents civils.',
       icon: Icons.account_balance_rounded,
-      color: const Color(0xFF1A237E),
+      color: Color(0xFF1A237E),
       isActive: true,
     ),
-    ServiceData(
+    const ServiceData(
       id: '2',
       name: 'JUSTICE',
       description: 'Casier judiciaire, certificats de nationalité.',
       icon: Icons.gavel_rounded,
-      color: const Color(0xFFB91C1C),
+      color: Color(0xFFB91C1C),
       isActive: true,
     ),
-    ServiceData(
+    const ServiceData(
       id: '3',
       name: 'POLICE',
       description: 'CNIB, Passeports, certificats de résidence.',
       icon: Icons.shield_rounded,
-      color: const Color(0xFF1E40AF),
+      color: Color(0xFF1E40AF),
       isActive: true,
     ),
-    ServiceData(
+    const ServiceData(
       id: '4',
       name: 'SANTÉ',
       description: 'Carnets de santé, certificats médicaux.',
       icon: Icons.local_hospital_rounded,
-      color: const Color(0xFF059669),
+      color: Color(0xFF059669),
       isActive: false,
     ),
   ];
@@ -149,65 +60,129 @@ class UserManagementProvider extends ChangeNotifier {
   List<AgentData> get agents => _agents;
   List<CitizenData> get citizens => _citizens;
   List<ServiceData> get services => _services;
+  bool get isLoading => _isLoading;
+  String? get error => _error;
 
-  // --- ACTIONS AGENTS ---
+  // --- API CALLS ---
 
-  void addAgent(AgentData agent) {
-    _agents.add(agent);
+  Future<void> fetchUsers(String token) async {
+    _isLoading = true;
+    _error = null;
     notifyListeners();
-  }
 
-  void toggleAgentStatus(String matricule) {
-    final index = _agents.indexWhere((a) => a.matricule == matricule);
-    if (index != -1) {
-      final old = _agents[index];
-      _agents[index] = AgentData(
-        initials: old.initials,
-        avatarBg: old.avatarBg,
-        avatarFg: old.avatarFg,
-        name: old.name,
-        matricule: old.matricule,
-        service: old.service,
-        serviceBg: old.serviceBg,
-        dossiersLabel: old.dossiersLabel,
-        actif: !old.actif,
-        email: old.email,
-        phone: old.phone,
-        dateAjout: old.dateAjout,
-        dossiersTraites: old.dossiersTraites,
-        tauxValidation: old.tauxValidation,
-        validees: old.validees,
-        rejetees: old.rejetees,
-        serviceComplet: old.serviceComplet,
-      );
+    try {
+      final response = await _apiService.get('/admin/users', token: token);
+      if (response['success'] == true) {
+        final List<dynamic> usersJson = response['data'] ?? [];
+        final List<UserModel> users = usersJson.map((u) => UserModel.fromJson(u)).toList();
+
+        // Séparer et Mapper vers les modèles UI
+        _citizens = users
+            .where((u) => u.role == 'CITOYEN')
+            .map((u) => _mapToCitizenData(u))
+            .toList();
+
+        _agents = users
+            .where((u) => u.role.startsWith('AGENT_') || u.role == 'SUPERVISEUR' || u.role == 'ADMIN')
+            .map((u) => _mapToAgentData(u))
+            .toList();
+      }
+    } catch (e) {
+      _error = e.toString();
+    } finally {
+      _isLoading = false;
       notifyListeners();
     }
   }
 
-  // --- ACTIONS CITOYENS ---
-
-  void updateCitizenStatus(String id, String newStatus) {
-    final index = _citizens.indexWhere((c) => c.id == id);
-    if (index != -1) {
-      final old = _citizens[index];
-      _citizens[index] = CitizenData(
-        id: old.id,
-        name: old.name,
-        cnib: old.cnib,
-        email: old.email,
-        phone: old.phone,
-        address: old.address,
-        city: old.city,
-        birthDate: old.birthDate,
-        status: newStatus,
-        registrationDate: old.registrationDate,
-        requestsCount: old.requestsCount,
-      );
+  Future<void> toggleUserStatus(String id, String token) async {
+    try {
+      final response = await _apiService.put('/admin/users/$id/toggle', {}, token: token);
+      if (response['success'] == true) {
+        await fetchUsers(token);
+      }
+    } catch (e) {
+      _error = e.toString();
       notifyListeners();
+      rethrow;
     }
   }
 
-  // --- ACTIONS SERVICES ---
+  // Aliases for compatibility
+  Future<void> toggleAgentStatus(String id, String token) => toggleUserStatus(id, token);
+  Future<void> updateCitizenStatus(String id, String token) => toggleUserStatus(id, token);
+
+  Future<void> addService(Map<String, dynamic> serviceData, String token) async {
+     // TODO: Implement API call for adding service if backend supports it
+     notifyListeners();
+  }
+
+  Future<void> createUser(Map<String, dynamic> userData, String token) async {
+    _isLoading = true;
+    notifyListeners();
+    try {
+      final response = await _apiService.post('/admin/users', userData, token: token);
+      if (response['success'] == true) {
+        await fetchUsers(token);
+      }
+    } catch (e) {
+      _error = e.toString();
+      notifyListeners();
+      rethrow;
+    } finally {
+      _isLoading = false;
+    }
+  }
+
+  // --- MAPPING HELPERS ---
+
+  CitizenData _mapToCitizenData(UserModel u) {
+    final id = u.id;
+    final safeId = id.length >= 8 ? id.substring(0, 8) : id;
+    final cnib = safeId.isEmpty ? '00000000' : safeId.toUpperCase();
+    return CitizenData(
+      id: u.id,
+      name: u.fullName,
+      cnib: 'B$cnib', // CNIB simulée si manquante
+      email: u.email,
+      phone: u.telephone ?? 'N/A',
+      address: u.adresse ?? 'N/A',
+      city: 'Burkina Faso',
+      birthDate: u.dateNaissance ?? 'N/A',
+      status: 'VALIDE', // Backend simpler for now
+      registrationDate: 'Récemment',
+    );
+  }
+
+  AgentData _mapToAgentData(UserModel u) {
+    final safeId = u.id.length >= 8 ? u.id.substring(0, 8) : u.id;
+    final matricule = safeId.isEmpty ? '00000000' : safeId.toUpperCase();
+    final bool isMairie = u.service == 'mairie';
+    final String initials = u.prenom.isNotEmpty ? u.prenom[0] + u.nom[0] : 'AG';
+    
+    return AgentData(
+      id: u.id,
+      initials: initials,
+      avatarBg: isMairie ? const Color(0xFFe0e7ff) : const Color(0xFFfee2e2),
+      avatarFg: isMairie ? const Color(0xFF4338ca) : const Color(0xFF991b1b),
+      name: u.fullName,
+      matricule: matricule,
+      service: u.service?.toUpperCase() ?? 'N/A',
+      serviceBg: isMairie ? const Color(0xFF1a237e) : const Color(0xFF991b1b),
+      dossiersLabel: 'Dossiers actifs',
+      actif: true, // À récupérer de isActive si ajouté au UserModel
+      email: u.email,
+      phone: u.telephone ?? 'N/A',
+      dateAjout: 'Récemment',
+      dossiersTraites: 0,
+      tauxValidation: 100,
+      validees: 0,
+      rejetees: 0,
+      serviceComplet: u.service == 'mairie' ? 'Mairie de Ouagadougou' : 'Services Judiciaires',
+    );
+  }
+
+  // --- ACTIONS SERVICES (Local for now) ---
 
   void toggleServiceStatus(String id) {
     final index = _services.indexWhere((s) => s.id == id);
@@ -215,10 +190,5 @@ class UserManagementProvider extends ChangeNotifier {
       _services[index] = _services[index].copyWith(isActive: !_services[index].isActive);
       notifyListeners();
     }
-  }
-
-  void addService(ServiceData service) {
-    _services.add(service);
-    notifyListeners();
   }
 }

@@ -1,5 +1,12 @@
-﻿Analyzing frontend-mobile...                                    
+﻿Analyzing frontend-mobile...
 
-warning - Unused import: '../auth/presentation/pages/citizen_auth_page.dart' - lib\features\landing\landing_page.dart:4:8 - unused_import
-   info - Use a 'SizedBox' to add whitespace to a layout - lib\features\landing\landing_page.dart:93:12 - sized_box_for_whitespace
+  error - lib\features\agent\presentation\pages\agent_dashboard_page.dart:244:6 - Expected to find ')'. - expected_token
+warning - lib\core\providers\user_management_provider.dart:4:59 - The name Colors is shown, but isn't used. Try removing the name from the list of shown members. - unused_shown_name
+warning - lib\features\admin\presentation\pages\admin_demandes_page.dart:106:8 - The declaration '_showDetail' isn't referenced. Try removing the declaration of '_showDetail'. - unused_element
+warning - lib\features\admin\presentation\pages\admin_home_page.dart:31:16 - The value of the field 'warningOrange' isn't used. Try removing the field, or using it. - unused_field
+warning - lib\features\admin\presentation\pages\admin_stats_page.dart:26:16 - The value of the field 'routeName' isn't used. Try removing the field, or using it. - unused_field
+warning - lib\features\agent\presentation\pages\agent_demandes_page.dart:10:8 - Unused import: '../../domain/models/service_documents.dart'. Try removing the import directive. - unused_import
+warning - lib\features\agent\presentation\pages\agent_demandes_page.dart:44:15 - The value of the field '_currentAgent' isn't used. Try removing the field, or using it. - unused_field
+   info - lib\features\citizen\presentation\pages\mes_demandes_page.dart:243:18 - Unnecessary use of 'toList' in a spread. Try removing the invocation of 'toList'. - unnecessary_to_list_in_spreads
 
+8 issues found.

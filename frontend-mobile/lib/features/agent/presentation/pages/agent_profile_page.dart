@@ -5,14 +5,14 @@ import 'package:provider/provider.dart';
 import '../../../../core/providers/auth_provider.dart';
 import '../../../../core/constants/app_colors.dart';
 
-class AgentProfilPage extends StatelessWidget {
-  const AgentProfilPage({super.key});
+class AgentProfilePage extends StatelessWidget {
+  const AgentProfilePage({super.key});
 
   @override
   Widget build(BuildContext context) {
     final authProvider = context.watch<AuthProvider>();
     final agent = authProvider.agent;
-    final agentName = agent?.nom ?? 'Agent';
+    final agentName = agent?.fullName ?? 'Agent';
     final agentService = agent?.service ?? 'Service Non Spécifié';
 
     return Scaffold(
@@ -61,7 +61,7 @@ class AgentProfilPage extends StatelessWidget {
                 height: 52,
                 child: OutlinedButton.icon(
                   onPressed: () {
-                    authProvider.logout();
+                    authProvider.logout(context);
                     Navigator.pushNamedAndRemoveUntil(context, '/agent-auth', (route) => false);
                   },
                   icon: const Icon(Icons.logout_rounded, color: Colors.red),

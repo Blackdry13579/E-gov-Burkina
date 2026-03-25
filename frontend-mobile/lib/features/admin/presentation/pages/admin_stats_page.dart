@@ -5,10 +5,6 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import '../../../../core/providers/stats_provider.dart';
 import '../../../../core/constants/app_colors.dart';
-import 'admin_home_page.dart';
-import 'admin_demandes_page.dart';
-import 'admin_users_page.dart';
-import 'admin_documents_page.dart';
 
 class AdminStatsPage extends StatefulWidget {
   const AdminStatsPage({super.key});
@@ -168,107 +164,6 @@ class _AdminStatsPageState extends State<AdminStatsPage> {
   }
 }
 
-class _TopBar extends StatelessWidget {
-  const _TopBar();
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      color: Colors.white,
-      padding: const EdgeInsets.fromLTRB(16, 12, 16, 12),
-      child: Row(
-        children: [
-          Image.asset('assets/images/embleme.png', height: 32, errorBuilder: (_, __, ___) => const Icon(Icons.account_balance, color: AppColors.primary)),
-          const SizedBox(width: 12),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text('BURKINA FASO', style: GoogleFonts.outfit(fontSize: 12, fontWeight: FontWeight.w900, color: const Color(0xFFF97316))),
-              Text('Services de Statistiques', style: GoogleFonts.outfit(fontSize: 10, fontWeight: FontWeight.w700, color: AppColors.textLight)),
-            ],
-          ),
-          const Spacer(),
-          const Icon(Icons.notifications_none_rounded, color: AppColors.textDark, size: 22),
-        ],
-      ),
-    );
-  }
-}
-
-class _AvatarHeader extends StatelessWidget {
-  const _AvatarHeader();
-
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Container(
-        width: 80,
-        height: 80,
-        decoration: const BoxDecoration(
-          shape: BoxShape.circle,
-          color: AppColors.sectionBg,
-        ),
-        child: const Icon(Icons.person, size: 40, color: AppColors.primary),
-      ),
-    );
-  }
-}
-
-class _KpiCard extends StatelessWidget {
-  final String label;
-  final String value;
-  final String trend;
-  final Color accent;
-
-  const _KpiCard({
-    required this.label,
-    required this.value,
-    required this.trend,
-    required this.accent,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.fromLTRB(14, 14, 14, 14),
-      decoration: BoxDecoration(
-        color: AppColors.cardBg,
-        borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: AppColors.divider),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            label,
-            style: GoogleFonts.outfit(
-              fontSize: 12,
-              fontWeight: FontWeight.w700,
-              color: AppColors.textLight,
-            ),
-          ),
-          const SizedBox(height: 6),
-          Text(
-            value,
-            style: GoogleFonts.outfit(
-              fontSize: 20,
-              fontWeight: FontWeight.w900,
-              color: AppColors.textDark,
-            ),
-          ),
-          const SizedBox(height: 4),
-          Text(
-            trend,
-            style: GoogleFonts.outfit(
-              fontSize: 11,
-              fontWeight: FontWeight.w800,
-              color: accent,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
 
 class _StatCard extends StatelessWidget {
   final String label;
@@ -413,7 +308,7 @@ class _DeliveryTimeRow extends StatelessWidget {
         LinearProgressIndicator(
           value: value,
           backgroundColor: AppColors.divider,
-          valueColor: AlwaysStoppedAnimation<Color>(AppColors.primary),
+          valueColor: const AlwaysStoppedAnimation<Color>(AppColors.primary),
           minHeight: 4,
         ),
       ],

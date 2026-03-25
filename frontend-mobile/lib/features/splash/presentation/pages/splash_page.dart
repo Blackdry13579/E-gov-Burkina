@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
 
 import 'package:egov_mobile/core/constants/app_colors.dart';
+import 'package:egov_mobile/core/providers/auth_provider.dart';
+import 'package:egov_mobile/core/models/user_model.dart';
 import 'package:egov_mobile/features/landing/landing_page.dart';
+import 'package:egov_mobile/features/agent/domain/models/agent_config.dart';
 
 class SplashPage extends StatefulWidget {
   const SplashPage({super.key});
@@ -21,11 +25,47 @@ class _SplashPageState extends State<SplashPage> {
   }
 
   Future<void> _bootstrap() async {
-    await Future.delayed(const Duration(milliseconds: 500)); // Réduit pour test rapide
+    await Future.delayed(const Duration(milliseconds: 800));
     if (!mounted) return;
 
-    // BYPASS AUTH POUR TEST
-    Navigator.of(context).pushReplacementNamed(LandingPage.routeName);
+    final authProvider = context.read<AuthProvider>();
+    try {
+      await authProvider.tryAutoLogin();
+    } catch (_) {
+      // En cas d'erreur inattendue, on repart sur l'écran d'accueil.
+      await authProvider.logout();
+      if (!mounted) return;
+      Navigator.of(context).pushReplacementNamed(LandingPage.routeName);
+      return;
+    }
+
+    if (!mounted) return;
+
+    if (authProvider.isAuthenticated) {
+      final user = authProvider.currentUser;
+      if (user == null) {
+        Navigator.of(context).pushReplacementNamed(LandingPage.routeName);
+        return;
+      }
+
+      // Redirection selon le rôle
+      if (user.role == 'ADMIN') {
+        Navigator.of(context).pushReplacementNamed('/admin-home');
+      } else if (user.role.startsWith('AGENT')) {
+        AgentRole role = AgentRole.mairie;
+        if (user.service?.toLowerCase() == 'justice' || user.role == 'AGENT_JUSTICE') {
+          role = AgentRole.justice;
+        }
+        Navigator.of(context).pushReplacementNamed(
+          '/agent-main',
+          arguments: {'role': role},
+        );
+      } else {
+        Navigator.of(context).pushReplacementNamed('/home');
+      }
+    } else {
+      Navigator.of(context).pushReplacementNamed(LandingPage.routeName);
+    }
   }
 
   @override

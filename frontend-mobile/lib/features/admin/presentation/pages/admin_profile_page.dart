@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 
-import '../../../../core/constants/app_colors.dart';
 import '../../../../core/providers/auth_provider.dart';
 
 class AdminProfilePage extends StatelessWidget {
@@ -17,6 +16,10 @@ class AdminProfilePage extends StatelessWidget {
     final authProvider = context.watch<AuthProvider>();
     final user = authProvider.user;
     final adminName = user?.nom ?? 'Administrateur';
+    final adminId = user?.id ?? '';
+    final adminIdDisplay = adminId.isEmpty
+        ? 'ADM-2024-001'
+        : (adminId.length >= 10 ? adminId.substring(0, 10) : adminId).toUpperCase();
 
     // Admin Specific Colors
     const primaryBlue = Color(0xFF1A237E);
@@ -108,7 +111,7 @@ class AdminProfilePage extends StatelessWidget {
                   _InfoItem(
                     icon: Icons.badge_outlined,
                     label: "ID Administrateur",
-                    value: user?.id.substring(0, 10).toUpperCase() ?? "ADM-2024-001",
+                    value: adminIdDisplay,
                   ),
                   _InfoItem(
                     icon: Icons.mail_outline_rounded,
@@ -157,7 +160,7 @@ class AdminProfilePage extends StatelessWidget {
                 height: 56,
                 child: ElevatedButton.icon(
                   onPressed: () {
-                    context.read<AuthProvider>().logout();
+                    context.read<AuthProvider>().logout(context);
                     Navigator.of(context).pushNamedAndRemoveUntil(
                       '/landing',
                       (route) => false,

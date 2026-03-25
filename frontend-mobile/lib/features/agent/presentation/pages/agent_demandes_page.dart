@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import '../../../../core/providers/demande_provider.dart';
+import '../../../../core/providers/auth_provider.dart';
 import '../../../shared/domain/models/demande_model.dart';
 import '../../domain/models/agent_config.dart';
 import '../../domain/models/agent_model.dart';
@@ -45,36 +46,25 @@ class _AgentDemandesPageState extends State<AgentDemandesPage> {
   @override
   void initState() {
     super.initState();
-    // Mock current agent for now based on role
-    _currentAgent = AgentModel(
-      id: '1',
-      nom: 'Sawadogo',
-      service: widget.role == AgentRole.justice ? 'Justice' : 'Mairie Centrale',
-      role: widget.role,
-    );
-    
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<DemandeProvider>().fetchDemandes();
+      final token = context.read<AuthProvider>().token;
+      if (token != null) {
+        context.read<DemandeProvider>().fetchAgentDemandes(token: token);
+      }
     });
   }
 
-  List<DemandeModel> _getFilteredDemandes(List<Map<String, dynamic>> rawDemandes) {
-    final demandes = rawDemandes.map((e) => DemandeModel.fromMap(e)).toList();
-    
-    // Step 1: filter by agent service
-    final serviceFiltered = demandes
-        .where((d) => ServiceDocuments.isAdmin(_currentAgent?.service ?? '')
-            ? true
-            : d.service == _currentAgent?.service)
-        .toList();
+  List<DemandeModel> _getFilteredDemandes(List<DemandeModel> demandes) {
 
-    // Step 2: filter by selected chip
+    // Le backend filtre déjà par service pour l'agent, pas besoin de le faire côté client !
+    
+    // Step 1: filter by selected chip
     List<DemandeModel> statusFiltered;
     if (_selectedFilter == 'Tout') {
-      statusFiltered = serviceFiltered;
+      statusFiltered = demandes;
     } else {
       final filter = _selectedFilter.toLowerCase();
-      statusFiltered = serviceFiltered.where((d) {
+      statusFiltered = demandes.where((d) {
         final status = d.statut.toLowerCase();
         if (filter.contains('valid')) return status.contains('valid');
         if (filter.contains('rejet')) return status.contains('rejet');
@@ -110,26 +100,34 @@ class _AgentDemandesPageState extends State<AgentDemandesPage> {
 
   @override
   Widget build(BuildContext context) {
-    final rawDemandes = context.watch<DemandeProvider>().demandes;
-    final castedDemandes = List<Map<String, dynamic>>.from(rawDemandes);
-    final filtered = _getFilteredDemandes(castedDemandes);
+    final demandes = context.watch<DemandeProvider>().demandes;
+    final filtered = _getFilteredDemandes(demandes);
 
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: EgovMainAppBar(
-        title: 'MES DEMANDES ${widget.role == AgentRole.justice ? 'JUSTICE' : 'MAIRIE'}',
+        title: 'Mes Demandes',
         onNotificationTap: widget.onNotificationTap,
         onProfileTap: widget.onProfileTap,
       ),
       body: Column(
         children: [
           _buildSearchBar(),
-          _buildFilterChips(castedDemandes),
+          _buildFilterChips(demandes),
           _buildCountBar(filtered.length),
           Expanded(
-            child: filtered.isEmpty
-                ? _buildEmptyState()
-                : _buildDemandesList(filtered),
+            child: RefreshIndicator(
+              onRefresh: () async {
+                final token = context.read<AuthProvider>().token;
+                if (token != null) {
+                  await context.read<DemandeProvider>().fetchAgentDemandes(token: token);
+                }
+              },
+              color: AppColors.primary,
+              child: filtered.isEmpty
+                  ? _buildEmptyState()
+                  : _buildDemandesList(filtered),
+            ),
           ),
         ],
       ),
@@ -165,9 +163,7 @@ class _AgentDemandesPageState extends State<AgentDemandesPage> {
     );
   }
 
-  Widget _buildFilterChips(List<Map<String, dynamic>> rawDemandes) {
-    final allConverted = rawDemandes.map((e) => DemandeModel.fromMap(e)).toList();
-    
+  Widget _buildFilterChips(List<DemandeModel> demandes) {
     return SizedBox(
       height: 40,
       child: ListView.separated(
@@ -180,8 +176,8 @@ class _AgentDemandesPageState extends State<AgentDemandesPage> {
           final isSelected = _selectedFilter == filter;
 
           final count = filter == 'Tout'
-              ? allConverted.length
-              : allConverted.where((d) {
+              ? demandes.length
+              : demandes.where((d) {
                   final status = d.statut.toLowerCase();
                   final f = filter.toLowerCase();
                   if (f.contains('valid')) return status.contains('valid');
@@ -277,18 +273,27 @@ class _AgentDemandesPageState extends State<AgentDemandesPage> {
   }
 
   Widget _buildEmptyState() {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          const Icon(Icons.folder_open_rounded, size: 64, color: Color(0xFFcbd5e1)),
-          const SizedBox(height: 16),
-          Text(
-            'Aucune demande trouvée',
-            style: GoogleFonts.publicSans(color: const Color(0xFF64748b), fontSize: 16),
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        return SingleChildScrollView(
+          physics: const AlwaysScrollableScrollPhysics(),
+          child: Container(
+            height: constraints.maxHeight,
+            alignment: Alignment.center,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Icon(Icons.folder_open_rounded, size: 64, color: Color(0xFFcbd5e1)),
+                const SizedBox(height: 16),
+                Text(
+                  'Aucune demande trouvée',
+                  style: GoogleFonts.publicSans(color: const Color(0xFF64748b), fontSize: 16),
+                ),
+              ],
+            ),
           ),
-        ],
-      ),
+        );
+      },
     );
   }
 
@@ -481,14 +486,7 @@ class _AgentDemandesPageState extends State<AgentDemandesPage> {
         onPressed: () => Navigator.pushNamed(
           context,
           AgentDetailDemandePage.routeName,
-          arguments: {
-            'id': d.id,
-            'reference': d.reference,
-            'citoyenId': {'nom': d.citoyenNom.split(' ').last, 'prenom': d.citoyenNom.split(' ').first},
-            'documentTypeId': {'nom': d.typeDocument},
-            'statut': d.statut,
-            'dateSoumission': d.dateSoumission.toIso8601String(),
-          },
+          arguments: d.toMap(),
         ),
         style: ElevatedButton.styleFrom(
           backgroundColor: AppColors.primary,

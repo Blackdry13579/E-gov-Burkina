@@ -1,10 +1,11 @@
 import 'package:egov_mobile/features/shared/presentation/widgets/egov_sub_app_bar.dart';
+import 'package:egov_mobile/scaffolds/citizen_main_scaffold.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import '../../../../core/constants/app_colors.dart';
+import '../../../home/presentation/pages/home_page.dart';
 import '../../domain/models/document_model.dart';
-import 'suivi_demande_page.dart';
 
 class ConfirmationPage extends StatelessWidget {
   final DocumentModel document;
@@ -290,10 +291,7 @@ class ConfirmationPage extends StatelessWidget {
         onPressed: () => Navigator.pushReplacement(
           context,
           MaterialPageRoute(
-            builder: (_) => SuiviDemandePage(
-              reference: reference,
-              document: document,
-            ),
+            builder: (_) => const CitizenMainScaffold(initialIndex: 2),
           ),
         ),
         style: ElevatedButton.styleFrom(
@@ -325,7 +323,11 @@ class ConfirmationPage extends StatelessWidget {
       height: 56,
       child: OutlinedButton.icon(
         onPressed: () {
-          Navigator.popUntil(context, (route) => route.isFirst);
+          Navigator.pushNamedAndRemoveUntil(
+            context,
+            HomePage.routeName,
+            (route) => false,
+          );
         },
         style: OutlinedButton.styleFrom(
           backgroundColor: Colors.white,

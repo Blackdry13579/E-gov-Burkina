@@ -211,7 +211,7 @@ class _AdminEditionDocumentPageState
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // Champ 1 — Nom
-          _FieldLabel('NOM DU DOCUMENT'),
+          const _FieldLabel('NOM DU DOCUMENT'),
           _fieldBox(
             child: TextFormField(
               controller: _nomCtrl,
@@ -223,7 +223,7 @@ class _AdminEditionDocumentPageState
           const SizedBox(height: 16),
 
           // Champ 2 — Code (disabled)
-          _FieldLabel('CODE'),
+          const _FieldLabel('CODE'),
           _fieldBox(
             child: TextFormField(
               initialValue: widget.document.code,
@@ -258,7 +258,7 @@ class _AdminEditionDocumentPageState
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    _FieldLabel('PRIX (FCFA)'),
+                    const _FieldLabel('PRIX (FCFA)'),
                     _fieldBox(
                       child: TextFormField(
                         controller: _prixCtrl,
@@ -278,7 +278,7 @@ class _AdminEditionDocumentPageState
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    _FieldLabel('DÉLAI'),
+                    const _FieldLabel('DÉLAI'),
                     _fieldBox(
                       child: TextFormField(
                         controller: _delaiCtrl,
@@ -297,7 +297,7 @@ class _AdminEditionDocumentPageState
           const SizedBox(height: 16),
 
           // Champ 5 — Livraison (dropdown)
-          _FieldLabel('MODE DE LIVRAISON'),
+          const _FieldLabel('MODE DE LIVRAISON'),
           _DropdownField(
             value: _selectedLivraison,
             options: _livraisonOptions,
@@ -306,7 +306,7 @@ class _AdminEditionDocumentPageState
           const SizedBox(height: 16),
 
           // Champ 6 — Service (dropdown)
-          _FieldLabel('SERVICE'),
+          const _FieldLabel('SERVICE'),
           _DropdownField(
             value: _selectedService,
             options: _serviceOptions,

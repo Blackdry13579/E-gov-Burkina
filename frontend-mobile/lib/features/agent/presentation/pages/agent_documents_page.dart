@@ -360,7 +360,7 @@ class _AgentDocumentsPageState extends State<AgentDocumentsPage> {
                   token: token,
                 );
               },
-              activeColor: AppColors.primary,
+              activeThumbColor: AppColors.primary,
               activeTrackColor: AppColors.primary.withOpacity(0.2),
               inactiveThumbColor: Colors.white,
               inactiveTrackColor: AppColors.textLight.withOpacity(0.5),

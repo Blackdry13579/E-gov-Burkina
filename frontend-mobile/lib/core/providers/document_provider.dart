@@ -1,10 +1,9 @@
-import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
 import '../services/api_service.dart';
 import '../../features/catalogue/domain/models/document_model.dart';
 
 class DocumentProvider extends ChangeNotifier {
+  final ApiService _apiService = ApiService();
   List<DocumentModel> _documents = [];
   bool _isLoading = false;
   String? _error;
@@ -24,20 +23,12 @@ class DocumentProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
-      final response = await http.get(
-        Uri.parse('${ApiService.baseUrl}/documents'),
-        headers: {
-          'Authorization': 'Bearer $token',
-          'Content-Type': 'application/json',
-        },
-      );
-
-      if (response.statusCode == 200) {
-        final List data = jsonDecode(response.body);
+      final response = await _apiService.get('/documents', token: token);
+      if (response['success'] == true) {
+        final List data = response['data'] ?? [];
         _documents = data.map((d) => DocumentModel.fromJson(d)).toList();
       } else {
         _error = 'Erreur de chargement';
-        // Fallback to mock data if API fails but we want to show something
         if (_documents.isEmpty) _documents = _getMockDocuments();
       }
     } catch (e) {
@@ -61,23 +52,10 @@ class DocumentProvider extends ChangeNotifier {
     _documents[index] = _documents[index].copyWith(isActive: newValue);
     notifyListeners();
 
-    // On ne tente l'API que si on a un token et que l'ID ne ressemble pas à un mock simple (1, 2, 3...)
     if (token.isEmpty || documentId.length < 5) return;
 
     try {
-      final response = await http.patch(
-        Uri.parse('${ApiService.baseUrl}/documents/$documentId/toggle'),
-        headers: {
-          'Authorization': 'Bearer $token',
-          'Content-Type': 'application/json',
-        },
-        body: jsonEncode({'isActive': newValue}),
-      );
-
-      if (response.statusCode != 200) {
-        // En cas d'erreur réelle (404, etc.), on garde quand même le changement local en mode démo 
-        // ou on pourrait logger l'erreur. Ici on reste en succès local.
-      }
+      await _apiService.patch('/documents/$documentId/toggle', {'isActive': newValue}, token: token);
     } catch (e) {
       debugPrint('Erreur toggle document: $e');
     }
@@ -89,19 +67,11 @@ class DocumentProvider extends ChangeNotifier {
     required String token,
   }) async {
     try {
-      final response = await http.put(
-        Uri.parse('${ApiService.baseUrl}/documents/$documentId'),
-        headers: {
-          'Authorization': 'Bearer $token',
-          'Content-Type': 'application/json',
-        },
-        body: jsonEncode(data),
-      );
-
-      if (response.statusCode == 200) {
+      final response = await _apiService.put('/documents/$documentId', data, token: token);
+      if (response['success'] == true) {
         final index = _documents.indexWhere((d) => d.id == documentId);
         if (index != -1) {
-          final updated = DocumentModel.fromJson(jsonDecode(response.body));
+          final updated = DocumentModel.fromJson(response['data']);
           _documents[index] = updated;
           notifyListeners();
         }
@@ -118,15 +88,8 @@ class DocumentProvider extends ChangeNotifier {
     required String token,
   }) async {
     try {
-      final response = await http.delete(
-        Uri.parse('${ApiService.baseUrl}/documents/$documentId'),
-        headers: {
-          'Authorization': 'Bearer $token',
-          'Content-Type': 'application/json',
-        },
-      );
-
-      if (response.statusCode == 200 || response.statusCode == 204) {
+      final response = await _apiService.delete('/documents/$documentId', token: token);
+      if (response['success'] == true) {
         _documents.removeWhere((d) => d.id == documentId);
         notifyListeners();
         return true;
@@ -141,25 +104,10 @@ class DocumentProvider extends ChangeNotifier {
     return [
       const DocumentModel(
         id: '1',
-        title: 'CNIB (Renouvellement)',
-        description: 'Carte Nationale d\'Identité Burkinabè',
-        code: 'CNIB_REN',
-        price: '2 500 FCFA',
-        delay: '72h',
-        delivery: 'En ligne',
-        status: 'DISPONIBLE',
-        icon: Icons.badge_outlined,
-        iconName: 'badge',
-        service: 'police',
-        isActive: true,
-        category: 'Identité',
-      ),
-      const DocumentModel(
-        id: '2',
         title: 'Extrait d\'Acte de Naissance',
         description: 'Copie intégrale ou extrait simple',
         code: 'NAISS_EX',
-        price: '500 FCFA',
+        price: '300 FCFA',
         delay: 'Instantané',
         delivery: 'Mobile',
         status: 'INSTANTANÉ',
@@ -168,13 +116,16 @@ class DocumentProvider extends ChangeNotifier {
         service: 'mairie',
         isActive: true,
         category: 'État Civil',
+        requiredDocs: [
+          'Ancien Extrait de Naissance (Scan)'
+        ],
       ),
       const DocumentModel(
-        id: '3',
+        id: '2',
         title: 'Casier Judiciaire',
         description: 'Bulletin N°3 administratif',
         code: 'CAS_JUD',
-        price: '1 000 FCFA',
+        price: '750 FCFA',
         delay: '48h',
         delivery: 'Email / Retrait',
         status: '48H DÉLAI',
@@ -183,36 +134,29 @@ class DocumentProvider extends ChangeNotifier {
         service: 'justice',
         isActive: true,
         category: 'Justice',
+        requiredDocs: [
+          'Extrait de Naissance (Scan)',
+          'CNIB (Scan Recto/Verso)'
+        ],
       ),
       const DocumentModel(
-        id: '4',
-        title: 'Permis de Conduire',
-        description: 'Duplicata ou renouvellement',
-        code: 'PERM_CON',
-        price: '15 000 FCFA',
-        delay: '5-7 jours',
-        delivery: 'Retrait Guichet',
-        status: 'NOUVEAU',
-        icon: Icons.directions_car_outlined,
-        iconName: 'directions_car',
-        service: 'police',
-        isActive: true,
-        category: 'Transport',
-      ),
-      const DocumentModel(
-        id: '5',
-        title: 'Certificat de Décès',
-        description: 'Acte officiel de décès',
-        code: 'DEC_CERT',
+        id: '3',
+        title: 'Certificat de Nationalité',
+        description: 'Document attestant de la nationalité burkinabè',
+        code: 'NATIONALITE',
         price: '500 FCFA',
-        delay: '24h',
-        delivery: 'PDF',
+        delay: '5 jours',
+        delivery: 'Retrait Tribunal',
         status: 'DISPONIBLE',
-        icon: Icons.assignment_rounded,
-        iconName: 'assignment',
-        service: 'mairie',
-        isActive: false,
-        category: 'État Civil',
+        icon: Icons.flag_rounded,
+        iconName: 'flag',
+        service: 'justice',
+        isActive: true,
+        category: 'Justice',
+        requiredDocs: [
+          'Extrait de naissance (Père ou Mère)',
+          'Extrait de naissance (Demandeur)'
+        ],
       ),
     ];
   }

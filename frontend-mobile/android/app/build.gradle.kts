@@ -42,3 +42,9 @@ android {
 flutter {
     source = "../.."
 }
+
+// Silence javac warnings about obsolete -source/-target values coming from
+// underlying toolchains/dependencies. This doesn't change bytecode target.
+tasks.withType<JavaCompile>().configureEach {
+    options.compilerArgs.add("-Xlint:-options")
+}

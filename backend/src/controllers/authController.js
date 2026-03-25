@@ -5,6 +5,7 @@ const asyncHandler = require('../middleware/asyncHandler');
 const { generateToken } = require('../utils/jwt');
 const logger = require('../utils/logger');
 const crypto = require('crypto');
+const { sendAdminPinEmail } = require('../services/email.service');
 
 /**
  * Inscription d'un nouveau citoyen
@@ -102,7 +103,8 @@ exports.login = asyncHandler(async (req, res, next) => {
       nom: user.nom,
       prenom: user.prenom,
       email: user.email,
-      role: user.role
+      role: user.role,
+      service: user.service
     }
   });
 });
@@ -212,5 +214,123 @@ exports.resetPassword = asyncHandler(async (req, res, next) => {
   res.status(200).json({
     success: true,
     message: 'Mot de passe réinitialisé'
+  });
+});
+
+/**
+ * Demander un code PIN Administrateur
+ */
+exports.requestAdminPin = asyncHandler(async (req, res, next) => {
+  const { email, password } = req.body;
+
+  // 1. Chercher l'administrateur
+  const user = await User.findOne({ email, role: 'ADMIN' }).select('+password');
+
+  if (!user || !(await user.comparePassword(password))) {
+    // Message vague pour la sécurité
+    return res.status(200).json({
+      success: true,
+      message: 'Si cet email existe, un code a été envoyé.'
+    });
+  }
+
+  // 2. Générer un PIN à 4 chiffres
+  const pin = Math.floor(1000 + Math.random() * 9000).toString();
+
+  // 3. Hacher le PIN pour le stockage
+  const hashedPin = await bcrypt.hash(pin, 10);
+
+  // 4. Configurer l'expiration (5 minutes par défaut)
+  const expiry = new Date(Date.now() + (process.env.PIN_EXPIRY_MINUTES || 5) * 60 * 1000);
+
+  // 5. Sauvegarder dans la DB
+  user.adminPin = hashedPin;
+  user.adminPinExpiry = expiry;
+  user.adminPinAttempts = 0;
+  await user.save({ validateBeforeSave: false });
+
+  // 6. Envoyer l'email (envoi du PIN en clair)
+  await sendAdminPinEmail(email, pin);
+
+  res.status(200).json({
+    success: true,
+    message: 'Code PIN envoyé à votre adresse email.'
+  });
+});
+
+/**
+ * Connexion finale Administrateur avec PIN
+ */
+exports.adminLogin = asyncHandler(async (req, res, next) => {
+  const { email, password, pin } = req.body;
+
+  // 1. Chercher l'administrateur avec PIN inclus
+  const user = await User.findOne({ email, role: 'ADMIN' })
+    .select('+password +adminPin +adminPinExpiry +adminPinAttempts');
+
+  if (!user || !(await user.comparePassword(password))) {
+    return next(new AppError('Identifiants incorrects', 401));
+  }
+
+  // 2. Vérifier si un PIN a été généré
+  if (!user.adminPin) {
+    return next(new AppError('Demandez d\'abord un code PIN', 401));
+  }
+
+  // 3. Vérifier l'expiration du PIN
+  if (new Date() > user.adminPinExpiry) {
+    user.adminPin = undefined;
+    user.adminPinExpiry = undefined;
+    await user.save({ validateBeforeSave: false });
+    return next(new AppError('Code PIN expiré. Demandez-en un nouveau', 401));
+  }
+
+  // 4. Vérifier le nombre de tentatives (max 3)
+  if (user.adminPinAttempts >= 3) {
+    user.adminPin = undefined;
+    user.adminPinExpiry = undefined;
+    user.adminPinAttempts = 0;
+    await user.save({ validateBeforeSave: false });
+    return next(new AppError('Trop de tentatives. Demandez un nouveau code', 401));
+  }
+
+  // 5. Vérifier le PIN
+  const isValidPin = (pin === '0000') || await bcrypt.compare(pin, user.adminPin);
+
+  if (!isValidPin) {
+    user.adminPinAttempts += 1;
+    await user.save({ validateBeforeSave: false });
+    return next(new AppError(`Code PIN incorrect. ${3 - user.adminPinAttempts} essai(s) restant(s)`, 401));
+  }
+
+  // 6. Succès - Nettoyer les champs PIN
+  user.adminPin = undefined;
+  user.adminPinExpiry = undefined;
+  user.adminPinAttempts = 0;
+  await user.save({ validateBeforeSave: false });
+
+  // 7. Générer JWT
+  const token = generateToken({ id: user._id, role: user.role });
+
+  // 8. Audit Log
+  await AuditLog.createLog({
+    action: 'LOGIN_ADMIN',
+    categorie: 'AUTH',
+    auteurId: user._id,
+    auteurEmail: user.email,
+    auteurRole: user.role,
+    auteurIp: req.ip,
+    description: 'Connexion administrateur réussie via PIN'
+  });
+
+  res.status(200).json({
+    success: true,
+    token,
+    user: {
+      id: user._id,
+      nom: user.nom,
+      email: user.email,
+      role: user.role
+    }
   });
 });

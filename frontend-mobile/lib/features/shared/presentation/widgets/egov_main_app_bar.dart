@@ -1,7 +1,8 @@
-import 'package:egov_mobile/features/shared/presentation/widgets/egov_main_app_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
 import 'package:egov_mobile/core/constants/app_colors.dart';
+import 'package:egov_mobile/core/providers/notification_provider.dart';
 
 class EgovMainAppBar extends StatelessWidget implements PreferredSizeWidget {
   final String title;
@@ -69,9 +70,42 @@ class EgovMainAppBar extends StatelessWidget implements PreferredSizeWidget {
         ],
       ),
       actions: [
-        IconButton(
-          icon: const Icon(Icons.notifications_none_rounded, color: AppColors.primary, size: 22),
-          onPressed: onNotificationTap ?? () => Navigator.pushNamed(context, '/notifications'),
+        Consumer<NotificationProvider>(
+          builder: (context, notifProvider, child) {
+            return Stack(
+              children: [
+                IconButton(
+                  icon: const Icon(Icons.notifications_none_rounded, color: AppColors.primary, size: 22),
+                  onPressed: onNotificationTap ?? () => Navigator.pushNamed(context, '/notifications'),
+                ),
+                if (notifProvider.unreadCount > 0)
+                  Positioned(
+                    right: 8,
+                    top: 8,
+                    child: Container(
+                      padding: const EdgeInsets.all(2),
+                      decoration: BoxDecoration(
+                        color: Colors.red,
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      constraints: const BoxConstraints(
+                        minWidth: 16,
+                        minHeight: 16,
+                      ),
+                      child: Text(
+                        notifProvider.unreadCount > 9 ? '9+' : '${notifProvider.unreadCount}',
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 10,
+                          fontWeight: FontWeight.bold,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                  ),
+              ],
+            );
+          },
         ),
         const SizedBox(width: 8),
         GestureDetector(

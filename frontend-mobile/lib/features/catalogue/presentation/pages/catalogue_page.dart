@@ -6,8 +6,6 @@ import 'package:provider/provider.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/providers/document_provider.dart';
 import '../../../../core/providers/auth_provider.dart';
-import '../../../shared/presentation/widgets/egov_app_bar.dart';
-import '../../../shared/presentation/widgets/citizen_bottom_nav.dart';
 import '../../../../scaffolds/citizen_main_scaffold.dart';
 import '../../domain/models/document_model.dart';
 import 'detail_document_page.dart';
@@ -313,7 +311,22 @@ class _CataloguePageState extends State<CataloguePage> {
                     size: 28,
                   ),
                 ),
-                _buildStatusBadge(doc.status),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    _buildStatusBadge(doc.status),
+                    const SizedBox(height: 4),
+                    Text(
+                      doc.service,
+                      style: GoogleFonts.publicSans(
+                        fontSize: 10,
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.primary.withOpacity(0.5),
+                        letterSpacing: 1.1,
+                      ),
+                    ),
+                  ],
+                ),
               ],
             ),
             const SizedBox(height: 14),

@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:egov_mobile/features/notifications/presentation/pages/notifications_page.dart';
 import 'package:google_fonts/google_fonts.dart';
-import '../core/constants/app_colors.dart';
-import '../features/agent/domain/models/agent_config.dart';
-import '../features/agent/presentation/pages/agent_dashboard_page.dart';
-import '../features/agent/presentation/pages/agent_demandes_page.dart';
-import '../features/agent/presentation/pages/agent_profil_page.dart';
-import '../features/agent/presentation/pages/agent_documents_page.dart';
+import 'package:provider/provider.dart';
+import 'package:egov_mobile/core/providers/auth_provider.dart';
+import 'package:egov_mobile/features/agent/domain/models/agent_config.dart';
+import 'package:egov_mobile/features/agent/presentation/pages/agent_dashboard_page.dart';
+import 'package:egov_mobile/features/agent/presentation/pages/agent_demandes_page.dart';
+import 'package:egov_mobile/features/agent/presentation/pages/agent_profile_page.dart';
+import 'package:egov_mobile/features/agent/presentation/pages/agent_documents_page.dart';
 
 class AgentMainScaffold extends StatefulWidget {
   final AgentRole role;
@@ -21,25 +22,43 @@ class AgentMainScaffold extends StatefulWidget {
 class _AgentMainScaffoldState extends State<AgentMainScaffold> {
   int _currentIndex = 0;
   List<Widget> _pages = [];
+  AgentRole? _currentRole;
 
   @override
   void initState() {
     super.initState();
+    // Initialisation immédiate avec le rôle du widget
+    _currentRole = widget.role;
     _initPages();
   }
 
   @override
-  void didUpdateWidget(AgentMainScaffold oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    if (oldWidget.role != widget.role) {
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // Détection dynamique du rôle via le profil utilisateur
+    final user = Provider.of<AuthProvider>(context).currentUser;
+    AgentRole detectedRole = AgentRole.mairie;
+    
+    if (user?.service?.toLowerCase() == 'justice' || user?.role == 'AGENT_JUSTICE') {
+      detectedRole = AgentRole.justice;
+    } else if (user?.service?.toLowerCase() == 'mairie' || user?.role == 'AGENT_MAIRIE') {
+      detectedRole = AgentRole.mairie;
+    } else {
+      // Fallback sur le rôle passé au widget si le profil n'est pas encore là
+      detectedRole = widget.role;
+    }
+
+    if (_currentRole != detectedRole) {
+      _currentRole = detectedRole;
       _initPages();
     }
   }
 
   void _initPages() {
+    final activeRole = _currentRole ?? widget.role;
     _pages = [
       AgentDashboardPage(
-        role: widget.role,
+        role: activeRole,
         onSeeAll: () => setState(() => _currentIndex = 1),
         onProfileTap: () => setState(() => _currentIndex = 3),
         onNotificationTap: () => Navigator.push(
@@ -48,7 +67,7 @@ class _AgentMainScaffoldState extends State<AgentMainScaffold> {
         ),
       ),
       AgentDemandesPage(
-        role: widget.role,
+        role: activeRole,
         onProfileTap: () => setState(() => _currentIndex = 3),
         onNotificationTap: () => Navigator.push(
           context,
@@ -62,7 +81,7 @@ class _AgentMainScaffoldState extends State<AgentMainScaffold> {
           MaterialPageRoute(builder: (_) => const NotificationsPage(role: 'agent')),
         ),
       ),
-      const AgentProfilPage(),
+      const AgentProfilePage(),
     ];
   }
 

@@ -89,19 +89,48 @@ class _AgentAuthPageState extends State<AgentAuthPage> {
   }
 
   Future<void> _handleLogin() async {
-    // DÉSACTIVATION TEMPORAIRE DE L'AUTHENTIFICATION (MODE TEST)
-    debugPrint("Connexion Agent (BYPASS)...");
-    
-    // Simple logic to detect role based on matricule for testing
-    AgentRole role = AgentRole.justice;
-    if (_matriculeCtrl.text.toLowerCase().contains('mairie')) {
-      role = AgentRole.mairie;
+    final identifier = _matriculeCtrl.text.trim();
+    final password = _passwordCtrl.text;
+
+    if (identifier.isEmpty || password.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Veuillez saisir votre identifiant/matricule et mot de passe.')),
+      );
+      return;
     }
 
-    Navigator.of(context).pushReplacementNamed(
-      AgentMainScaffold.routeName,
-      arguments: {'role': role},
-    );
+    try {
+      // 1. Appel de l'authentification réelle
+      await context.read<AuthProvider>().loginAgent(identifier, password);
+      
+      if (!mounted) return;
+
+      // 2. Récupération du profil pour déterminer le service
+      final user = context.read<AuthProvider>().currentUser;
+      
+      // On détermine le rôle basé sur le champ 'service' ou le 'role' renvoyé par le backend
+      AgentRole role = AgentRole.mairie;
+      if (user?.service?.toLowerCase() == 'justice' || user?.role == 'AGENT_JUSTICE') {
+        role = AgentRole.justice;
+      }
+
+      debugPrint("Connexion réussie pour ${user?.email} - Service identifié: ${role.name}");
+
+      // 3. Navigation vers le portail agent avec le bon rôle
+      Navigator.of(context).pushReplacementNamed(
+        AgentMainScaffold.routeName,
+        arguments: {'role': role},
+      );
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text("Échec de connexion : ${e.toString()}"),
+          backgroundColor: Colors.red.shade700,
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+    }
   }
 }
 

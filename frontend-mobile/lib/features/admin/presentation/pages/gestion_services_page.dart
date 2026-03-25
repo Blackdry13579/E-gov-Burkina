@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import '../../../../core/providers/user_management_provider.dart';
+import '../../../../core/providers/auth_provider.dart';
 import 'service_model.dart';
 
 class GestionServicesPage extends StatefulWidget {
@@ -451,7 +452,12 @@ class _GestionServicesPageState extends State<GestionServicesPage> {
                           isActive: true,
                         );
 
-                        context.read<UserManagementProvider>().addService(newService);
+                        final token = context.read<AuthProvider>().token ?? '';
+                        context.read<UserManagementProvider>().addService({
+                          'nom': newService.name,
+                          'description': newService.description,
+                          'isActive': newService.isActive,
+                        }, token);
                         Navigator.of(context).pop();
                         
                         ScaffoldMessenger.of(context).showSnackBar(

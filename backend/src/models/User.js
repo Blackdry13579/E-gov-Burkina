@@ -62,6 +62,22 @@ const userSchema = new mongoose.Schema(
     dateNaissance: String,
     lieuNaissance: String,
     adresse: String,
+    // PIN Admin pour la double authentification
+    adminPin: {
+      type: String,
+      select: false,
+      default: null,
+    },
+    adminPinExpiry: {
+      type: Date,
+      select: false,
+      default: null,
+    },
+    adminPinAttempts: {
+      type: Number,
+      default: 0,
+      select: false,
+    },
     passwordResetToken: {
       type: String,
       select: false

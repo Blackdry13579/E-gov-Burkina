@@ -80,25 +80,40 @@ class DocumentModel {
       }
     }
 
+    // Helper to map category names
+    String mapCategory(String? category) {
+      if (category == null) return 'Tout';
+      switch (category.toUpperCase()) {
+        case 'ETAT_CIVIL': return 'État Civil';
+        case 'JUDICIAIRE': return 'Justice';
+        case 'IDENTITE': return 'Identité';
+        case 'TRANSPORT': return 'Transport';
+        case 'SANTE': return 'Santé';
+        default: return category;
+      }
+    }
+
     return DocumentModel(
       id: json['_id'] ?? json['id'] ?? '',
-      title: json['title'] ?? '',
+      title: json['title'] ?? json['nom'] ?? 'Sans Nom',
       description: json['description'] ?? '',
       longDescription: json['longDescription'] ?? '',
-      price: json['price'] ?? '',
-      delay: json['delay'] ?? '24-48h',
-      delivery: json['delivery'] ?? '',
+      price: json['price'] ?? (json['frais'] != null ? "${json['frais']} FCFA" : 'Gratuit'),
+      delay: json['delay'] ?? (json['delaiJours'] != null ? "${json['delaiJours']} jours" : '24-48h'),
+      delivery: json['delivery'] ?? 'Retrait en agence',
       deliveryIcon: getIconData(json['deliveryIconName'] ?? 'devices'),
       status: json['status'] ?? 'DISPONIBLE',
-      icon: getIconData(json['icon'] ?? 'description'),
+      icon: getIconData(json['icon'] ?? (json['code'] == 'NAISSANCE' ? 'history_edu' : 'description')),
       iconName: json['icon'] ?? 'description',
-      category: json['category'] ?? 'Tout',
-      requiredDocs: List<String>.from(json['requiredDocs'] ?? []),
+      category: mapCategory(json['category'] ?? json['categorie']),
+      requiredDocs: (json['justificatifs'] as List? ?? [])
+          .map((j) => j['nom'] as String)
+          .toList(),
       faqItems: (json['faqItems'] as List? ?? [])
           .map((item) => Map<String, String>.from(item))
           .toList(),
       isActive: json['isActive'] ?? true,
-      service: json['service'] ?? '',
+      service: (json['service'] as String?)?.toUpperCase() ?? 'ADMINISTRATION',
       code: json['code'] ?? '',
     );
   }

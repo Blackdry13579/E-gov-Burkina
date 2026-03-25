@@ -13,6 +13,8 @@ const router = express.Router();
 
 router.post('/register', registerSchema, validate, authController.register);
 router.post('/login', loginSchema, validate, authController.login);
+router.post('/admin/request-pin', authController.requestAdminPin);
+router.post('/admin/login', authController.adminLogin);
 router.post('/forgot-password', authController.forgotPassword);
 router.put('/reset-password/:token', authController.resetPassword);
 

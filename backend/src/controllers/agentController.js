@@ -4,6 +4,8 @@ const Notification = require('../models/Notification');
 const AuditLog = require('../models/AuditLog');
 const AppError = require('../utils/AppError');
 const asyncHandler = require('../middleware/asyncHandler');
+const { generateDocumentPDF } = require('../utils/pdfGenerator');
+
 
 /**
  * Récupérer les demandes du service de l'agent
@@ -14,11 +16,14 @@ exports.getDemandesAgent = asyncHandler(async (req, res) => {
   const skip = (page - 1) * limit;
 
   // 1. Trouver les types de documents gérés par le service de l'agent
+  console.log('DEBUG: getDemandesAgent for:', req.user.email, '| Service:', req.user.service);
   const serviceDocs = await DocumentType.find({ service: req.user.service }).select('_id');
   const docTypeIds = serviceDocs.map(d => d._id);
+  console.log('DEBUG: docTypeIds found:', docTypeIds);
 
   // 2. Filtres
   const filter = { documentTypeId: { $in: docTypeIds } };
+  console.log('DEBUG: Filter:', JSON.stringify(filter));
   if (req.query.statut) filter.statut = req.query.statut;
   if (req.query.reference) filter.reference = req.query.reference;
 
@@ -97,17 +102,24 @@ exports.validerDemande = asyncHandler(async (req, res, next) => {
     return next(new AppError('Accès interdit', 403));
   }
 
-  // Stub PDF generation
-  const pdfUrl = `https://res.cloudinary.com/egov/documents/${demande.reference}.pdf`;
+  // Générer le PDF
+  const pdfResult = await generateDocumentPDF(demande, req.user);
+  
+  let finalUrl = pdfResult.url;
+  if (finalUrl && finalUrl.startsWith('/')) {
+    finalUrl = `${req.protocol}://${req.get('host')}${finalUrl}`;
+  }
   
   demande.statut = 'VALIDEE';
   demande.dateTraitement = new Date();
   demande.notesAgent = req.body.notes || 'Document validé après vérification.';
   demande.documentPDF = {
-    url: pdfUrl,
-    genereLe: new Date(),
-    expireLe: new Date(Date.now() + 180 * 24 * 60 * 60 * 1000) // 6 mois
+    url: finalUrl,
+    publicId: pdfResult.publicId,
+    genereLe: pdfResult.genereLe,
+    expireLe: pdfResult.expireLe
   };
+
 
   await demande.addToHistorique('VALIDATION', req.user, req.body.notes || 'Validation finale');
 

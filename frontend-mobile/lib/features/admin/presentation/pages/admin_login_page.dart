@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
+import '../../../../core/providers/auth_provider.dart';
+import '../../../../core/constants/app_colors.dart';
 import 'admin_home_page.dart';
 
 class AdminLoginPage extends StatefulWidget {
@@ -26,7 +29,7 @@ class _AdminLoginPageState extends State<AdminLoginPage> {
   static const Color labelDark = Color(0xFF1e293b);
   static const Color textGray = Color(0xFF64748b);
   static const Color warningBg = Color(0xFFfef3c7);
-  static const Color warningOrange = Color(0xFFd97706);
+  static const Color warningOrange = AppColors.warning;
 
   @override
   Widget build(BuildContext context) {
@@ -217,11 +220,34 @@ class _AdminLoginPageState extends State<AdminLoginPage> {
             label: "Recevoir le code PIN par email",
             icon: Icons.sms_outlined,
             isOutlined: true,
-            onPressed: () {
-              setState(() => _isPinRequested = true);
-              // Bypass : pré-remplir le PIN pour le test si les identifiants par défaut sont utilisés
-              if (_emailController.text == 'admin@egov.bf') {
-                _pinController.text = '0000';
+            isLoading: _isLoading,
+            onPressed: () async {
+              final email = _emailController.text.trim();
+              final password = _passwordController.text;
+              if (email.isEmpty || password.isEmpty) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Veuillez remplir l\'email et le mot de passe.')),
+                );
+                return;
+              }
+              setState(() => _isLoading = true);
+              try {
+                await context.read<AuthProvider>().requestAdminPin(email, password);
+                if (mounted) {
+                  setState(() { _isPinRequested = true; _isLoading = false; });
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Code PIN envoyé à votre email.'), backgroundColor: Colors.green),
+                  );
+                  // Bypass test : pré-remplir si admin@egov.bf
+                  if (email == 'admin@egov.bf') _pinController.text = '0000';
+                }
+              } catch (e) {
+                if (mounted) {
+                  setState(() => _isLoading = false);
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text(e.toString()), backgroundColor: Colors.red.shade700),
+                  );
+                }
               }
             },
           )
@@ -230,18 +256,27 @@ class _AdminLoginPageState extends State<AdminLoginPage> {
             label: "Accéder au panneau admin",
             icon: Icons.admin_panel_settings_rounded,
             isLoading: _isLoading,
-            onPressed: _pinController.text.length == 4 ? () {
+            onPressed: _pinController.text.length == 4 ? () async {
+              final email = _emailController.text.trim();
+              final password = _passwordController.text;
+              final pin = _pinController.text;
               setState(() => _isLoading = true);
-              
-              // Simuler une connexion réussie pour les tests
-              Future.delayed(const Duration(milliseconds: 800), () {
+              try {
+                await context.read<AuthProvider>().loginAdmin(email, password, pin);
                 if (mounted) {
                   Navigator.of(context).pushAndRemoveUntil(
                     MaterialPageRoute(builder: (_) => const AdminHomePage()),
                     (route) => false,
                   );
                 }
-              });
+              } catch (e) {
+                if (mounted) {
+                  setState(() => _isLoading = false);
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text(e.toString()), backgroundColor: Colors.red.shade700),
+                  );
+                }
+              }
             } : null,
           ),
       ],

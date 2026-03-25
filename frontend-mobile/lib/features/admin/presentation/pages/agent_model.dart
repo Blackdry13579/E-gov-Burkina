@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 class AgentData {
+  final String id; // ID MongoDB
   final String initials;
   final Color  avatarBg;
   final Color  avatarFg;
@@ -20,6 +21,7 @@ class AgentData {
   final String serviceComplet;
 
   const AgentData({
+    required this.id,
     required this.initials,
     required this.avatarBg,
     required this.avatarFg,

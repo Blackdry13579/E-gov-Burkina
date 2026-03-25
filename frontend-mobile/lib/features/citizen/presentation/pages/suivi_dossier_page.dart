@@ -1,24 +1,25 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import '../../../../core/constants/app_colors.dart';
 import '../../../shared/presentation/widgets/citizen_bottom_nav.dart';
+import '../../../shared/domain/models/demande_model.dart';
+
 class SuiviDossierPage extends StatelessWidget {
   static const routeName = '/suivi-dossier';
 
-  final String reference;
-  final String statut;
+  final DemandeModel demande;
 
   const SuiviDossierPage({
     super.key,
-    required this.reference,
-    required this.statut,
+    required this.demande,
   });
 
   // Colors
   static const primaryBlue = Color(0xFF1A237E);
   static const accentBlue = Color(0xFF1565C0);
   static const successGreen = Color(0xFF27AE60);
-  static const warningOrange = Color(0xFFF39C12);
+  static const warningOrange = AppColors.warning;
   static const backgroundLight = Color(0xFFF4F6F9);
   static const textPrimary = Color(0xFF1C1C1E);
   static const textSecondary = Color(0xFF8E8E93);
@@ -137,16 +138,16 @@ class SuiviDossierPage extends StatelessWidget {
                 children: [
                   const Icon(
                     Icons.chat_bubble_outline_rounded,
-                    color: warningOrange,
+                    color: AppColors.warning,
                     size: 16,
                   ),
                   const SizedBox(width: 8),
                   Text(
-                    statut,
+                    demande.statut.toUpperCase(),
                     style: GoogleFonts.inter(
                       fontSize: 14,
                       fontWeight: FontWeight.w600,
-                      color: warningOrange,
+                      color: AppColors.warning,
                     ),
                   ),
                 ],
@@ -162,7 +163,7 @@ class SuiviDossierPage extends StatelessWidget {
                 children: [
                   const TextSpan(text: "Référence: "),
                   TextSpan(
-                    text: reference,
+                    text: demande.reference,
                     style: GoogleFonts.inter(
                       fontSize: 13,
                       fontWeight: FontWeight.w700,
@@ -201,31 +202,32 @@ class SuiviDossierPage extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 20),
-                  _buildTimelineStep(
-                    status: 'done',
-                    title: "Demande soumise",
-                    date: "Le 12/10/2023 à 09:45",
-                    subtitle: "Complété",
-                    subtitleColor: successGreen,
-                    isLast: false,
-                  ),
-                  _buildTimelineStep(
-                    status: 'done',
-                    title: "Paiement confirmé",
-                    date: "Le 12/10/2023 à 10:15",
-                    subtitle: "Complété",
-                    subtitleColor: successGreen,
-                    isLast: false,
-                  ),
-                  _buildTimelineStep(
-                    status: 'active',
-                    title: "Validation",
-                    date: null,
-                    subtitle: "Votre dossier sera bientôt traité par nos agents.",
-                    subtitleColor: textSecondary,
-                    badge: "ÉTAPE ACTUELLE",
-                    isLast: true,
-                  ),
+                  if (demande.statusHistory.isEmpty)
+                    _buildTimelineStep(
+                      status: 'active',
+                      title: "Demande soumise",
+                      date: "Le ${_formatDate(demande.dateSoumission)}",
+                      subtitle: "Votre dossier est en attente de traitement.",
+                      subtitleColor: textSecondary,
+                      badge: "ÉTAPE ACTUELLE",
+                      isLast: true,
+                    )
+                  else
+                    ...demande.statusHistory.asMap().entries.map((entry) {
+                      final index = entry.key;
+                      final h = entry.value;
+                      final isLast = index == demande.statusHistory.length - 1;
+                      
+                      return _buildTimelineStep(
+                        status: isLast ? 'active' : 'done',
+                        title: _mapActionToTitle(h['action']),
+                        date: _formatDateStr(h['date']),
+                        subtitle: h['commentaire'] ?? 'Étape complétée',
+                        subtitleColor: isLast ? textSecondary : successGreen,
+                        badge: isLast ? "ÉTAPE ACTUELLE" : null,
+                        isLast: isLast,
+                      );
+                    }),
                 ],
               ),
             ),
@@ -251,34 +253,10 @@ class SuiviDossierPage extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 12),
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.symmetric(vertical: 40, horizontal: 20),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(16),
-                border: Border.all(color: const Color(0xFFEEEEEE), width: 1),
-              ),
-              child: Column(
-                children: [
-                  const Icon(
-                    Icons.hourglass_empty_rounded,
-                    color: stepPending,
-                    size: 40,
-                  ),
-                  const SizedBox(height: 16),
-                  Text(
-                    "Le document sera disponible au téléchargement après la phase de validation.",
-                    textAlign: TextAlign.center,
-                    style: GoogleFonts.inter(
-                      fontSize: 13,
-                      color: textSecondary,
-                      height: 1.6,
-                    ),
-                  ),
-                ],
-              ),
-            ),
+            if (demande.documentUrl != null)
+              _buildDownloadableDocument()
+            else
+              _buildPendingDocument(),
             const SizedBox(height: 28),
 
             // D. BOUTON CONTACTER L'ASSISTANCE
@@ -339,6 +317,131 @@ class SuiviDossierPage extends StatelessWidget {
       ),
       bottomNavigationBar: const CitizenBottomNav(currentIndex: 2),
     );
+  }
+
+  // ──────────────────────────────────────────────────────────────────
+  // DOCUMENT WIDGETS
+  // ──────────────────────────────────────────────────────────────────
+  Widget _buildPendingDocument() {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.symmetric(vertical: 40, horizontal: 20),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: const Color(0xFFEEEEEE), width: 1),
+      ),
+      child: Column(
+        children: [
+          const Icon(
+            Icons.hourglass_empty_rounded,
+            color: stepPending,
+            size: 40,
+          ),
+          const SizedBox(height: 16),
+          Text(
+            "Le document sera disponible au téléchargement après la phase de validation.",
+            textAlign: TextAlign.center,
+            style: GoogleFonts.inter(
+              fontSize: 13,
+              color: textSecondary,
+              height: 1.6,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildDownloadableDocument() {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: successGreen.withOpacity(0.2), width: 1.5),
+      ),
+      child: Row(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: successGreen.withOpacity(0.1),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: const Icon(Icons.picture_as_pdf_rounded, color: successGreen, size: 32),
+          ),
+          const SizedBox(width: 16),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  "Document disponible",
+                  style: GoogleFonts.inter(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 15,
+                    color: textPrimary,
+                  ),
+                ),
+                Text(
+                  "Prêt pour téléchargement",
+                  style: GoogleFonts.inter(
+                    fontSize: 12,
+                    color: textSecondary,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              // Action de téléchargement (simulée avec l'URL Cloudinary)
+              debugPrint("Lancement du téléchargement : ${demande.documentUrl}");
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: primaryBlue,
+              foregroundColor: Colors.white,
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+              elevation: 0,
+            ),
+            child: const Text("TÉLÉCHARGER", style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // ──────────────────────────────────────────────────────────────────
+  // HELPERS
+  // ──────────────────────────────────────────────────────────────────
+  String _mapActionToTitle(String? action) {
+    switch (action) {
+      case 'CREATION': return "Demande soumise";
+      case 'PAIEMENT': return "Paiement confirmé";
+      case 'PRISE_EN_CHARGE': return "En cours d'examen";
+      case 'VALIDATION': return "Dossier validé";
+      case 'REJET': return "Dossier rejeté";
+      case 'DEMANDE_COMPLEMENT': return "Documents manquants";
+      case 'COMPLEMENT_FOURNI': return "Compléments reçus";
+      default: return action ?? "Étape inconnue";
+    }
+  }
+
+  String _formatDate(DateTime date) {
+    return "${date.day.toString().padLeft(2, '0')}/${date.month.toString().padLeft(2, '0')}/${date.year} à ${date.hour}:${date.minute.toString().padLeft(2, '0')}";
+  }
+
+  String _formatDateStr(String? dateStr) {
+    if (dateStr == null) return "...";
+    try {
+      final dt = DateTime.parse(dateStr);
+      return "Le ${_formatDate(dt)}";
+    } catch (_) {
+      return dateStr;
+    }
   }
 
   // ──────────────────────────────────────────────────────────────────

@@ -1,9 +1,10 @@
+import 'package:egov_mobile/core/models/user_model.dart';
 import 'agent_config.dart';
-import '../../../auth/domain/models/user_model.dart';
 
 class AgentModel {
   final String id;
   final String nom;
+  final String prenom;
   final String service;
   final AgentRole role;
   final String? email;
@@ -12,6 +13,7 @@ class AgentModel {
   AgentModel({
     required this.id,
     required this.nom,
+    required this.prenom,
     required this.service,
     required this.role,
     this.email,
@@ -21,8 +23,11 @@ class AgentModel {
   UserModel toUserModel() => UserModel(
     id: id,
     nom: nom,
+    prenom: prenom,
     email: email ?? "agent@egov.bf",
-    telephone: telephone ?? "+226 25 XX XX XX",
+    telephone: telephone ?? "70000000",
+    role: role == AgentRole.justice ? 'AGENT_JUSTICE' : 'AGENT_MAIRIE',
+    service: service,
     adresse: "Ouagadougou, BF",
   );
 }

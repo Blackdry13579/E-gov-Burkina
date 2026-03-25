@@ -5,7 +5,7 @@ import 'package:provider/provider.dart';
 
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/providers/auth_provider.dart';
-import '../../../auth/domain/models/user_model.dart';
+import '../../../../core/models/user_model.dart';
 import 'profile_edit_page.dart';
 
 class ProfilePage extends StatelessWidget {
@@ -76,7 +76,7 @@ class ProfilePage extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(height: 10),
-                    _InfoCard(user: user?.toUserModel()),
+                    _InfoCard(user: user),
                     const SizedBox(height: 22),
                     Align(
                       alignment: Alignment.centerLeft,
@@ -94,7 +94,7 @@ class ProfilePage extends StatelessWidget {
                     const _SettingsList(),
                     const SizedBox(height: 22),
                     _LogoutButton(onTap: () {
-                      context.read<AuthProvider>().logout();
+                      context.read<AuthProvider>().logout(context);
                       Navigator.of(context).pushNamedAndRemoveUntil(
                         '/landing',
                         (route) => false,
@@ -108,6 +108,7 @@ class ProfilePage extends StatelessWidget {
         ),
       ),
       floatingActionButton: FloatingActionButton(
+        heroTag: 'profile_fab',
         onPressed: () {
           Navigator.of(context).push(
             MaterialPageRoute(builder: (_) => const ProfileEditPage()),
@@ -168,6 +169,12 @@ class _InfoCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Avoid RangeError when backend returns a short/null id for some users.
+    final id = user?.id ?? '';
+    final idDisplay = id.isEmpty
+        ? 'B00000000'
+        : (id.length >= 8 ? id.substring(0, 8) : id).toUpperCase();
+
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.fromLTRB(16, 16, 16, 16),
@@ -187,7 +194,7 @@ class _InfoCard extends StatelessWidget {
           _InfoRow(
             icon: Icons.badge_outlined,
             label: 'Numéro CNIB',
-            value: user?.id.substring(0, 8).toUpperCase() ?? 'B00000000',
+            value: idDisplay,
           ),
           const SizedBox(height: 12),
           _InfoRow(

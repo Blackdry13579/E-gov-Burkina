@@ -6,11 +6,8 @@ import 'package:provider/provider.dart';
 import '../../../../core/providers/auth_provider.dart';
 import '../../../../core/providers/document_provider.dart';
 import '../../../../features/catalogue/domain/models/document_model.dart';
-import 'admin_users_page.dart';
 import 'admin_ajouter_document_page.dart';
-import 'admin_demandes_page.dart';
 import 'admin_edition_document_page.dart';
-import 'admin_home_page.dart';
 import 'gestion_services_page.dart';
 
 // ─── Couleurs ─────────────────────────────────────────────────────────────────

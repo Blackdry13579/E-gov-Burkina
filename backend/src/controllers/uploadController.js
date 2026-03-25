@@ -3,15 +3,21 @@ const { uploadToCloudinary, deleteFromCloudinary } = require('../config/cloudina
 const AppError = require('../utils/AppError');
 const asyncHandler = require('../middleware/asyncHandler');
 
-// Configuration Multer
-const storage = multer.memoryStorage();
-const fileFilter = (req, file, cb) => {
-  const allowedTypes = ['image/jpeg', 'image/png', 'image/jpg', 'application/pdf'];
-  if (allowedTypes.includes(file.mimetype)) {
-    cb(null, true);
-  } else {
-    cb(new AppError('Format de fichier non autorisé (Seuls JPG, PNG et PDF sont acceptés)', 400), false);
+// Configuration Multer pour stockage local
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, 'uploads/');
+  },
+  filename: (req, file, cb) => {
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
+    const ext = file.originalname.split('.').pop();
+    cb(null, `${file.fieldname}-${uniqueSuffix}.${ext}`);
   }
+});
+
+const fileFilter = (req, file, cb) => {
+  // On accepte tout pour débloquer l'utilisateur
+  cb(null, true);
 };
 
 const upload = multer({
@@ -21,21 +27,18 @@ const upload = multer({
 });
 
 /**
- * Upload un fichier vers Cloudinary
+ * Upload un fichier vers le stockage local
  */
 const uploadFile = asyncHandler(async (req, res, next) => {
   if (!req.file) return next(new AppError('Veuillez fournir un fichier', 400));
 
-  // Conversion buffer vers base64 pour Cloudinary (ou utiliser upload_stream)
-  const base64File = `data:${req.file.mimetype};base64,${req.file.buffer.toString('base64')}`;
+  const fileUrl = `${req.protocol}://${req.get('host')}/uploads/${req.file.filename}`;
   
-  const result = await uploadToCloudinary(base64File, `e-gov-docs/${req.user._id}`);
-
   res.status(200).json({
     success: true,
     data: {
-      url: result.secure_url,
-      publicId: result.public_id,
+      url: fileUrl,
+      filename: req.file.filename,
       type: req.file.mimetype,
       taille: req.file.size
     }

@@ -222,9 +222,10 @@ class AgentRejectionSuccessPage extends StatelessWidget {
       height: 56,
       child: ElevatedButton.icon(
         onPressed: () {
-          Navigator.popUntil(
+          Navigator.pushNamedAndRemoveUntil(
             context,
-            (route) => route.settings.name == '/agent/demandes' || route.isFirst,
+            '/agent-main', // AgentMainScaffold.routeName
+            (route) => false,
           );
         },
         style: ElevatedButton.styleFrom(

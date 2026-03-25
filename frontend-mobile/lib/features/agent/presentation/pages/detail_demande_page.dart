@@ -1,12 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../../../shared/domain/models/demande_model.dart';
 import '../../../../core/constants/app_colors.dart';
+import '../../../../core/providers/auth_provider.dart';
+import '../../../../core/providers/demande_provider.dart';
 import 'agent_validation_success_page.dart';
 import 'agent_rejection_success_page.dart';
 
 const _primaryBlue     = Color(0xFF1A237E);
-const _warningOrange   = Color(0xFFF39C12);
+const _warningOrange   = AppColors.warning;
 const _backgroundLight = Color(0xFFF4F6F9);
 const _textPrimary     = Color(0xFF1C1C1E);
 const _textSecondary   = Color(0xFF8E8E93);
@@ -286,11 +290,13 @@ class _AgentDetailDemandePageState extends State<AgentDetailDemandePage> {
                 children: [
                   _buildInfoRow('Nom Complet', citoyenNom),
                   _buildDivider(),
-                  _buildInfoRow('CNIB', 'B12345678'), // Placeholder
+                  _buildInfoRow('Téléphone', demandeMap['citoyenId']?['telephone'] ?? 'Non fourni'),
                   _buildDivider(),
-                  _buildInfoRow('Téléphone', '+226 70 00 00 00'), // Placeholder
-                  _buildDivider(),
-                  _buildInfoRow('Email', 'j.ouedraogo@mail.bf'), // Placeholder
+                  _buildInfoRow('Email', demandeMap['citoyenId']?['email'] ?? 'Non fourni'),
+                  if (demandeMap['donnees']?['cnib'] != null) ...[
+                    _buildDivider(),
+                    _buildInfoRow('CNIB', demandeMap['donnees']['cnib']),
+                  ],
                 ],
               ),
             ),
@@ -301,108 +307,78 @@ class _AgentDetailDemandePageState extends State<AgentDetailDemandePage> {
             _buildSectionHeader(Icons.description_outlined, 'Détails de la demande'),
             Container(
               margin: const EdgeInsets.symmetric(horizontal: 16),
-              padding: const EdgeInsets.all(16),
+              padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(14),
                 border: Border.all(color: const Color(0xFFE8ECF0)),
               ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
+              child: Builder(
+                builder: (context) {
+                  final donnees = Map<String, dynamic>.from(demandeMap['donnees'] ?? {});
+                  if (donnees.isEmpty) {
+                    return Text(
+                      'Aucun détail supplémentaire',
+                      style: GoogleFonts.inter(fontSize: 14, color: _textSecondary),
+                    );
+                  }
+
+                  Widget buildField(String label, String? value) {
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          label.toUpperCase(),
+                          style: GoogleFonts.inter(
+                            fontSize: 10,
+                            fontWeight: FontWeight.w700,
+                            color: _labelGray,
+                            letterSpacing: 1.0,
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          value ?? '--',
+                          style: GoogleFonts.inter(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w500,
+                            color: _textPrimary,
+                          ),
+                        ),
+                      ],
+                    );
+                  }
+
+                  // Extraction structurée pour le design original
+                  final pere = '${donnees['prenomPere'] ?? ''} ${donnees['nomPere'] ?? ''}'.trim();
+                  final mere = '${donnees['prenomMere'] ?? ''} ${donnees['nomMere'] ?? ''}'.trim();
+                  final lieu = donnees['lieuNaissance'];
+                  final date = donnees['dateNaissance'];
+
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'PÈRE',
-                              style: GoogleFonts.inter(
-                                fontSize: 10,
-                                fontWeight: FontWeight.w700,
-                                color: _labelGray,
-                                letterSpacing: 1.0,
-                              ),
-                            ),
-                            const SizedBox(height: 4),
-                            Text(
-                              'Moussa Ouédraogo', // Placeholder
-                              style: GoogleFonts.inter(
-                                fontSize: 14,
-                                fontWeight: FontWeight.w500,
-                                color: _textPrimary,
-                              ),
-                            ),
-                          ],
-                        ),
+                      Row(
+                        children: [
+                          Expanded(child: buildField('PÈRE', pere.isEmpty ? null : pere)),
+                          Expanded(child: buildField('MÈRE', mere.isEmpty ? null : mere)),
+                        ],
                       ),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'MÈRE',
-                              style: GoogleFonts.inter(
-                                fontSize: 10,
-                                fontWeight: FontWeight.w700,
-                                color: _labelGray,
-                                letterSpacing: 1.0,
-                              ),
-                            ),
-                            const SizedBox(height: 4),
-                            Text(
-                              'Aminata Traoré', // Placeholder
-                              style: GoogleFonts.inter(
-                                fontSize: 14,
-                                fontWeight: FontWeight.w500,
-                                color: _textPrimary,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
+                      const SizedBox(height: 20),
+                      buildField('LIEU DE NAISSANCE', lieu),
+                      const SizedBox(height: 20),
+                      buildField('DATE DE NAISSANCE', date),
+                      
+                      // Affichage des autres champs s'il y en a
+                      ...donnees.entries.where((e) => !['nomPere', 'prenomPere', 'nomMere', 'prenomMere', 'lieuNaissance', 'dateNaissance', 'cnib'].contains(e.key)).map((e) {
+                         return Padding(
+                           padding: const EdgeInsets.only(top: 20),
+                           child: buildField(e.key, e.value.toString()),
+                         );
+                      }),
                     ],
-                  ),
-                  const SizedBox(height: 16),
-                  Text(
-                    'LIEU DE NAISSANCE',
-                    style: GoogleFonts.inter(
-                      fontSize: 10,
-                      fontWeight: FontWeight.w700,
-                      color: _labelGray,
-                      letterSpacing: 1.0,
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    'Ouagadougou, Secteur 15', // Placeholder
-                    style: GoogleFonts.inter(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w500,
-                      color: _textPrimary,
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  Text(
-                    'DATE DE NAISSANCE',
-                    style: GoogleFonts.inter(
-                      fontSize: 10,
-                      fontWeight: FontWeight.w700,
-                      color: _labelGray,
-                      letterSpacing: 1.0,
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    '12 Mars 1992', // Placeholder
-                    style: GoogleFonts.inter(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w500,
-                      color: _textPrimary,
-                    ),
-                  ),
-                ],
+                  );
+                }
               ),
             ),
 
@@ -410,9 +386,32 @@ class _AgentDetailDemandePageState extends State<AgentDetailDemandePage> {
 
             // D. SECTION "Pièces Justificatives"
             _buildSectionHeader(Icons.attach_file_rounded, 'Pièces Justificatives'),
-            _buildFileCard(Icons.image_outlined, 'CNIB_recto.jpg', '1.2 MB'),
-            _buildFileCard(Icons.image_outlined, 'CNIB_verso.jpg', '1.1 MB'),
-            _buildFileCard(Icons.picture_as_pdf_rounded, 'Certificat_Residence.pdf', '2.4 MB'),
+            Builder(
+              builder: (context) {
+                final fichiers = List<dynamic>.from(demandeMap['fichiers'] ?? []);
+                if (fichiers.isEmpty) {
+                  return Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    child: Text('Aucun fichier joint', style: GoogleFonts.inter(color: _textSecondary)),
+                  );
+                }
+                return Column(
+                  children: fichiers.map((f) {
+                    final map = Map<String, dynamic>.from(f);
+                    final name = map['nom'] ?? 'Document sans nom';
+                    final url = map['url'] ?? '';
+                    final size = map['taille'] ?? 'N/A';
+                    final isPdf = name.toLowerCase().endsWith('.pdf');
+                    return _buildFileCard(
+                      isPdf ? Icons.picture_as_pdf_rounded : Icons.image_outlined,
+                      name,
+                      size,
+                      url,
+                    );
+                  }).toList(),
+                );
+              }
+            ),
 
             const SizedBox(height: 20),
 
@@ -420,19 +419,27 @@ class _AgentDetailDemandePageState extends State<AgentDetailDemandePage> {
             _buildSectionHeader(Icons.history_rounded, 'Historique des actions'),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: Column(
-                children: [
-                  _buildTimelineItem(
-                    isDone: true,
-                    title: 'Demande soumise',
-                    subtitle: "Aujourd'hui, 09:45 · Par le citoyen",
-                  ),
-                  _buildTimelineItem(
-                    isDone: false,
-                    title: 'En attente de traitement',
-                    subtitle: 'Assigné automatiquement à la Mairie Centrale',
-                  ),
-                ],
+              child: Builder(
+                builder: (context) {
+                  final historique = List<dynamic>.from(demandeMap['historique'] ?? []);
+                  if (historique.isEmpty) {
+                    return _buildTimelineItem(
+                      isDone: true,
+                      title: 'Demande soumise',
+                      subtitle: _formatDateTime(demandeMap['dateSoumission']),
+                    );
+                  }
+                  return Column(
+                    children: historique.map((h) {
+                      final map = Map<String, dynamic>.from(h);
+                      return _buildTimelineItem(
+                        isDone: true,
+                        title: map['action'] ?? 'Action',
+                        subtitle: '${_formatDateTime(map['date'])} · ${map['commentaire'] ?? ''}',
+                      );
+                    }).toList(),
+                  );
+                }
               ),
             ),
 
@@ -501,7 +508,7 @@ class _AgentDetailDemandePageState extends State<AgentDetailDemandePage> {
     );
   }
 
-  Widget _buildFileCard(IconData icon, String name, String size) {
+  Widget _buildFileCard(IconData icon, String name, String size, String url) {
     return Container(
       margin: const EdgeInsets.fromLTRB(16, 0, 16, 10),
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
@@ -547,7 +554,20 @@ class _AgentDetailDemandePageState extends State<AgentDetailDemandePage> {
             ),
           ),
           OutlinedButton.icon(
-            onPressed: () {},
+            onPressed: () async {
+              if (url.isNotEmpty) {
+                final uri = Uri.parse(url);
+                if (await canLaunchUrl(uri)) {
+                  await launchUrl(uri, mode: LaunchMode.externalApplication);
+                } else {
+                  if (context.mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('Impossible d\'ouvrir ce fichier'))
+                    );
+                  }
+                }
+              }
+            },
             icon: const Icon(Icons.visibility_outlined, size: 14),
             label: Text(
               'Voir',
@@ -741,26 +761,38 @@ class _AgentDetailDemandePageState extends State<AgentDetailDemandePage> {
   Future<void> _validerDemande() async {
     setState(() => _isValidating = true);
     try {
-      await Future.delayed(const Duration(seconds: 1));
+      final auth = context.read<AuthProvider>();
+      final demandeProvider = context.read<DemandeProvider>();
+      final token = auth.token;
+      
+      final demandeMap = _getDemande(context) ?? {};
+      final demandeId = demandeMap['_id'] ?? demandeMap['id'];
+
+      if (token == null || demandeId == null) {
+        throw Exception('Données manquantes pour la validation');
+      }
+
+      final success = await demandeProvider.validerDemandeAgent(demandeId.toString(), token);
+      
       if (!mounted) return;
 
-      final demandeMap = _getDemande(context) ?? {};
-      final model = DemandeModel.fromMap(demandeMap);
-
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-          builder: (_) => AgentValidationSuccessPage(
-            demande: model,
+      if (success) {
+        final model = DemandeModel.fromMap(demandeMap);
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (_) => AgentValidationSuccessPage(demande: model),
           ),
-        ),
-      );
+        );
+      } else {
+        throw Exception(demandeProvider.error ?? 'Erreur lors de la validation');
+      }
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
-            'Erreur lors de la validation',
+            e.toString().replaceAll('Exception: ', ''),
             style: GoogleFonts.publicSans(color: Colors.white),
           ),
           backgroundColor: const Color(0xFFdc2626),
@@ -1023,24 +1055,62 @@ class _AgentDetailDemandePageState extends State<AgentDetailDemandePage> {
   Future<void> _rejeterDemande(String reason) async {
     setState(() => _isValidating = true);
     try {
-      await Future.delayed(const Duration(seconds: 1));
-      if (!mounted) return;
+      final auth = context.read<AuthProvider>();
+      final demandeProvider = context.read<DemandeProvider>();
+      final token = auth.token;
       
       final demandeMap = _getDemande(context) ?? {};
-      final model = DemandeModel.fromMap(demandeMap);
+      final demandeId = demandeMap['_id'] ?? demandeMap['id'];
 
-    // ✅ Navigate to rejection page
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(
-        builder: (_) => AgentRejectionSuccessPage(
-          demande: model,
-          motifRejet: reason,
+      if (token == null || demandeId == null) {
+        throw Exception('Données manquantes pour le rejet');
+      }
+
+      final success = await demandeProvider.rejeterDemandeAgent(demandeId.toString(), token, reason);
+      
+      if (!mounted) return;
+
+      if (success) {
+        final model = DemandeModel.fromMap(demandeMap);
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (_) => AgentRejectionSuccessPage(
+              demande: model,
+              motifRejet: reason,
+            ),
+          ),
+        );
+      } else {
+        throw Exception(demandeProvider.error ?? 'Erreur lors du rejet');
+      }
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            e.toString().replaceAll('Exception: ', ''),
+            style: GoogleFonts.publicSans(color: Colors.white),
+          ),
+          backgroundColor: const Color(0xFFdc2626),
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+          margin: const EdgeInsets.all(16),
         ),
-      ),
-    );
+      );
     } finally {
       if (mounted) setState(() => _isValidating = false);
     }
+  }
+
+  String _formatDate(DateTime date) {
+    return '${date.day.toString().padLeft(2, '0')}/${date.month.toString().padLeft(2, '0')}/${date.year}';
+  }
+
+  String _formatDateTime(dynamic dateStr) {
+    if (dateStr == null) return '--/--/--';
+    final date = dateStr is DateTime ? dateStr : DateTime.tryParse(dateStr.toString());
+    if (date == null) return dateStr.toString();
+    return '${date.day.toString().padLeft(2, '0')}/${date.month.toString().padLeft(2, '0')}/${date.year} à ${date.hour.toString().padLeft(2, '0')}:${date.minute.toString().padLeft(2, '0')}';
   }
 }

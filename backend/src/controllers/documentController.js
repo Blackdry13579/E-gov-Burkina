@@ -7,7 +7,7 @@ const asyncHandler = require('../middleware/asyncHandler');
  */
 exports.getAllDocuments = asyncHandler(async (req, res) => {
   const documents = await DocumentType.findActive().select(
-    'code nom description frais delaiJours categorie service'
+    'code nom description frais delaiJours categorie service justificatifs champsSpecifiques'
   );
 
   res.status(200).json({
