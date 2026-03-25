@@ -7,11 +7,6 @@ const validateEnv = () => {
     'PORT',
     'MONGODB_URI',
     'JWT_SECRET',
-    'JWT_EXPIRE',
-    'CLOUDINARY_CLOUD_NAME',
-    'CLOUDINARY_API_KEY',
-    'CLOUDINARY_API_SECRET',
-    'FRONTEND_URL',
     'NODE_ENV'
   ];
 
@@ -19,7 +14,7 @@ const validateEnv = () => {
 
   if (missingEnv.length > 0) {
     throw new Error(
-      `Variables d'environnement manquantes : ${missingEnv.join(', ')}`
+      `Variables d'environnement obligatoires manquantes : ${missingEnv.join(', ')}`
     );
   }
 };
