@@ -285,260 +285,209 @@ const Requests = () => {
         )}
       </div>
 
-      {/* ── Multi-step Validation Modal (Mobile-like PRO flow) ── */}
+      {/* ── Multi-step Validation Modal (Sober & Institutional) ── */}
       {activeRequest && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 lg:p-10 bg-[#0F2244]/80 backdrop-blur-sm animate-in fade-in duration-200">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-gray-900/70 backdrop-blur-sm">
           
-          {/* Main Modal Container */}
-          <div className="bg-[#F4F6F9] w-full max-w-4xl h-[90vh] rounded-[2rem] shadow-2xl overflow-hidden flex flex-col relative">
+          <div className="bg-white w-full max-w-4xl max-h-[90vh] rounded-xl shadow-xl overflow-hidden flex flex-col relative animate-in fade-in zoom-in-95 duration-200">
             
-            {/* Header (Appbar equivalent) */}
-            <div className="bg-white px-6 py-4 border-b border-gray-100 flex items-center justify-between shrink-0 z-10 sticky top-0">
-              <div className="flex items-center gap-3">
-                {activeRequest.step === 'DETAILS' ? (
-                  <h3 className="text-lg font-black text-[#1A237E]">Détails de la demande</h3>
-                ) : (
-                  <button 
-                    onClick={() => setActiveRequest({ ...activeRequest, step: 'DETAILS' })}
-                    className="flex items-center gap-2 text-gray-500 hover:text-[#1A237E] font-bold transition-colors"
-                  >
-                    <ChevronLeft size={20} />
-                    <span>Retour</span>
-                  </button>
-                )}
+            {/* Header Officiel */}
+            <div className={`px-6 py-4 flex items-center justify-between shrink-0 ${activeRequest.step === 'SUCCESS' ? 'bg-[#10B981]' : activeRequest.step === 'REJECT_FORM' ? 'bg-[#DC2626]' : 'bg-[#1A237E]'} text-white transition-colors`}>
+              <div>
+                <h3 className="text-lg font-bold tracking-wide uppercase">
+                  {activeRequest.step === 'SUCCESS' ? 'Opération réussie' : activeRequest.step === 'REJECT_FORM' ? 'Rejet du dossier' : 'Examen du dossier'}
+                </h3>
+                <p className="text-sm opacity-80 font-mono">Dossier Réf: {detailData?.id || activeRequest.id}</p>
               </div>
-              <button onClick={() => setActiveRequest(null)} className="p-2 text-gray-400 hover:bg-gray-100 hover:text-gray-900 rounded-full transition-colors">
+              <button onClick={() => setActiveRequest(null)} className="p-1.5 hover:bg-white/20 rounded-lg transition-colors">
                 <XCircle size={24} />
               </button>
             </div>
 
             {/* Scrollable Body */}
-            <div className="flex-1 overflow-y-auto relative">
+            <div className="flex-1 overflow-y-auto bg-[#F8FAFC]">
               
               {/* === STEP 1: DETAILS === */}
               {activeRequest.step === 'DETAILS' && (
-                <div className="pb-28">
+                <div className="p-6">
                   {loadingDetail ? (
-                    <div className="py-20 text-center font-bold text-gray-400 animate-pulse">Chargement des données...</div>
+                    <div className="py-20 text-center text-gray-500 font-semibold">Chargement des registres...</div>
                   ) : (
-                    <div className="max-w-3xl mx-auto py-6 space-y-6 px-4">
+                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                       
-                      {/* Header Block with Building Icon & Status */}
-                      <div className="bg-white p-6 rounded-[1.25rem] border border-[#E8ECF0]">
-                        <div className="flex items-start gap-4 mb-4">
-                          <div className="w-16 h-16 bg-[#EEF2F5] rounded-2xl flex items-center justify-center text-[#1A237E] shrink-0 border border-gray-100">
-                            <FileText size={28} />
+                      {/* Left Column (Citizen + History) */}
+                      <div className="lg:col-span-1 border border-gray-200 bg-white rounded-lg overflow-hidden h-max">
+                        <div className="bg-gray-100 border-b border-gray-200 px-4 py-2.5 flex items-center gap-2">
+                          <AlertCircle size={16} className="text-gray-500" />
+                          <h4 className="text-sm font-bold text-gray-700 uppercase tracking-widest">Requérant</h4>
+                        </div>
+                        <div className="p-4 space-y-4">
+                          <div className="flex items-center gap-3 pb-4 border-b border-gray-100">
+                            <img 
+                              src={`https://ui-avatars.com/api/?name=${encodeURIComponent(detailData?.citizen?.name || 'C')}&background=E2E8F0&color=1A237E&bold=true`} 
+                              alt="Requérant" 
+                              className="w-12 h-12 rounded-sm border border-gray-200"
+                            />
+                            <div>
+                              <p className="font-bold text-[#1e293b]">{detailData?.citizen?.name}</p>
+                              <p className="text-xs text-gray-500 uppercase">{detailData?.citizen?.phone}</p>
+                            </div>
                           </div>
                           <div>
-                            <h2 className="text-xl font-bold text-[#1A237E]">{detailData?.document || 'Document'}</h2>
-                            <p className="text-sm font-semibold text-gray-500 mt-1">Réf: {detailData?.id || activeRequest.id}</p>
+                            <p className="text-xs text-gray-500 mb-1">Date de Naissance :</p>
+                            <p className="text-sm font-semibold text-gray-800">{detailData?.citizen?.dob || 'Non spécifié'}</p>
                           </div>
                         </div>
-                        <div className="inline-flex items-center gap-2 px-4 py-2 bg-amber-50 rounded-xl border border-amber-100/50">
-                          <div className="w-2 h-2 rounded-full bg-amber-500"></div>
-                          <span className="text-sm font-bold text-amber-600">En attente d'examen</span>
-                        </div>
-                      </div>
 
-                      {/* Section: Informations Citoyen */}
-                      <div>
-                        <div className="flex items-center gap-2 mb-3 ml-2">
-                          <div className="w-8 h-8 rounded-full bg-blue-50 text-[#1A237E] flex items-center justify-center"><AlertCircle size={16} /></div>
-                          <h3 className="text-[15px] font-bold text-[#1C1C1E]">Informations Citoyen</h3>
+                        <div className="bg-gray-100 border-t border-b border-gray-200 px-4 py-2.5 flex items-center gap-2 mt-2">
+                          <Calendar size={16} className="text-gray-500" />
+                          <h4 className="text-sm font-bold text-gray-700 uppercase tracking-widest">Historique</h4>
                         </div>
-                        <div className="bg-white rounded-[1.25rem] border border-[#E8ECF0] overflow-hidden">
-                          <div className="px-5 py-4 flex justify-between items-center bg-[#F8F9FB]">
-                            <span className="text-sm text-gray-400 font-semibold">Nom Complet</span>
-                            <span className="text-sm text-[#1C1C1E] font-bold">{detailData?.citizen?.name}</span>
-                          </div>
-                          <div className="h-px bg-[#E8ECF0] mx-5"></div>
-                          <div className="px-5 py-4 flex justify-between items-center">
-                            <span className="text-sm text-gray-400 font-semibold">Téléphone</span>
-                            <span className="text-sm text-[#1C1C1E] font-bold">{detailData?.citizen?.phone}</span>
-                          </div>
-                          <div className="h-px bg-[#E8ECF0] mx-5"></div>
-                          <div className="px-5 py-4 flex justify-between items-center bg-[#F8F9FB]">
-                            <span className="text-sm text-gray-400 font-semibold">Date de Naissance</span>
-                            <span className="text-sm text-[#1C1C1E] font-bold">{detailData?.citizen?.dob || 'Non spécifié'}</span>
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* Section: Détails de la demande */}
-                      <div>
-                        <div className="flex items-center gap-2 mb-3 ml-2">
-                          <div className="w-8 h-8 rounded-full bg-blue-50 text-[#1A237E] flex items-center justify-center"><FileText size={16} /></div>
-                          <h3 className="text-[15px] font-bold text-[#1C1C1E]">Détails de la demande</h3>
-                        </div>
-                        <div className="bg-white p-6 rounded-[1.25rem] border border-[#E8ECF0]">
-                          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div className="p-4 space-y-3">
+                          <div className="flex items-start gap-3">
+                            <div className="w-2 h-2 mt-1.5 bg-[#1A237E] rounded-full shrink-0"></div>
                             <div>
-                              <p className="text-[10px] font-black text-gray-400 tracking-widest uppercase mb-1">Père</p>
-                              <p className="text-sm font-semibold text-[#1C1C1E]">{detailData?.donnees?.pere || 'Non spécifié'}</p>
+                              <p className="text-xs font-bold text-gray-800">Dépôt du dossier</p>
+                              <p className="text-[10px] text-gray-500">{detailData?.date || 'Date inconnue'}</p>
                             </div>
+                          </div>
+                          <div className="flex items-start gap-3">
+                            <div className="w-2 h-2 mt-1.5 bg-gray-300 rounded-full shrink-0"></div>
                             <div>
-                              <p className="text-[10px] font-black text-gray-400 tracking-widest uppercase mb-1">Mère</p>
-                              <p className="text-sm font-semibold text-[#1C1C1E]">{detailData?.donnees?.mere || 'Non spécifié'}</p>
-                            </div>
-                            <div>
-                              <p className="text-[10px] font-black text-gray-400 tracking-widest uppercase mb-1">Lieu de Naissance</p>
-                              <p className="text-sm font-semibold text-[#1C1C1E]">{detailData?.donnees?.lieuNaissance || 'Non spécifié'}</p>
-                            </div>
-                            <div>
-                              <p className="text-[10px] font-black text-gray-400 tracking-widest uppercase mb-1">Date de Naissance (Document)</p>
-                              <p className="text-sm font-semibold text-[#1C1C1E]">{detailData?.donnees?.dateNaissance || 'Non spécifié'}</p>
+                              <p className="text-xs font-semibold text-gray-500">Examen en cours</p>
                             </div>
                           </div>
                         </div>
                       </div>
 
-                      {/* Section: Pièces Justificatives */}
-                      <div>
-                        <div className="flex items-center gap-2 mb-3 ml-2">
-                          <div className="w-8 h-8 rounded-full bg-blue-50 text-[#1A237E] flex items-center justify-center"><Download size={16} /></div>
-                          <h3 className="text-[15px] font-bold text-[#1C1C1E]">Pièces Justificatives</h3>
-                        </div>
-                        <div className="space-y-3">
-                          {(detailData?.pieces || []).length === 0 ? (
-                            <p className="text-sm text-gray-500 ml-2">Aucun fichier joint.</p>
-                          ) : (
-                            detailData.pieces.map((file, idx) => (
-                              <div key={idx} className="bg-white p-4 rounded-[1.25rem] border border-[#E8ECF0] flex items-center justify-between group cursor-pointer hover:border-[#1A237E]/30 transition-colors">
-                                <div className="flex items-center gap-4">
-                                  <div className="w-10 h-10 bg-[#EEF2F5] rounded-[10px] flex items-center justify-center text-[#1A237E]">
-                                    {file.type === 'pdf' ? <FileText size={20} /> : <AlertCircle size={20} />}
-                                  </div>
-                                  <div>
-                                    <p className="text-sm font-bold text-[#1C1C1E]">{file.name}</p>
-                                    <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide">Document {file.type}</p>
-                                  </div>
-                                </div>
-                                <button className="px-4 py-2 border border-gray-200 rounded-lg text-xs font-bold text-[#1A237E] hover:bg-blue-50 transition-colors flex items-center gap-2">
-                                  <Download size={14} /> Voir
-                                </button>
+                      {/* Right Column (Details + Files) */}
+                      <div className="lg:col-span-2 space-y-6">
+                        
+                        {/* Dossier Info */}
+                        <div className="border border-gray-200 bg-white rounded-lg overflow-hidden">
+                          <div className="bg-gray-100 border-b border-gray-200 px-4 py-2.5 flex justify-between items-center">
+                            <div className="flex items-center gap-2">
+                              <FileText size={16} className="text-gray-500" />
+                              <h4 className="text-sm font-bold text-gray-700 uppercase tracking-widest">Informations du document</h4>
+                            </div>
+                            <span className="text-xs font-bold text-amber-700 bg-amber-100 px-2 py-1 rounded border border-amber-200">En attente d'examen</span>
+                          </div>
+                          <div className="p-5">
+                            <p className="text-xl font-bold text-[#1A237E] mb-6">{detailData?.document}</p>
+                            
+                            <div className="grid grid-cols-2 gap-y-4 gap-x-6">
+                              <div>
+                                <p className="text-xs text-gray-500 font-semibold mb-1">Père</p>
+                                <p className="text-sm font-medium text-gray-900 border-b border-gray-100 pb-1">{detailData?.donnees?.pere || 'Non spécifié'}</p>
                               </div>
-                            ))
-                          )}
-                        </div>
-                      </div>
-
-                      {/* Section: Historique */}
-                      <div>
-                        <div className="flex items-center gap-2 mb-3 ml-2">
-                          <div className="w-8 h-8 rounded-full bg-blue-50 text-[#1A237E] flex items-center justify-center"><Calendar size={16} /></div>
-                          <h3 className="text-[15px] font-bold text-[#1C1C1E]">Historique des actions</h3>
-                        </div>
-                        <div className="bg-white p-6 rounded-[1.25rem] border border-[#E8ECF0]">
-                          {/* Timeline Item (Static mock for example) */}
-                          <div className="flex gap-4">
-                            <div className="flex flex-col items-center">
-                              <div className="w-3 h-3 bg-[#1A237E] rounded-full"></div>
-                              <div className="w-[2px] h-10 bg-[#1A237E]/20 my-1"></div>
-                            </div>
-                            <div className="pb-4">
-                              <p className="text-sm font-bold text-[#1C1C1E] leading-loose">Demande soumise</p>
-                              <p className="text-xs font-semibold text-gray-400">{detailData?.date || 'Date inconnue'}</p>
-                            </div>
-                          </div>
-                          <div className="flex gap-4">
-                            <div className="flex flex-col items-center">
-                              <div className="w-3 h-3 bg-gray-300 rounded-full"></div>
-                              <div className="w-[2px] h-8 bg-transparent my-1"></div>
-                            </div>
-                            <div>
-                              <p className="text-sm font-bold text-gray-500 leading-loose">En attente de traitement</p>
-                              <p className="text-xs font-semibold text-gray-400">Maintenant</p>
+                              <div>
+                                <p className="text-xs text-gray-500 font-semibold mb-1">Mère</p>
+                                <p className="text-sm font-medium text-gray-900 border-b border-gray-100 pb-1">{detailData?.donnees?.mere || 'Non spécifié'}</p>
+                              </div>
+                              <div>
+                                <p className="text-xs text-gray-500 font-semibold mb-1">Lieu de Naissance</p>
+                                <p className="text-sm font-medium text-gray-900 border-b border-gray-100 pb-1">{detailData?.donnees?.lieuNaissance || 'Non spécifié'}</p>
+                              </div>
+                              <div>
+                                <p className="text-xs text-gray-500 font-semibold mb-1">Date de Naissance</p>
+                                <p className="text-sm font-medium text-gray-900 border-b border-gray-100 pb-1">{detailData?.donnees?.dateNaissance || 'Non spécifié'}</p>
+                              </div>
                             </div>
                           </div>
                         </div>
-                      </div>
 
+                        {/* Files */}
+                        <div className="border border-gray-200 bg-white rounded-lg overflow-hidden">
+                          <div className="bg-gray-100 border-b border-gray-200 px-4 py-2.5 flex items-center gap-2">
+                            <Download size={16} className="text-gray-500" />
+                            <h4 className="text-sm font-bold text-gray-700 uppercase tracking-widest">Pièces jointes</h4>
+                          </div>
+                          <div className="p-0">
+                            <table className="w-full text-left">
+                              <tbody className="divide-y divide-gray-100">
+                                {(detailData?.pieces || []).length === 0 ? (
+                                  <tr><td className="p-4 text-sm text-gray-500">Aucun fichier.</td></tr>
+                                ) : (
+                                  detailData.pieces.map((file, idx) => (
+                                    <tr key={idx} className="hover:bg-gray-50">
+                                      <td className="px-4 py-3 w-10 text-gray-400">
+                                        {file.type === 'pdf' ? <FileText size={18} /> : <AlertCircle size={18} />}
+                                      </td>
+                                      <td className="px-4 py-3">
+                                        <p className="text-sm font-semibold text-gray-800">{file.name}</p>
+                                        <p className="text-[10px] text-gray-500 uppercase tracking-wide">Document {file.type}</p>
+                                      </td>
+                                      <td className="px-4 py-3 text-right">
+                                        <button className="text-xs font-bold text-[#1A237E] hover:underline flex items-center gap-1 justify-end w-full">
+                                          <Download size={14} /> Consulter
+                                        </button>
+                                      </td>
+                                    </tr>
+                                  ))
+                                )}
+                              </tbody>
+                            </table>
+                          </div>
+                        </div>
+
+                      </div>
                     </div>
                   )}
                 </div>
               )}
 
-              {/* === STEP 2: VALIDATION CONFIRMATION === */}
-              {activeRequest.step === 'CONFIRM_AUTHORIZE' && (
-                <div className="min-h-full flex items-center justify-center p-6 animate-in slide-in-from-right-8 duration-300">
-                  <div className="bg-white max-w-lg w-full rounded-[2rem] p-10 text-center shadow-xl border border-gray-100">
-                    <div className="w-20 h-20 bg-green-50 text-green-600 rounded-full flex items-center justify-center mx-auto mb-6">
-                      <CheckCircle size={40} />
-                    </div>
-                    <h3 className="text-2xl font-black text-[#1e293b] mb-4">Confirmer la validation ?</h3>
-                    <p className="text-sm font-medium text-[#64748b] leading-relaxed mb-8">
-                      Cette action confirmera que tous les documents de <strong className="text-[#1e293b]">{detailData?.citizen?.name}</strong> sont conformes aux exigences réglementaires.
-                    </p>
-                    <button 
-                      onClick={() => handleAction('APPROVE')}
-                      disabled={submitting}
-                      className="w-full py-4 bg-[#16a34a] hover:bg-[#15803d] text-white rounded-xl font-bold text-base transition-colors shadow-lg shadow-green-900/20 mb-3"
-                    >
-                      {submitting ? 'Validation...' : 'Confirmer'}
-                    </button>
-                    <button 
-                      onClick={() => setActiveRequest({ ...activeRequest, step: 'DETAILS' })}
-                      className="w-full py-4 bg-transparent text-[#64748b] hover:text-[#1e293b] rounded-xl font-bold text-base transition-colors"
-                    >
-                      Annuler
-                    </button>
-                  </div>
-                </div>
-              )}
-
-              {/* === STEP 3: REJECT FORM === */}
+              {/* === STEP 2: REJECT FORM === */}
               {activeRequest.step === 'REJECT_FORM' && (
-                <div className="min-h-full flex items-center justify-center p-6 animate-in slide-in-from-right-8 duration-300">
-                  <div className="bg-white max-w-lg w-full rounded-[2rem] p-10 text-center shadow-xl border border-gray-100">
-                    <div className="w-20 h-20 bg-red-50 text-red-600 rounded-full flex items-center justify-center mx-auto mb-6">
-                      <XCircle size={40} />
-                    </div>
-                    <h3 className="text-2xl font-black text-[#1e293b] mb-2">Rejeter le dossier</h3>
-                    <p className="text-sm font-medium text-[#64748b] leading-relaxed mb-6">
-                      Veuillez indiquer précisément pourquoi ce dossier est rejeté. Le citoyen sera notifié avec ce message.
+                <div className="p-10 flex flex-col items-center justify-center min-h-[50vh]">
+                  <div className="w-full max-w-lg border border-red-200 bg-white p-8 rounded-lg shadow-sm">
+                    <h3 className="text-xl font-bold text-red-700 mb-2 flex items-center gap-2">
+                       Avis défavorable
+                    </h3>
+                    <p className="text-sm text-gray-600 mb-6">
+                      Ce dossier sera marqué comme rejeté. Le citoyen sera informé par notification. Veuillez justifier cette décision administrative.
                     </p>
+                    <label className="block text-xs font-bold text-gray-700 uppercase mb-2">Motif du rejet (Obligatoire) *</label>
                     <textarea 
                       value={comment}
                       onChange={(e) => setComment(e.target.value)}
-                      placeholder="Motif du rejet (ex: Pièce d'identité illisible...)"
-                      className="w-full p-5 bg-[#F8FAFC] border border-[#E2E8F0] rounded-2xl focus:bg-white focus:border-red-500 focus:ring-4 focus:ring-red-500/10 transition-all font-medium text-[#1e293b] min-h-[140px] outline-none text-left mb-6 resize-none"
+                      placeholder="Indiquez la ou les pièces manquantes, illisibles ou non conformes."
+                      className="w-full p-3 border border-gray-300 rounded focus:border-red-500 focus:ring-1 focus:ring-red-500 outline-none text-sm min-h-[120px]"
                     />
-                    <button 
-                      onClick={() => handleAction('REJECT')}
-                      disabled={submitting || !comment.trim()}
-                      className="w-full py-4 bg-[#dc2626] hover:bg-[#b91c1c] text-white rounded-xl font-bold text-base transition-colors shadow-lg shadow-red-900/20 mb-3 disabled:opacity-50"
-                    >
-                      {submitting ? 'Traitement...' : 'Confirmer le rejet'}
-                    </button>
-                    <button 
-                      onClick={() => setActiveRequest({ ...activeRequest, step: 'DETAILS' })}
-                      className="w-full py-4 bg-transparent text-[#64748b] hover:text-[#1e293b] rounded-xl font-bold text-base transition-colors"
-                    >
-                      Annuler
-                    </button>
+                    <div className="mt-6 flex justify-end gap-3">
+                      <button 
+                        onClick={() => setActiveRequest({ ...activeRequest, step: 'DETAILS' })}
+                        className="px-5 py-2 border border-gray-300 text-gray-700 rounded hover:bg-gray-50 font-bold text-sm"
+                      >
+                        Annuler
+                      </button>
+                      <button 
+                        onClick={() => handleAction('REJECT')}
+                        disabled={submitting || !comment.trim()}
+                        className="px-5 py-2 bg-red-600 text-white rounded hover:bg-red-700 font-bold text-sm disabled:opacity-50"
+                      >
+                        {submitting ? 'Enregistrement...' : 'Confirmer le rejet'}
+                      </button>
+                    </div>
                   </div>
                 </div>
               )}
 
-              {/* === STEP 4: SUCCESS PAGES === */}
+              {/* === STEP 3: SUCCESS PAGES === */}
               {activeRequest.step === 'SUCCESS' && (
-                <div className="min-h-full flex items-center justify-center p-6 bg-white animate-in zoom-in-95 duration-300">
-                  <div className="max-w-md w-full text-center py-10">
-                    <div className={`w-32 h-32 rounded-full flex items-center justify-center mx-auto mb-8 shadow-2xl ${
-                      activeRequest.type === 'APPROVE' ? 'bg-[#16a34a] shadow-green-900/30' : 'bg-[#dc2626] shadow-red-900/30'
-                    }`}>
-                      <CheckCircle size={64} className="text-white" />
+                <div className="p-10 flex flex-col items-center justify-center min-h-[50vh]">
+                  <div className="w-full max-w-sm border border-gray-200 bg-white p-8 rounded-lg shadow-sm text-center">
+                    <div className={`w-14 h-14 rounded-full flex items-center justify-center mx-auto mb-4 ${activeRequest.type === 'APPROVE' ? 'bg-green-100 text-green-600' : 'bg-red-100 text-red-600'}`}>
+                      <CheckCircle size={28} />
                     </div>
-                    <h2 className="text-3xl font-black text-[#1e293b] mb-4">Terminé !</h2>
-                    <p className="text-base font-medium text-[#64748b] leading-relaxed mb-10">
-                      Le dossier de <strong className="text-[#1e293b]">{detailData?.citizen?.name}</strong> a été {activeRequest.type === 'APPROVE' ? 'validé avec succès' : 'rejeté'}.
-                      Une notification a été automatiquement envoyée au citoyen.
+                    <h3 className="text-lg font-bold text-gray-900 mb-2">Traitement enregistré</h3>
+                    <p className="text-sm text-gray-600 mb-6">
+                      Le dossier a été officiellement {activeRequest.type === 'APPROVE' ? 'approuvé' : 'rejeté'} et clôturé dans le registre.
                     </p>
                     <button 
                       onClick={() => setActiveRequest(null)}
-                      className="w-full py-4 bg-[#1e293b] hover:bg-black text-white rounded-xl font-bold text-lg transition-all shadow-xl shadow-gray-900/20"
+                      className="w-full py-2.5 bg-gray-900 hover:bg-black text-white rounded font-bold text-sm transition-colors"
                     >
-                      Retour aux demandes
+                      Retour à la liste
                     </button>
                   </div>
                 </div>
@@ -546,20 +495,21 @@ const Requests = () => {
 
             </div>
 
-            {/* Bottom Actions Bar (only for DETAILS step) */}
+            {/* Institutional Bottom Actions Bar (only for DETAILS step) */}
             {activeRequest.step === 'DETAILS' && !loadingDetail && (
-              <div className="bg-white p-5 border-t border-gray-100 flex gap-4 shrink-0 shadow-[0_-4px_20px_rgba(0,0,0,0.03)] absolute bottom-0 left-0 right-0 z-10 w-full">
-                <button 
-                  onClick={() => setActiveRequest({ ...activeRequest, step: 'CONFIRM_AUTHORIZE' })}
-                  className="flex-1 h-14 bg-[#16a34a] hover:bg-[#15803d] text-white flex items-center justify-center gap-2 rounded-xl font-bold text-base transition-all shadow-lg shadow-green-900/20"
-                >
-                  <CheckCircle size={20} /> Valider le dossier
-                </button>
+              <div className="bg-gray-100 px-6 py-4 border-t border-gray-200 flex justify-end gap-3 shrink-0">
                 <button 
                   onClick={() => setActiveRequest({ ...activeRequest, step: 'REJECT_FORM' })}
-                  className="flex-1 h-14 bg-white border-2 border-[#dc2626] text-[#dc2626] hover:bg-red-50 flex items-center justify-center gap-2 rounded-xl font-bold text-base transition-all"
+                  className="px-6 py-2.5 bg-white border border-red-200 text-red-700 hover:bg-red-50 rounded shadow-sm font-bold text-sm flex items-center gap-2 transition-colors"
                 >
-                  <XCircle size={20} /> Rejeter
+                  <XCircle size={16} /> Rejeter le dossier
+                </button>
+                <button 
+                  onClick={() => handleAction('APPROVE')}
+                  disabled={submitting}
+                  className="px-6 py-2.5 bg-[#10B981] hover:bg-[#059669] text-white rounded shadow-sm font-bold text-sm flex items-center gap-2 transition-colors"
+                >
+                  <CheckCircle size={16} /> Valider le dossier
                 </button>
               </div>
             )}
