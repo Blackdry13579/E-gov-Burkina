@@ -45,45 +45,98 @@ const Landing = () => {
       </section>
 
       {/* Catégories de services */}
-      {/* ... (déjà mis à jour dans l'étape précédente) ... */}
+      <section className="px-4 py-12 bg-gray-50 overflow-hidden">
+        <div className="max-w-6xl mx-auto">
+          <div className="flex justify-between items-end mb-8 px-2">
+            <div>
+              <h2 className="text-2xl font-extrabold text-[#1A237E]">Nos services en ligne</h2>
+              <p className="text-xs text-gray-400 font-bold mt-1 tracking-wide uppercase">Accès rapide par catégorie</p>
+            </div>
+            <Link to="/services" className="text-sm font-bold text-institutional hover:underline">Voir tout le catalogue →</Link>
+          </div>
+          <div className="flex flex-row space-x-4 overflow-x-auto no-scrollbar pb-6 -mx-4 px-4 lg:grid lg:grid-cols-4 lg:space-x-0 lg:gap-6 lg:overflow-x-visible">
+            <Link to="/services" className="min-w-[170px] flex-1 bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex flex-col items-center text-center hover:shadow-md transition-all active:scale-95 group">
+              <span className="text-4xl mb-4 group-hover:scale-110 transition-transform">🪪</span>
+              <span className="text-sm font-bold text-gray-800">Identité & Documents</span>
+            </Link>
+            <Link to="/services" className="min-w-[170px] flex-1 bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex flex-col items-center text-center hover:shadow-md transition-all active:scale-95 group">
+              <span className="text-4xl mb-4 group-hover:scale-110 transition-transform">👨‍👩‍👧</span>
+              <span className="text-sm font-bold text-gray-800">État Civil</span>
+            </Link>
+            <Link to="/services" className="min-w-[170px] flex-1 bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex flex-col items-center text-center hover:shadow-md transition-all active:scale-95 group">
+              <span className="text-4xl mb-4 group-hover:scale-110 transition-transform">💼</span>
+              <span className="text-sm font-bold text-gray-800">Entreprises & Commerce</span>
+            </Link>
+            <Link to="/services" className="min-w-[170px] flex-1 bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex flex-col items-center text-center hover:shadow-md transition-all active:scale-95 group">
+              <span className="text-4xl mb-4 group-hover:scale-110 transition-transform">🎓</span>
+              <span className="text-sm font-bold text-gray-800">Éducation & Examens</span>
+            </Link>
+          </div>
+        </div>
+      </section>
 
-      {/* ... (Pourquoi utiliser E-Gov reste inchangé) ... */}
+      {/* Pourquoi utiliser E-Gov */}
+      <section className="px-4 py-16 bg-white border-t border-gray-50">
+        <div className="max-w-6xl mx-auto">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl font-extrabold text-[#1A237E]">Pourquoi choisir E-Gov ?</h2>
+            <div className="w-16 h-1.5 bg-yellow-400 mx-auto mt-4 rounded-full"></div>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
+            <div className="flex flex-col items-center text-center p-4">
+              <div className="w-16 h-16 bg-blue-50 rounded-2xl flex items-center justify-center text-3xl mb-4 shadow-sm">🕐</div>
+              <h3 className="text-lg font-bold text-gray-900">Gain de temps</h3>
+              <p className="text-sm text-gray-500 mt-2 leading-relaxed">Plus besoin de vous déplacer ou de faire la queue pour vos formalités administratives.</p>
+            </div>
+            <div className="flex flex-col items-center text-center p-4">
+              <div className="w-16 h-16 bg-blue-50 rounded-2xl flex items-center justify-center text-3xl mb-4 shadow-sm">🛡️</div>
+              <h3 className="text-lg font-bold text-gray-900">Sécurité maximale</h3>
+              <p className="text-sm text-gray-500 mt-2 leading-relaxed">Vos données personnelles et vos documents officiels sont protégés par les standards de l'État.</p>
+            </div>
+            <div className="flex flex-col items-center text-center p-4">
+              <div className="w-16 h-16 bg-blue-50 rounded-2xl flex items-center justify-center text-3xl mb-4 shadow-sm">👁️</div>
+              <h3 className="text-lg font-bold text-gray-900">Suivi transparent</h3>
+              <p className="text-sm text-gray-500 mt-2 leading-relaxed">Consultez l'état d'avancement de vos demandes à tout moment depuis votre espace citoyen.</p>
+            </div>
+          </div>
+        </div>
+      </section>
 
       {/* Footer (Plus compact) */}
-      <footer className="bg-[#121858] text-white py-10 px-6 mt-auto">
+      <footer className="bg-[#121858] text-white py-12 px-6 mt-auto">
         <div className="max-w-6xl mx-auto">
-          <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-8 mb-8 border-b border-white/10 pb-8">
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-8 mb-10 border-b border-white/10 pb-10">
             <div className="flex items-center space-x-3">
-              <Emblem className="w-10 h-10 opacity-90" />
+              <Emblem className="w-12 h-12 opacity-90" />
               <div>
-                <span className="text-xl font-bold tracking-tight block">E-Gov Burkina</span>
-                <span className="text-[10px] text-blue-300 font-bold tracking-widest uppercase">Portail Officiel</span>
+                <span className="text-2xl font-bold tracking-tight block">E-Gov Burkina</span>
+                <span className="text-[10px] text-blue-300 font-bold tracking-widest uppercase">Portail Officiel des Services Publics</span>
               </div>
             </div>
             
-            <div className="flex flex-wrap gap-6 text-sm font-bold text-blue-200">
+            <div className="flex flex-wrap gap-8 text-sm font-bold text-blue-200">
               <Link to="/services" className="hover:text-white transition-colors">Catalogue</Link>
-              <Link to="/demandes" className="hover:text-white transition-colors">Suivi</Link>
-              <Link to="/agent/login" className="hover:text-white transition-colors text-blue-400">Espace Agent</Link>
-              <Link to="/admin/login" className="hover:text-white transition-colors text-blue-400">Admin</Link>
+              <Link to="/demandes" className="hover:text-white transition-colors">Suivi Dossier</Link>
+              <Link to="/agent/login" className="hover:text-white transition-colors text-blue-400">Accès Agent</Link>
+              <Link to="/admin/login" className="hover:text-white transition-colors text-blue-400 font-extrabold flex items-center gap-1">
+                <span className="w-1.5 h-1.5 rounded-full bg-blue-400"></span> Admin
+              </Link>
             </div>
           </div>
           
-          <div className="flex flex-col md:flex-row justify-between items-center text-center md:text-left gap-4">
-            <p className="text-[11px] text-blue-400 font-medium">© 2026 GOUVERNEMENT DU BURKINA FASO · MINISTÈRE DE LA TRANSITION DIGITALE</p>
-            <div className="flex space-x-6 text-blue-300 opacity-60">
-              <span className="text-lg hover:opacity-100 cursor-pointer transition-opacity">📘</span>
-              <span className="text-lg hover:opacity-100 cursor-pointer transition-opacity">🌐</span>
-              <span className="text-lg hover:opacity-100 cursor-pointer transition-opacity">📧</span>
+          <div className="flex flex-col md:flex-row justify-between items-center text-center md:text-left gap-6">
+            <p className="text-[11px] text-blue-400/80 font-medium tracking-wide">
+              © 2026 GOUVERNEMENT DU BURKINA FASO · MINISTÈRE DE LA TRANSITION DIGITALE, DES POSTES ET DES COMMUNICATIONS ÉLECTRONIQUES
+            </p>
+            <div className="flex space-x-8 text-blue-300 opacity-60">
+              <span className="text-xl hover:opacity-100 cursor-pointer transition-opacity">📘</span>
+              <span className="text-xl hover:opacity-100 cursor-pointer transition-opacity">🌐</span>
+              <span className="text-xl hover:opacity-100 cursor-pointer transition-opacity">📧</span>
             </div>
           </div>
         </div>
       </footer>
-    </div>
-  );
-};
-
-export default Landing;
     </div>
   );
 };
