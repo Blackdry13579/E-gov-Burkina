@@ -71,46 +71,65 @@ exports.createDemande = asyncHandler(async (req, res, next) => {
     ipCreation: req.ip
   });
 
-  // 6. Créer notification pour le CITOYEN
-  await Notification.createForDemande(
-    req.user._id,
-    demande._id,
-    'DEMANDE_RECUE',
-    'Demande reçue',
-    `Votre demande d'un ${docType.nom} a été enregistrée avec succès.`,
-    { reference: demande.reference, statut: demande.statut }
-  );
+  // 6. Créer notification pour le CITOYEN (on peut déjà le lancer en parallèle)
+  const notificationsPromises = [
+    Notification.createForDemande(
+      req.user._id,
+      demande._id,
+      'DEMANDE_RECUE',
+      'Demande reçue',
+      `Votre demande d'un ${docType.nom} a été enregistrée avec succès.`,
+      { reference: demande.reference, statut: demande.statut }
+    )
+  ];
 
-  // 7. Créer notifications pour les AGENTS du même service
-  const agents = await User.find({ 
-    role: { $regex: /^AGENT_/ }, 
-    service: docType.service,
-    isActive: true 
-  });
+  // 7. & 8. Chercher les destinataires (Agents et Admins) en une fois ou en parallèle
+  const [agents, admins] = await Promise.all([
+    User.find({ role: { $regex: /^AGENT_/ }, service: docType.service, isActive: true }),
+    User.find({ role: 'ADMIN', isActive: true })
+  ]);
 
-  for (const agent of agents) {
-    await Notification.create({
+  // Ajouter les notifs agents
+  agents.forEach(agent => {
+    notificationsPromises.push(Notification.create({
       userId: agent._id,
       demandeId: demande._id,
       type: 'DEMANDE_RECUE',
       titre: 'Nouvelle demande à traiter',
       message: `Une nouvelle demande de ${docType.nom} (${demande.reference}) a été soumise dans votre service.`,
       donnees: { reference: demande.reference, statut: demande.statut }
-    });
-  }
+    }));
+  });
 
-  // 8. Créer notification pour les ADMINS (suivi global)
-  const admins = await User.find({ role: 'ADMIN', isActive: true });
-  for (const admin of admins) {
-    await Notification.create({
+  // Ajouter les notifs admins
+  admins.forEach(admin => {
+    notificationsPromises.push(Notification.create({
       userId: admin._id,
       demandeId: demande._id,
       type: 'DEMANDE_RECUE',
       titre: '🔔 Nouvelle activité système',
       message: `Nouveau dossier déposé : ${demande.reference} (${docType.nom}) par ${req.user.prenom} ${req.user.nom}.`,
       donnees: { reference: demande.reference, statut: demande.statut }
-    });
-  }
+    }));
+  });
+
+  // Lancer toutes les notifications et l'audit log en arrière-plan ou attendre si nécessaire
+  // Ici on attend pour être sûr que tout est OK avant de répondre
+  await Promise.all([
+    ...notificationsPromises,
+    AuditLog.createLog({
+      action: 'CREATION_DEMANDE',
+      categorie: 'DEMANDE',
+      auteurId: req.user._id,
+      auteurEmail: req.user.email,
+      auteurRole: req.user.role,
+      auteurIp: req.ip,
+      cibleType: 'Demande',
+      cibleId: demande._id,
+      cibleReference: demande.reference,
+      description: `Création demande ${docType.code}`
+    })
+  ]);
 
   // 9. Audit Log
   await AuditLog.createLog({
