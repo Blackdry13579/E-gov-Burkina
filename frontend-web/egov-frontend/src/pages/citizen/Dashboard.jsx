@@ -3,7 +3,7 @@ import { NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import {
   FileText, Shield, FileCheck, ArrowRight,
-  ClipboardList, CheckCircle, Bell, LayoutDashboard
+  ClipboardList, CheckCircle, Bell, LayoutDashboard, AlertCircle
 } from 'lucide-react';
 
 const popularDocuments = [
@@ -46,11 +46,11 @@ const stats = [
     bgColor: 'bg-green-50'
   },
   {
-    value: '03',
-    label: 'RENDEZ-VOUS À VENIR',
-    icon: Bell,
-    color: 'text-amber-600',
-    bgColor: 'bg-amber-50'
+    value: '00',
+    label: 'DOCUMENTS REJETÉS',
+    icon: AlertCircle,
+    color: 'text-red-600',
+    bgColor: 'bg-red-50'
   }
 ];
 
