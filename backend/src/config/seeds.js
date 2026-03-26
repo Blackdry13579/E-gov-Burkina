@@ -1,4 +1,5 @@
 const DocumentType = require('../models/DocumentType');
+const User = require('../models/User');
 const logger = require('../utils/logger');
 
 const documentTypes = [
@@ -96,8 +97,46 @@ const seedDocuments = async () => {
       );
     }
     logger.info('✅ Catalogue officiel synchronisé : Mairie (Naissance) + Justice (Casier, Nationalité)');
+
+    // === SEED UTILISATEURS PAR DÉFAUT ===
+    const defaultUsers = [
+      {
+        nom: 'Administrateur',
+        prenom: 'Système',
+        email: 'admin@egov.bf',
+        password: 'admin123@BF',
+        role: 'ADMIN',
+        isActive: true
+      },
+      {
+        nom: 'Agent',
+        prenom: 'Mairie',
+        email: 'agent.mairie@egov.bf',
+        password: 'agent123@BF',
+        role: 'AGENT',
+        service: 'mairie',
+        isActive: true
+      },
+      {
+        nom: 'Agent',
+        prenom: 'Justice',
+        email: 'agent.justice@egov.bf',
+        password: 'agent123@BF',
+        role: 'AGENT',
+        service: 'justice',
+        isActive: true
+      }
+    ];
+
+    for (const u of defaultUsers) {
+      const exists = await User.findOne({ email: u.email });
+      if (!exists) {
+        await User.create(u);
+        logger.info(`👤 Utilisateur par défaut créé : ${u.email}`);
+      }
+    }
   } catch (error) {
-    logger.error(`Erreur synchronisation catalogue : ${error.message}`);
+    logger.error(`Erreur synchronisation catalogue/users : ${error.message}`);
   }
 };
 
