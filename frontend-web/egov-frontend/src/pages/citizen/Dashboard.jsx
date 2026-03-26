@@ -3,7 +3,7 @@ import { NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import {
   FileText, Shield, FileCheck, ArrowRight,
-  ClipboardList, CheckCircle, Bell
+  ClipboardList, CheckCircle, Bell, LayoutDashboard
 } from 'lucide-react';
 
 const popularDocuments = [
