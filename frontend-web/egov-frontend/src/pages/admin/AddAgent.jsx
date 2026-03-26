@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, Save } from 'lucide-react';
+import { createAdminUser } from '../../services/api';
 
 const AddAgent = () => {
   const navigate = useNavigate();
@@ -22,34 +23,23 @@ const AddAgent = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!formData.nom || !formData.prenom || !formData.email || !formData.role || !formData.password) {
+      alert('Veuillez remplir tous les champs obligatoires.');
+      return;
+    }
     setSubmitting(true);
     try {
-      // Nettoyage des données pour correspondre à l'API backend
-      const payload = {
-        ...formData,
-        // Si le nom complet a été saisi dans un seul champ (anciens restes), on le splite ou on l'adapte
-      };
-      
-      const response = await fetch('/api/admin/users', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('egov_token')}`
-        },
-        body: JSON.stringify(payload)
-      });
-      
-      if (!response.ok) throw new Error('Erreur lors de la création');
-      
+      await createAdminUser(formData);
       alert('Agent créé avec succès !');
       navigate('/admin/agents');
     } catch (error) {
-      console.error("Save error:", error);
+      console.error('Save error:', error);
       alert('Erreur: ' + error.message);
     } finally {
       setSubmitting(false);
     }
   };
+
 
   return (
     <div className="font-sans max-w-4xl mx-auto pb-20">
