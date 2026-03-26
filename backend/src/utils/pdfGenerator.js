@@ -132,8 +132,7 @@ const generateDocumentPDF = async (demande, agent) => {
     // Génération PDF via Puppeteer
     const browser = await puppeteer.launch({
       headless: "new",
-      channel: 'chrome',
-      args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage']
+      args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage', '--single-process']
     });
     
     const page = await browser.newPage();
