@@ -92,12 +92,12 @@ async function drawExtraitNaissance(doc, demande, agent) {
     currentY += 35;
   };
 
-  drawField('Nom :', d.nom || d.lastName);
-  drawField('Prénom(s) :', d.prenom || d.firstName);
-  drawField('Né(e) le :', d.dateNaissance || d.date_naissance || d.birthDate);
-  drawField('À :', d.lieuNaissance || d.lieu_naissance || d.birthPlace);
-  drawField('Fils / Fille de :', (d.nomPere || d.fatherName || `${d.prenom_pere || ''} ${d.nom_pere || ''}`).trim());
-  drawField('Et de :', (d.nomMere || d.motherName || `${d.prenom_mere || ''} ${d.nom_mere || ''}`).trim());
+  drawField('Nom :', d.nom || d.lastName || d.nomNaissance);
+  drawField('Prénom(s) :', d.prenom || d.firstName || d.prenoms);
+  drawField('Né(e) le :', d.dateNaissance || d.date_naissance || d.birthDate || d.date_naissance_enfant);
+  drawField('À :', d.lieuNaissance || d.lieu_naissance || d.birthPlace || d.lieu_naissance_enfant);
+  drawField('Fils / Fille de :', (d.nomPere || d.fatherName || d.nom_pere || `${d.prenom_pere || ''} ${d.nom_pere || ''}`).trim());
+  drawField('Et de :', (d.nomMere || d.motherName || d.nom_mere || `${d.prenom_mere || ''} ${d.nom_mere || ''}`).trim());
 
   await drawCommonFooter(doc, demande, agent, "L'Officier de l'Etat Civil", false);
 }
@@ -123,11 +123,11 @@ async function drawCasierJudiciaire(doc, demande, agent) {
   doc.moveDown(2);
   doc.fontSize(13).font('Helvetica');
   const genderPrefix = (d.genre === 'Féminin' || d.sexe === 'F') ? 'La nommée' : 'Le nommé';
-  const name = `${(d.nom || d.lastName || '').toUpperCase()} ${(d.prenom || d.firstName || '').toUpperCase()}`;
-  const father = (d.nomPere || d.fatherName || '---').toUpperCase();
-  const mother = (d.nomMere || d.motherName || '---').toUpperCase();
-  const birthDate = d.dateNaissance || d.date_naissance || d.birthDate || '---';
-  const birthPlace = d.lieuNaissance || d.lieu_naissance || d.birthPlace || '---';
+  const name = `${(d.nom || d.lastName || d.nomNaissance || '').toUpperCase()} ${(d.prenom || d.firstName || d.prenoms || '').toUpperCase()}`;
+  const father = (d.nomPere || d.fatherName || d.nom_pere || '---').toUpperCase();
+  const mother = (d.nomMere || d.motherName || d.nom_mere || '---').toUpperCase();
+  const birthDate = d.dateNaissance || d.date_naissance || d.birthDate || d.date_naissance_enfant || '---';
+  const birthPlace = d.lieuNaissance || d.lieu_naissance || d.birthPlace || d.lieu_naissance_enfant || '---';
 
   doc.text(`${genderPrefix} `, 70, 260, { continued: true })
      .font('Helvetica-Bold').text(name)
@@ -172,10 +172,10 @@ async function drawCertificatNationalite(doc, demande, agent) {
   const d = demande.donnees || {};
   const fullName = `${(d.prenom || d.firstName || '')} ${(d.nom || d.lastName || '')}`.toUpperCase();
   const gender = (d.genre === 'Féminin' || d.sexe === 'F') ? 'fille' : 'fils';
-  const birthDate = d.dateNaissance || d.date_naissance || d.birthDate || '---';
-  const birthPlace = d.lieuNaissance || d.lieu_naissance || d.birthPlace || '---';
-  const fatherName = d.nomPere || d.fatherName || '---';
-  const motherName = d.nomMere || d.motherName || '---';
+  const birthDate = d.dateNaissance || d.date_naissance || d.birthDate || d.date_naissance_enfant || '---';
+  const birthPlace = d.lieuNaissance || d.lieu_naissance || d.birthPlace || d.lieu_naissance_enfant || '---';
+  const fatherName = d.nomPere || d.fatherName || d.nom_pere || '---';
+  const motherName = d.nomMere || d.motherName || d.nom_mere || '---';
   const deliveryDateFormatted = d.deliveryDate || new Date().toLocaleDateString('fr-FR');
   
   // Header spécial Nationalité
