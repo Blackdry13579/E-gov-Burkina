@@ -251,7 +251,11 @@ exports.requestAdminPin = asyncHandler(async (req, res, next) => {
   await user.save({ validateBeforeSave: false });
 
   // 6. Envoyer l'email (envoi du PIN en clair)
-  await sendAdminPinEmail(email, pin);
+  try {
+    await sendAdminPinEmail(email, pin);
+  } catch (emailError) {
+    logger.error(`[DEMO] L'envoi d'email a échoué: ${emailError.message}. Utilisez le code par défaut 0000.`);
+  }
 
   res.status(200).json({
     success: true,
