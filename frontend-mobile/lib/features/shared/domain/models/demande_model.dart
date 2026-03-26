@@ -15,6 +15,7 @@ class DemandeModel {
   final String service;
   final String type;
   final String? motifRejet;
+  final String? notesAgent;
   final String? documentUrl;
   final List<Map<String, dynamic>> statusHistory;
   final Map<String, dynamic> donnees;
@@ -37,6 +38,7 @@ class DemandeModel {
     required this.service,
     required this.type,
     this.motifRejet,
+    this.notesAgent,
     this.documentUrl,
     this.statusHistory = const [],
     this.donnees = const {},
@@ -101,6 +103,7 @@ class DemandeModel {
       service: map['service'] ?? 'Général',
       type: typeDoc['nom'] ?? map['type'] ?? 'Demande',
       motifRejet: map['motif'] ?? map['motifRejet'],
+      notesAgent: map['notesAgent'],
       documentUrl: map['documentPDF']?['url'],
       statusHistory: (map['historique'] as List?)?.map((e) => e is Map ? Map<String, dynamic>.from(e) : <String, dynamic>{}).toList() ?? [],
       donnees: Map<String, dynamic>.from(map['donnees'] ?? {}),

@@ -217,7 +217,7 @@ class _MesDemandesPageState extends State<MesDemandesPage> {
                         dateDepot: formattedDate,
                         direction: "Mairie Centrale de Ouagadougou",
                         motifRejet: model.motifRejet ?? "Document non-conforme aux exigences.",
-                        noteInstructeur: "Veuillez fournir une copie numérisée lisible.",
+                        noteInstructeur: model.notesAgent ?? "Veuillez examiner les motifs ci-dessus.",
                     )));
                   } else {
                     Navigator.push(context, MaterialPageRoute(builder: (_) => SuiviDossierPage(
