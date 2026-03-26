@@ -5,6 +5,7 @@ const asyncHandler = require('../middleware/asyncHandler');
 const { generateToken } = require('../utils/jwt');
 const logger = require('../utils/logger');
 const crypto = require('crypto');
+const bcrypt = require('bcryptjs');
 const { sendAdminPinEmail } = require('../services/email.service');
 
 /**

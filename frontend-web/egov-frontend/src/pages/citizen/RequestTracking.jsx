@@ -81,11 +81,13 @@ const RequestTracking = () => {
 
         <div className="hidden lg:flex items-center gap-3">
           <div className="text-right">
-            <p className="text-sm font-bold text-gray-800 leading-none">Abdoulaye Traoré</p>
+            <p className="text-sm font-bold text-gray-800 leading-none">
+              {demande.userId?.nom} {demande.userId?.prenom}
+            </p>
             <p className="text-[10px] font-bold text-institutional tracking-widest uppercase mt-1">CITOYEN</p>
           </div>
-          <div className="w-10 h-10 rounded-full bg-teal-500 flex items-center justify-center text-white font-bold text-sm shadow-sm">
-            AT
+          <div className="w-10 h-10 rounded-full bg-teal-500 flex items-center justify-center text-white font-bold text-sm shadow-sm uppercase">
+            {demande.userId?.nom?.charAt(0) || 'C'}{demande.userId?.prenom?.charAt(0)}
           </div>
         </div>
       </div>
@@ -110,10 +112,12 @@ const RequestTracking = () => {
             <div className={`px-4 py-1.5 rounded-full text-xs font-bold flex items-center gap-2 ${
               isValidee 
                 ? 'bg-green-100 text-green-600' 
+                : demande.statut === 'REJETEE'
+                ? 'bg-red-100 text-red-600'
                 : 'bg-amber-100 text-amber-600'
             }`}>
-              {isValidee ? <CheckCircle2 size={14} /> : <Clock size={14} />}
-              {isValidee ? '✔ Validée' : 'En cours'}
+              {isValidee ? <CheckCircle2 size={14} /> : demande.statut === 'REJETEE' ? <Eye size={14} /> : <Clock size={14} />}
+              {isValidee ? '✔ Validée' : demande.statut === 'REJETEE' ? '✘ Rejetée' : 'En cours'}
             </div>
             <div className="hidden md:flex items-center gap-2 text-gray-400">
               <Archive size={18} />
@@ -176,25 +180,65 @@ const RequestTracking = () => {
                   </div>
                 </div>
 
-                {/* ÉTAPE 4: VALIDATION */}
+                {/* ÉTAPE 4: VALIDATION / REJET */}
                 <div className="relative">
                   <div className={`absolute -left-8 w-7 h-7 rounded-full border-4 border-white shadow-sm flex items-center justify-center text-white z-10 font-bold text-[10px] ${
-                    isValidee ? 'bg-green-500' : 'bg-gray-200'
+                    isValidee ? 'bg-green-500' : demande.statut === 'REJETEE' ? 'bg-red-500' : 'bg-gray-200'
                   }`}>
-                    {isValidee ? '✓' : ''}
+                    {isValidee ? '✓' : demande.statut === 'REJETEE' ? '✘' : ''}
                   </div>
                   <div>
-                    <h4 className={`text-sm font-bold uppercase ${isValidee ? 'text-green-600' : 'text-gray-400'}`}>
-                      DEMANDE VALIDÉE
+                    <h4 className={`text-sm font-bold uppercase ${
+                      isValidee ? 'text-green-600' : demande.statut === 'REJETEE' ? 'text-red-600' : 'text-gray-400'
+                    }`}>
+                      {isValidee ? 'DEMANDE VALIDÉE' : demande.statut === 'REJETEE' ? 'DEMANDE REJETÉE' : 'VALIDATION'}
                     </h4>
                     <p className="text-xs text-gray-400 font-medium mt-0.5">{formatDate(demande.dateTraitement)}</p>
+                    
                     {isValidee && (
                       <p className="text-xs text-gray-600 font-medium mt-2 bg-green-50 p-2 rounded-lg border border-green-100">
                         "{demande.notesAgent || 'Dossier conforme, document généré.'}"
                       </p>
                     )}
+
+                    {demande.statut === 'REJETEE' && (
+                      <div className="mt-2 bg-red-50 p-3 rounded-xl border border-red-100">
+                        <p className="text-[10px] font-bold text-red-400 uppercase tracking-widest mb-1">Motif du rejet</p>
+                        <p className="text-xs text-red-700 font-bold">
+                           {demande.motif_rejet || 'Dossier incomplet ou informations non valides.'}
+                        </p>
+                      </div>
+                    )}
                   </div>
                 </div>
+              </div>
+            </div>
+
+            {/* SECTION: RÉSUMÉ DES INFORMATIONS */}
+            <div className="bg-white rounded-[12px] p-6 shadow-sm border border-gray-100">
+              <h3 className="text-sm font-bold text-[#1A3A5C] uppercase tracking-wider mb-6 border-b border-gray-50 pb-4">
+                Informations fournies
+              </h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4">
+                {demande.data && Object.keys(demande.data).map((key) => (
+                  <div key={key} className="flex flex-col">
+                    <span className="text-[10px] text-gray-400 font-bold uppercase tracking-widest truncate">{key.replace(/([A-Z])/g, ' $1')}</span>
+                    <span className="text-sm font-bold text-gray-800">{demande.data[key] || '—'}</span>
+                  </div>
+                ))}
+                {/* Fallback si par hasard data est vide mais on a userId */}
+                {!demande.data && (
+                  <>
+                    <div className="flex flex-col">
+                      <span className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">Nom</span>
+                      <span className="text-sm font-bold text-gray-800">{demande.userId?.nom}</span>
+                    </div>
+                    <div className="flex flex-col">
+                      <span className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">Prénom</span>
+                      <span className="text-sm font-bold text-gray-800">{demande.userId?.prenom}</span>
+                    </div>
+                  </>
+                )}
               </div>
             </div>
           </div>
