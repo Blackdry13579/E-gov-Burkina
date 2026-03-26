@@ -16,7 +16,7 @@ dynamic _decodeJson(String body) => jsonDecode(body);
 class ApiService {
   static String get baseUrl => ApiConfig.baseUrl;
 
-  static const Duration _timeout = Duration(seconds: 30);
+  static const Duration _timeout = Duration(seconds: 90);
 
   Map<String, String> _headers({String? token}) => {
         'Content-Type': 'application/json',
