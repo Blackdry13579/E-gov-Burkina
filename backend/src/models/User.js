@@ -62,6 +62,12 @@ const userSchema = new mongoose.Schema(
     dateNaissance: String,
     lieuNaissance: String,
     adresse: String,
+    matricule: {
+      type: String,
+      unique: true,
+      sparse: true,
+      index: true
+    },
     // PIN Admin pour la double authentification
     adminPin: {
       type: String,

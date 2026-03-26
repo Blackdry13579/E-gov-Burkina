@@ -29,28 +29,23 @@ exports.getStatsGlobales = asyncHandler(async (req, res) => {
     { $group: { _id: '$docType.service', count: { $sum: 1 } } }
   ]);
 
-  // 3. Total paiements
-  const statsPaiement = await Demande.aggregate([
-    { $match: { 'paiement.statut': 'PAYE' } },
-    { $group: { _id: null, total: { $sum: '$paiement.montant' } } }
-  ]);
-
-  // 4. Utilisateurs
+  // 3. Totaux pour le frontend
+  const totalDemandes = await Demande.countDocuments();
+  const enAttente = statsStatut.find(s => s._id === 'EN_ATTENTE')?.count || 0;
   const totalCitoyens = await User.countDocuments({ role: 'CITOYEN' });
+  const totalAgents = await User.countDocuments({ 
+    role: { $in: ['AGENT_MAIRIE', 'AGENT_JUSTICE', 'SUPERVISEUR'] } 
+  });
 
   res.status(200).json({
     success: true,
     data: {
-      demandes: {
-        parStatut: statsStatut,
-        parService: statsService
-      },
-      paiements: {
-        totalCollecte: statsPaiement.length > 0 ? statsPaiement[0].total : 0
-      },
-      utilisateurs: {
-        citoyens: totalCitoyens
-      }
+      totalDemandes,
+      enAttente,
+      totalCitoyens,
+      totalAgents,
+      parService: statsService,
+      parStatut: statsStatut
     }
   });
 });
@@ -67,6 +62,13 @@ exports.createUser = asyncHandler(async (req, res, next) => {
 
   const passwordTemp = password || Math.random().toString(36).slice(-8);
 
+  // Génération automatique du matricule si non fourni
+  let finalMatricule = req.body.matricule;
+  if (!finalMatricule && role !== 'CITOYEN') {
+    const randomNum = Math.floor(1000 + Math.random() * 9000);
+    finalMatricule = `BF-${role.split('_').pop()}-${randomNum}`;
+  }
+
   const newUser = await User.create({
     nom,
     prenom,
@@ -74,7 +76,8 @@ exports.createUser = asyncHandler(async (req, res, next) => {
     telephone,
     password: passwordTemp,
     role,
-    service
+    service,
+    matricule: finalMatricule
   });
 
   await AuditLog.createLog({
