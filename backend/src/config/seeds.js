@@ -113,7 +113,7 @@ const seedDocuments = async () => {
         prenom: 'Mairie',
         email: 'agent.mairie@egov.bf',
         password: 'agent123@BF',
-        role: 'AGENT',
+        role: 'AGENT_MAIRIE',
         service: 'mairie',
         isActive: true
       },
@@ -122,7 +122,7 @@ const seedDocuments = async () => {
         prenom: 'Justice',
         email: 'agent.justice@egov.bf',
         password: 'agent123@BF',
-        role: 'AGENT',
+        role: 'AGENT_JUSTICE',
         service: 'justice',
         isActive: true
       }
