@@ -55,12 +55,8 @@ const AdminSidebar = () => {
     >
       {/* ── Logo ── */}
       <div className="px-5 pt-6 pb-5 flex items-center gap-3">
-        <div
-          className="w-10 h-10 rounded-2xl flex items-center justify-center shadow-md"
-          style={{ background: 'linear-gradient(135deg,#1A237E 0%,#2952A3 100%)' }}
-        >
-          <Emblem className="w-6 h-6" />
-        </div>
+        {/* Emblème national directement, plus lisible */}
+        <Emblem className="w-12 h-12 shrink-0 drop-shadow-sm" />
         <div>
           <p className="text-base font-black tracking-tight leading-none" style={{ color: '#1A1A2E' }}>
             E-Gov Burkina
@@ -151,11 +147,12 @@ const AdminSidebar = () => {
           className="flex items-center gap-3 px-3 py-3 rounded-2xl mb-1"
           style={{ backgroundColor: '#F8FAFF' }}
         >
+          {/* Emblème à la place de l'initiale */}
           <div
-            className="w-8 h-8 rounded-xl flex items-center justify-center text-white text-sm font-black shrink-0"
-            style={{ background: 'linear-gradient(135deg,#1A237E 0%,#2952A3 100%)' }}
+            className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0 border"
+            style={{ backgroundColor: '#EFF3FA', borderColor: '#E2E8F0' }}
           >
-            {initial}
+            <Emblem className="w-7 h-7" />
           </div>
           <div className="flex-1 min-w-0">
             <p className="text-xs font-black truncate" style={{ color: '#1A1A2E' }}>
