@@ -104,5 +104,3 @@ const DocumentsConfig = () => {
 };
 
 export default DocumentsConfig;
-
-export default DocumentsConfig;
