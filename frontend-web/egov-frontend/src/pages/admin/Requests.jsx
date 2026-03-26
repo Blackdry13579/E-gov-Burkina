@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { fetchRequests, approveRequest, rejectRequest } from '../../services/api';
-import { Search, Eye, Filter, CheckCircle, XCircle, Clock, AlertCircle } from 'lucide-react';
+import { Search, Eye, Filter, CheckCircle, XCircle, Clock, AlertCircle, FileText } from 'lucide-react';
 
 const Requests = () => {
   const [requests, setRequests] = useState([]);
