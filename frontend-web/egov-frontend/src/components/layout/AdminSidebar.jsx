@@ -25,7 +25,7 @@ const groups = [
   {
     label: 'Administration',
     items: [
-      { name: 'Agents & RH',  path: '/admin/agents',   icon: Users },
+      { name: 'Utilisateurs', path: '/admin/users',   icon: Users },
       { name: 'Rôles & Perms',path: '/admin/roles',    icon: ShieldCheck },
       { name: 'Documents',    path: '/admin/services', icon: FolderOpen },
     ],

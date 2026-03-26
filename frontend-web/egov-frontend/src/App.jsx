@@ -27,7 +27,7 @@ import CitizenLayout from './components/layout/CitizenLayout';
 import LoginAdmin from './pages/admin/Login';
 import AdminDashboard from './pages/admin/Dashboard';
 import RecentActivities from './pages/admin/RecentActivities';
-import AgentsList from './pages/admin/AgentsList';
+import UsersList from './pages/admin/UsersList';
 import AddAgent from './pages/admin/AddAgent';
 import AgentProfile from './pages/admin/AgentProfile';
 import Requests from './pages/admin/Requests';
@@ -81,9 +81,9 @@ function AppRoutes() {
           <Route path="/admin" element={<AdminLayout />}>
             <Route path="dashboard"       element={<AdminDashboard />} />
             <Route path="activities"      element={<RecentActivities />} />
-            <Route path="agents"          element={<AgentsList />} />
-            <Route path="agents/add"      element={<AddAgent />} />
-            <Route path="agents/:id"      element={<AgentProfile />} />
+            <Route path="users"           element={<UsersList />} />
+            <Route path="users/add"       element={<AddAgent />} />
+            <Route path="users/:id"       element={<AgentProfile />} />
             <Route path="requests"        element={<Requests />} />
             <Route path="roles"           element={<RolePermissions />} />
             <Route path="services"        element={<ServicesConfig />} />
