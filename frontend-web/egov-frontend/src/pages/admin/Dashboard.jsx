@@ -1,3 +1,5 @@
+import React, { useEffect, useState } from 'react';
+import { FileText, Clock, Users, UserCheck, TrendingUp } from 'lucide-react';
 import { fetchDashboardStats, fetchRecentActivities } from '../../services/api';
 
 const Dashboard = () => {
