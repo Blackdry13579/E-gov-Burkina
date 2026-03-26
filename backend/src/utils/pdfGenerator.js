@@ -86,17 +86,18 @@ async function drawExtraitNaissance(doc, demande, agent) {
   let currentY = 320;
   const drawField = (label, value) => {
     doc.fontSize(12).font('Helvetica-Bold').text(label, 70, currentY);
-    doc.font('Helvetica').text((value || '---').toUpperCase(), 180, currentY);
+    const val = value || '---';
+    doc.font('Helvetica').text(val.toUpperCase(), 180, currentY);
     doc.moveTo(180, currentY + 12).lineTo(520, currentY + 12).strokeColor('#666').lineWidth(0.5).stroke();
     currentY += 35;
   };
 
-  drawField('Nom :', d.nom);
-  drawField('Prénom(s) :', d.prenom);
-  drawField('Né(e) le :', d.date_naissance);
-  drawField('À :', d.lieu_naissance);
-  drawField('Fils / Fille de :', `${d.prenom_pere || ''} ${d.nom_pere || ''}`.trim());
-  drawField('Et de :', `${d.prenom_mere || ''} ${d.nom_mere || ''}`.trim());
+  drawField('Nom :', d.nom || d.lastName);
+  drawField('Prénom(s) :', d.prenom || d.firstName);
+  drawField('Né(e) le :', d.dateNaissance || d.date_naissance || d.birthDate);
+  drawField('À :', d.lieuNaissance || d.lieu_naissance || d.birthPlace);
+  drawField('Fils / Fille de :', (d.nomPere || d.fatherName || `${d.prenom_pere || ''} ${d.nom_pere || ''}`).trim());
+  drawField('Et de :', (d.nomMere || d.motherName || `${d.prenom_mere || ''} ${d.nom_mere || ''}`).trim());
 
   await drawCommonFooter(doc, demande, agent, "L'Officier de l'Etat Civil", false);
 }
@@ -121,15 +122,20 @@ async function drawCasierJudiciaire(doc, demande, agent) {
   // Corps
   doc.moveDown(2);
   doc.fontSize(13).font('Helvetica');
-  const genderPrefix = (d.genre === 'Féminin') ? 'La nommée' : 'Le nommé';
-  
+  const genderPrefix = (d.genre === 'Féminin' || d.sexe === 'F') ? 'La nommée' : 'Le nommé';
+  const name = `${(d.nom || d.lastName || '').toUpperCase()} ${(d.prenom || d.firstName || '').toUpperCase()}`;
+  const father = (d.nomPere || d.fatherName || '---').toUpperCase();
+  const mother = (d.nomMere || d.motherName || '---').toUpperCase();
+  const birthDate = d.dateNaissance || d.date_naissance || d.birthDate || '---';
+  const birthPlace = d.lieuNaissance || d.lieu_naissance || d.birthPlace || '---';
+
   doc.text(`${genderPrefix} `, 70, 260, { continued: true })
-     .font('Helvetica-Bold').text(`${(d.nom || '').toUpperCase()} ${(d.prenom || '').toUpperCase()}`)
-     .font('Helvetica').text(`${(d.genre === 'Féminin') ? 'Fille' : 'Fils'} de `, { continued: true })
-     .font('Helvetica-Bold').text(`${(d.nom_pere || d.prenom_pere || '---').toUpperCase()}`)
+     .font('Helvetica-Bold').text(name)
+     .font('Helvetica').text(`${(d.genre === 'Féminin' || d.sexe === 'F') ? 'Fille' : 'Fils'} de `, { continued: true })
+     .font('Helvetica-Bold').text(father)
      .font('Helvetica').text(`Et de `, { continued: true })
-     .font('Helvetica-Bold').text(`${(d.nom_mere || d.prenom_mere || '---').toUpperCase()}`)
-     .font('Helvetica').text(`Né(e) le ${d.date_naissance || '---'} à ${d.lieu_naissance || '---'}`)
+     .font('Helvetica-Bold').text(mother)
+     .font('Helvetica').text(`Né(e) le ${birthDate} à ${birthPlace}`)
      .text(`Domicile : ${d.adresse || d.domicile || '---'}`)
      .text(`Nationalité : BURKINABÈ`)
      .text(`Profession : ${d.profession || '---'}`);
@@ -151,7 +157,10 @@ async function drawCasierJudiciaire(doc, demande, agent) {
   doc.fontSize(30).font('Helvetica-Bold').text("NÉANT", 70, tableY + 30, { width: 340, align: 'center', characterSpacing: 10 });
   
   // Observations techniques
-  doc.fontSize(7).font('Helvetica').text(`Extrait d'Acte de Naissance\nN°${d.num_acte_naissance || '---'} du ${d.date_acte_naissance || '---'}\nde ${d.commune || '---'}`, 415, tableY + 25, { width: 100 });
+  const eanRef = d.num_acte_naissance || d.eanRef || '---';
+  const eanDate = d.date_acte_naissance || d.eanDate || '---';
+  const communeLabel = d.commune || d.birthCommune || '---';
+  doc.fontSize(7).font('Helvetica').text(`Extrait d'Acte de Naissance\nN°${eanRef} du ${eanDate}\nde ${communeLabel}`, 415, tableY + 25, { width: 100 });
 
   await drawCommonFooter(doc, demande, agent, "Le Ministre, Garde des Sceaux", true);
 }
@@ -161,6 +170,13 @@ async function drawCasierJudiciaire(doc, demande, agent) {
 // =============================================================================
 async function drawCertificatNationalite(doc, demande, agent) {
   const d = demande.donnees || {};
+  const fullName = `${(d.prenom || d.firstName || '')} ${(d.nom || d.lastName || '')}`.toUpperCase();
+  const gender = (d.genre === 'Féminin' || d.sexe === 'F') ? 'fille' : 'fils';
+  const birthDate = d.dateNaissance || d.date_naissance || d.birthDate || '---';
+  const birthPlace = d.lieuNaissance || d.lieu_naissance || d.birthPlace || '---';
+  const fatherName = d.nomPere || d.fatherName || '---';
+  const motherName = d.nomMere || d.motherName || '---';
+  const deliveryDateFormatted = d.deliveryDate || new Date().toLocaleDateString('fr-FR');
   
   // Header spécial Nationalité
   doc.fontSize(10).font('Helvetica-Bold');
@@ -194,13 +210,13 @@ async function drawCertificatNationalite(doc, demande, agent) {
   doc.fontSize(12).font('Helvetica-Bold').text("CERTIFIE AU VU DES PIÈCES SUIVANTES :", 70);
   
   doc.moveDown(1);
-  doc.font('Helvetica').fontSize(11).text(`1° Extrait d'acte de naissance n°${d.num_acte_naissance || '---'} du ${d.date_acte_naissance || '---'}, délivré par l'officier de l'état civil de ${d.commune_acte_naissance || '---'}, attestant que `, 70, doc.y, { width: 450, continued: true, align: 'justify' })
-     .font('Helvetica-Bold').text(`${(d.prenom || '')} ${(d.nom || '')}`.toUpperCase(), { continued: true })
-     .font('Helvetica').text(`, fils de ${d.nom_pere || '---'} et de ${d.nom_mere || '---'}, est né(e) à ${d.lieu_naissance || '---'}, le ${d.date_naissance || '---'} ;`);
+  doc.font('Helvetica').fontSize(11).text(`1° Extrait d'acte de naissance n°${d.num_acte_naissance || d.eanRef || '---'} du ${d.date_acte_naissance || d.eanDate || '---'}, délivré par l'officier de l'état civil de ${d.commune_acte_naissance || d.commune || '---'}, attestant que `, 70, doc.y, { width: 450, continued: true, align: 'justify' })
+     .font('Helvetica-Bold').text(fullName, { continued: true })
+     .font('Helvetica').text(`, fils de ${fatherName} et de ${motherName}, est né(e) à ${birthPlace}, le ${birthDate} ;`);
 
   doc.moveDown(2);
-  doc.font('Helvetica-Bold').text(`Que ${(d.prenom || '')} ${(d.nom || '')}`.toUpperCase(), 70, doc.y, { width: 450, continued: true, align: 'justify' })
-     .text(`, né(e) à ${d.lieu_naissance || '---'}, le ${d.date_naissance || '---'}, possède la Nationalité Burkinabè comme étant né(e) au Burkina Faso d'un père qui y est lui-même né (Art 144 du Code des Personnes et de la Famille).`);
+  doc.font('Helvetica-Bold').text(`Que ${fullName}`, 70, doc.y, { width: 450, continued: true, align: 'justify' })
+     .text(`, né(e) à ${birthPlace}, le ${birthDate}, possède la Nationalité Burkinabè comme étant né(e) au Burkina Faso d'un père qui y est lui-même né (Art 144 du Code des Personnes et de la Famille).`);
 
   await drawCommonFooter(doc, demande, agent, "Le Président du Tribunal", true);
 }
