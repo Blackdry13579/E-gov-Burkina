@@ -9,23 +9,16 @@ const Landing = () => {
       <header className="flex items-center justify-between px-4 py-3 bg-white shadow-sm sticky top-0 z-50">
         <div className="flex items-center space-x-2">
           <Emblem className="w-8 h-8" />
-          <span className="text-xl font-bold text-institutional tracking-tight">E-Gov</span>
-        </div>
-        <div className="flex items-center space-x-2">
-          <button onClick={(e) => { e.preventDefault(); alert('Fonctionnalité en cours de développement'); }} className="text-institutional p-2 opacity-10 hover:opacity-100 transition-opacity">
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16" />
-            </svg>
-          </button>
+          <span className="text-xl font-bold text-[#1A237E] tracking-tight">E-Gov Burkina</span>
         </div>
       </header>
-
+  
       {/* Hero Banner */}
       <section 
         className="relative bg-gray-900 text-white bg-cover bg-center"
         style={{ backgroundImage: "url('/building.png')" }}
       >
-        <div className="absolute inset-0 bg-[#1A237E]/80 mix-blend-multiply"></div>
+        <div className="absolute inset-0 bg-black/40"></div>
         <div className="relative px-6 py-16 lg:py-24 flex flex-col items-center text-center max-w-4xl mx-auto">
           <span className="inline-flex items-center px-3 py-1 mb-6 text-xs font-bold text-yellow-400 bg-black/40 rounded-full backdrop-blur-md border border-yellow-400/20">
             <span className="w-2 h-2 mr-2 bg-yellow-400 rounded-full animate-pulse"></span>
