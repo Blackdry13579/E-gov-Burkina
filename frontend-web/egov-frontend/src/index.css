@@ -1,55 +1,69 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
+/* ─────────────────────────────────────────────────────────────
+   Design Tokens — alignés sur AppColors Flutter (app_colors.dart)
+   ───────────────────────────────────────────────────────────── */
 :root {
-  /* Colors */
-  --color-primary: #1E507B;
-  --color-primary-dark: #1A4B76;
-  --color-primary-light: #EBF1F7;
-  
-  --color-bg: #F8F9FB;
-  --color-surface: #FFFFFF;
-  
-  --color-text-main: #1F2937;
-  --color-text-muted: #6B7280;
-  --color-text-accent: #374151;
-  
-  --color-success: #10B981;
-  --color-success-bg: #D1FAE5;
-  --color-success-text: #065F46;
-  
-  --color-danger: #EF4444;
-  --color-danger-bg: #FEE2E2;
-  --color-danger-text: #991B1B;
-  
-  --color-warning: #F59E0B;
-  --color-warning-bg: #FEF3C7;
-  --color-warning-text: #92400E;
-  
-  --color-border: #E5E7EB;
-  --color-border-input: #D1D5DB;
+  /* Brand (= AppColors.primary*) */
+  --brand-primary:       #1A237E;   /* AppColors.primary */
+  --brand-dark:          #0F2244;   /* AppColors.primaryDark */
+  --brand-light:         #2952A3;   /* AppColors.primaryLight */
+  --brand-accent:        #EAB208;   /* AppColors.accent (or/jaune) */
+  --brand-accent-light:  #F5C842;   /* AppColors.accentLight */
 
-  --color-yellow-bg: #FCF4CD;
-  --color-yellow-text: #B45309;
+  /* Semantic */
+  --color-success:       #10B981;   /* AppColors.success */
+  --color-success-bg:    #D1FAE5;
+  --color-success-text:  #065F46;
+
+  --color-warning:       #F59E0B;   /* AppColors.warning */
+  --color-warning-bg:    #FEF3C7;
+  --color-warning-text:  #92400E;
+
+  --color-danger:        #EF4444;   /* AppColors.error */
+  --color-danger-bg:     #FEE2E2;
+  --color-danger-text:   #991B1B;
+
+  /* Backgrounds (= AppColors.background*) */
+  --color-bg:            #F5F7FA;   /* AppColors.background */
+  --color-surface:       #FFFFFF;   /* AppColors.cardBg */
+  --color-section:       #EFF3FA;   /* AppColors.sectionBg */
+  --color-footer:        #0F1F3D;   /* AppColors.footerBg */
+
+  /* Text (= AppColors.text*) */
+  --color-text-main:     #1A1A2E;   /* AppColors.textDark */
+  --color-text-muted:    #718096;   /* AppColors.textLight */
+  --color-text-medium:   #4A5568;   /* AppColors.textMedium */
+  --color-text-accent:   #2952A3;   /* AppColors.primaryLight */
+
+  /* Borders */
+  --color-border:        #E2E8F0;   /* AppColors.divider */
+  --color-border-input:  #CBD5E1;
+
+  /* Yellows */
+  --color-yellow-bg:     #FEF9EC;
+  --color-yellow-text:   #92400E;
 
   /* Typography */
   --font-family: 'Inter', sans-serif;
-  
-  /* Shadow */
-  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-  
+
+  /* Shadows */
+  --shadow-sm:  0 1px 2px 0 rgba(0,0,0,.05);
+  --shadow-md:  0 4px 6px -1px rgba(0,0,0,.1), 0 2px 4px -1px rgba(0,0,0,.06);
+  --shadow-lg:  0 10px 15px -3px rgba(0,0,0,.1), 0 4px 6px -2px rgba(0,0,0,.05);
+
   /* Radii */
-  --radius-sm: 0.25rem;
-  --radius-md: 0.5rem;
-  --radius-lg: 1rem;
-  --radius-xl: 1.5rem;
+  --radius-sm:   0.25rem;
+  --radius-md:   0.5rem;
+  --radius-lg:   1rem;
+  --radius-xl:   1.5rem;
   --radius-full: 9999px;
 }
+
 
 * {
   margin: 0;

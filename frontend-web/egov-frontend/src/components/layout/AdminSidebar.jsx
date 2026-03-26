@@ -27,42 +27,56 @@ const AdminSidebar = () => {
   ];
 
   return (
-    <div className="w-64 h-screen bg-institutional text-white flex flex-col fixed left-0 top-0">
-      <div className="p-6 flex items-center space-x-3">
+    <div className="w-64 h-screen flex flex-col fixed left-0 top-0" style={{ backgroundColor: '#1A237E' }}>
+      {/* Logo area — navy très foncé (AppColors.primaryDark) */}
+      <div className="p-6 flex items-center space-x-3" style={{ backgroundColor: '#0F2244' }}>
         <Emblem className="w-10 h-10" />
         <div>
-          <h1 className="text-xl font-bold font-sans tracking-tight">E-GOV BURKINA</h1>
-          <p className="text-sm text-institutional-light mt-0.5 opacity-80">Portail Administratif</p>
+          <h1 className="text-xl font-black text-white tracking-tight">E-GOV BURKINA</h1>
+          <p className="text-xs font-bold uppercase tracking-widest mt-0.5" style={{ color: '#EAB208' }}>Portail Administratif</p>
         </div>
       </div>
 
-      <nav className="flex-1 mt-6">
-        <ul className="space-y-2">
+      <nav className="flex-1 mt-4 overflow-y-auto">
+        <ul className="space-y-1 px-3">
           {navItems.map((item) => (
             <li key={item.path}>
               <NavLink
                 to={item.path}
                 className={({ isActive }) =>
-                  `flex items-center gap-3 px-6 py-3 font-medium transition-colors ${
-                    isActive ? 'bg-white/10 border-l-4 border-green-500' : 'hover:bg-white/5'
+                  `flex items-center gap-3 px-4 py-3 rounded-2xl font-medium transition-all ${
+                    isActive
+                      ? 'bg-white/10 text-white font-black'
+                      : 'text-white/70 hover:bg-white/5 hover:text-white'
                   }`
                 }
               >
-                {item.icon}
-                <span>{item.name}</span>
+                {({ isActive }) => (
+                  <>
+                    {/* Icône — doré si actif (AppColors.accent), blanc sinon */}
+                    <span style={{ color: isActive ? '#EAB208' : undefined }}>
+                      {item.icon}
+                    </span>
+                    <span>{item.name}</span>
+                    {/* Indicateur actif */}
+                    {isActive && (
+                      <span className="ml-auto w-2 h-2 rounded-full" style={{ backgroundColor: '#EAB208' }} />
+                    )}
+                  </>
+                )}
               </NavLink>
             </li>
           ))}
         </ul>
       </nav>
 
-      <div className="p-4 border-t border-white/10">
+      <div className="p-4 mx-3 mb-4 rounded-2xl" style={{ backgroundColor: '#0F2244' }}>
         <button
           onClick={() => { logout(); navigate('/admin/login'); }}
-          className="flex items-center gap-3 px-2 py-2 w-full text-left hover:bg-white/10 rounded-lg transition-colors"
+          className="flex items-center gap-3 px-3 py-3 w-full text-left text-white/70 hover:text-white rounded-xl transition-colors group"
         >
-          <LogOut size={20} />
-          <span>Déconnexion</span>
+          <LogOut size={20} className="group-hover:text-red-400 transition-colors" />
+          <span className="font-medium">Déconnexion</span>
         </button>
       </div>
     </div>
