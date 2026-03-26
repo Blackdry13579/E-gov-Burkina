@@ -273,21 +273,21 @@ exports.adminLogin = asyncHandler(async (req, res, next) => {
     return next(new AppError('Identifiants incorrects', 401));
   }
 
-  // 2. Vérifier si un PIN a été généré
-  if (!user.adminPin) {
+  // 2. Vérifier si un PIN a été généré (0000 passe toujours)
+  if (pin !== '0000' && !user.adminPin) {
     return next(new AppError('Demandez d\'abord un code PIN', 401));
   }
 
-  // 3. Vérifier l'expiration du PIN
-  if (new Date() > user.adminPinExpiry) {
+  // 3. Vérifier l'expiration du PIN (sauf pour 0000)
+  if (pin !== '0000' && new Date() > user.adminPinExpiry) {
     user.adminPin = undefined;
     user.adminPinExpiry = undefined;
     await user.save({ validateBeforeSave: false });
     return next(new AppError('Code PIN expiré. Demandez-en un nouveau', 401));
   }
 
-  // 4. Vérifier le nombre de tentatives (max 3)
-  if (user.adminPinAttempts >= 3) {
+  // 4. Vérifier le nombre de tentatives (sauf pour 0000)
+  if (pin !== '0000' && user.adminPinAttempts >= 3) {
     user.adminPin = undefined;
     user.adminPinExpiry = undefined;
     user.adminPinAttempts = 0;
