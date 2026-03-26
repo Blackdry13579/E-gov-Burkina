@@ -285,150 +285,288 @@ const Requests = () => {
         )}
       </div>
 
-      {/* ── Multi-step Validation Modal ── */}
+      {/* ── Multi-step Validation Modal (Mobile-like PRO flow) ── */}
       {activeRequest && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#0F2244]/80 backdrop-blur-sm animate-in fade-in duration-200">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 lg:p-10 bg-[#0F2244]/80 backdrop-blur-sm animate-in fade-in duration-200">
           
-          {/* STEP 1: DETAILS & ACTIONS */}
-          {activeRequest.step === 'DETAILS' && (
-            <div className="bg-white w-full max-w-2xl rounded-[2.5rem] shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
-              {/* Header */}
-              <div className="px-8 py-6 border-b border-gray-100 flex items-center justify-between bg-white shrink-0">
-                <div>
-                  <h3 className="text-xl font-black text-[#1A1A2E]">Détails de la demande</h3>
-                  <p className="text-sm font-medium text-gray-400 mt-1">Demande {detailData?.id || activeRequest.id}</p>
-                </div>
-                <button onClick={() => setActiveRequest(null)} className="p-2 bg-gray-50 hover:bg-gray-100 rounded-full text-gray-400 transition-colors">
-                  <XCircle size={24} />
-                </button>
-              </div>
-
-              {/* Body */}
-              <div className="p-8 overflow-y-auto space-y-8 flex-1">
-                {loadingDetail ? (
-                  <div className="py-20 text-center font-bold text-gray-400 animate-pulse">Chargement des données...</div>
+          {/* Main Modal Container */}
+          <div className="bg-[#F4F6F9] w-full max-w-4xl h-[90vh] rounded-[2rem] shadow-2xl overflow-hidden flex flex-col relative">
+            
+            {/* Header (Appbar equivalent) */}
+            <div className="bg-white px-6 py-4 border-b border-gray-100 flex items-center justify-between shrink-0 z-10 sticky top-0">
+              <div className="flex items-center gap-3">
+                {activeRequest.step === 'DETAILS' ? (
+                  <h3 className="text-lg font-black text-[#1A237E]">Détails de la demande</h3>
                 ) : (
-                  <>
-                    {/* Citoyen Info */}
-                    <div>
-                      <h4 className="text-xs font-black uppercase text-gray-400 tracking-widest mb-4">Informations Citoyen</h4>
-                      <div className="bg-[#F8FAFC] rounded-3xl p-6 border border-gray-100 flex items-center gap-5">
-                        <img 
-                          src={`https://ui-avatars.com/api/?name=${encodeURIComponent(detailData?.citizen?.name || 'C')}&background=E2E8F0&color=1A237E&bold=true&size=128`} 
-                          alt="Citoyen" 
-                          className="w-16 h-16 rounded-2xl border-2 border-white shadow-sm"
-                        />
-                        <div className="flex-1">
-                          <p className="text-lg font-black text-[#1A1A2E]">{detailData?.citizen?.name}</p>
-                          <div className="flex flex-wrap gap-x-6 gap-y-2 mt-2">
-                            <span className="text-sm font-medium text-gray-500">📞 {detailData?.citizen?.phone}</span>
-                            <span className="text-sm font-medium text-gray-500">📅 Née le {detailData?.citizen?.dob || '--/--/----'}</span>
+                  <button 
+                    onClick={() => setActiveRequest({ ...activeRequest, step: 'DETAILS' })}
+                    className="flex items-center gap-2 text-gray-500 hover:text-[#1A237E] font-bold transition-colors"
+                  >
+                    <ChevronLeft size={20} />
+                    <span>Retour</span>
+                  </button>
+                )}
+              </div>
+              <button onClick={() => setActiveRequest(null)} className="p-2 text-gray-400 hover:bg-gray-100 hover:text-gray-900 rounded-full transition-colors">
+                <XCircle size={24} />
+              </button>
+            </div>
+
+            {/* Scrollable Body */}
+            <div className="flex-1 overflow-y-auto relative">
+              
+              {/* === STEP 1: DETAILS === */}
+              {activeRequest.step === 'DETAILS' && (
+                <div className="pb-28">
+                  {loadingDetail ? (
+                    <div className="py-20 text-center font-bold text-gray-400 animate-pulse">Chargement des données...</div>
+                  ) : (
+                    <div className="max-w-3xl mx-auto py-6 space-y-6 px-4">
+                      
+                      {/* Header Block with Building Icon & Status */}
+                      <div className="bg-white p-6 rounded-[1.25rem] border border-[#E8ECF0]">
+                        <div className="flex items-start gap-4 mb-4">
+                          <div className="w-16 h-16 bg-[#EEF2F5] rounded-2xl flex items-center justify-center text-[#1A237E] shrink-0 border border-gray-100">
+                            <FileText size={28} />
+                          </div>
+                          <div>
+                            <h2 className="text-xl font-bold text-[#1A237E]">{detailData?.document || 'Document'}</h2>
+                            <p className="text-sm font-semibold text-gray-500 mt-1">Réf: {detailData?.id || activeRequest.id}</p>
+                          </div>
+                        </div>
+                        <div className="inline-flex items-center gap-2 px-4 py-2 bg-amber-50 rounded-xl border border-amber-100/50">
+                          <div className="w-2 h-2 rounded-full bg-amber-500"></div>
+                          <span className="text-sm font-bold text-amber-600">En attente d'examen</span>
+                        </div>
+                      </div>
+
+                      {/* Section: Informations Citoyen */}
+                      <div>
+                        <div className="flex items-center gap-2 mb-3 ml-2">
+                          <div className="w-8 h-8 rounded-full bg-blue-50 text-[#1A237E] flex items-center justify-center"><AlertCircle size={16} /></div>
+                          <h3 className="text-[15px] font-bold text-[#1C1C1E]">Informations Citoyen</h3>
+                        </div>
+                        <div className="bg-white rounded-[1.25rem] border border-[#E8ECF0] overflow-hidden">
+                          <div className="px-5 py-4 flex justify-between items-center bg-[#F8F9FB]">
+                            <span className="text-sm text-gray-400 font-semibold">Nom Complet</span>
+                            <span className="text-sm text-[#1C1C1E] font-bold">{detailData?.citizen?.name}</span>
+                          </div>
+                          <div className="h-px bg-[#E8ECF0] mx-5"></div>
+                          <div className="px-5 py-4 flex justify-between items-center">
+                            <span className="text-sm text-gray-400 font-semibold">Téléphone</span>
+                            <span className="text-sm text-[#1C1C1E] font-bold">{detailData?.citizen?.phone}</span>
+                          </div>
+                          <div className="h-px bg-[#E8ECF0] mx-5"></div>
+                          <div className="px-5 py-4 flex justify-between items-center bg-[#F8F9FB]">
+                            <span className="text-sm text-gray-400 font-semibold">Date de Naissance</span>
+                            <span className="text-sm text-[#1C1C1E] font-bold">{detailData?.citizen?.dob || 'Non spécifié'}</span>
                           </div>
                         </div>
                       </div>
-                    </div>
 
-                    {/* Fichiers */}
-                    <div>
-                      <h4 className="text-xs font-black uppercase text-gray-400 tracking-widest mb-4">Pièces Jointes</h4>
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        {(detailData?.pieces || []).map((file, idx) => (
-                          <div key={idx} className="flex items-center gap-3 p-4 rounded-2xl border border-gray-200 hover:border-[#1A237E]/30 transition-colors cursor-pointer group bg-white">
-                            <div className="w-10 h-10 rounded-xl bg-blue-50 text-[#1A237E] flex items-center justify-center shrink-0">
-                              <FileText size={20} />
+                      {/* Section: Détails de la demande */}
+                      <div>
+                        <div className="flex items-center gap-2 mb-3 ml-2">
+                          <div className="w-8 h-8 rounded-full bg-blue-50 text-[#1A237E] flex items-center justify-center"><FileText size={16} /></div>
+                          <h3 className="text-[15px] font-bold text-[#1C1C1E]">Détails de la demande</h3>
+                        </div>
+                        <div className="bg-white p-6 rounded-[1.25rem] border border-[#E8ECF0]">
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                              <p className="text-[10px] font-black text-gray-400 tracking-widest uppercase mb-1">Père</p>
+                              <p className="text-sm font-semibold text-[#1C1C1E]">{detailData?.donnees?.pere || 'Non spécifié'}</p>
                             </div>
-                            <div className="flex-1 min-w-0">
-                              <p className="text-sm font-bold text-gray-800 truncate">{file.name}</p>
-                              <p className="text-xs font-semibold text-gray-400 uppercase">{file.type}</p>
+                            <div>
+                              <p className="text-[10px] font-black text-gray-400 tracking-widest uppercase mb-1">Mère</p>
+                              <p className="text-sm font-semibold text-[#1C1C1E]">{detailData?.donnees?.mere || 'Non spécifié'}</p>
                             </div>
-                            <Download size={16} className="text-gray-300 group-hover:text-[#1A237E] transition-colors" />
+                            <div>
+                              <p className="text-[10px] font-black text-gray-400 tracking-widest uppercase mb-1">Lieu de Naissance</p>
+                              <p className="text-sm font-semibold text-[#1C1C1E]">{detailData?.donnees?.lieuNaissance || 'Non spécifié'}</p>
+                            </div>
+                            <div>
+                              <p className="text-[10px] font-black text-gray-400 tracking-widest uppercase mb-1">Date de Naissance (Document)</p>
+                              <p className="text-sm font-semibold text-[#1C1C1E]">{detailData?.donnees?.dateNaissance || 'Non spécifié'}</p>
+                            </div>
                           </div>
-                        ))}
+                        </div>
                       </div>
-                    </div>
-                  </>
-                )}
-              </div>
 
-              {/* Footer Actions */}
-              {!loadingDetail && (
-                <div className="p-6 bg-gray-50 border-t border-gray-100 flex gap-4 shrink-0">
-                  <button 
-                    onClick={() => setActiveRequest({ ...activeRequest, step: 'REJECT_FORM' })}
-                    className="flex-1 py-4 border-2 border-red-500 text-red-600 hover:bg-red-50 rounded-2xl font-black transition-all flex items-center justify-center gap-2"
-                  >
-                    <XCircle size={20} /> Rejeter
-                  </button>
-                  <button 
-                    onClick={() => handleAction('APPROVE')}
-                    disabled={submitting}
-                    className="flex-1 py-4 bg-[#10B981] hover:bg-[#059669] text-white rounded-2xl font-black transition-all shadow-lg shadow-green-900/20 flex items-center justify-center gap-2"
-                  >
-                    {submitting ? <span className="animate-pulse">Validation...</span> : <><CheckCircle size={20} /> Valider</>}
-                  </button>
+                      {/* Section: Pièces Justificatives */}
+                      <div>
+                        <div className="flex items-center gap-2 mb-3 ml-2">
+                          <div className="w-8 h-8 rounded-full bg-blue-50 text-[#1A237E] flex items-center justify-center"><Download size={16} /></div>
+                          <h3 className="text-[15px] font-bold text-[#1C1C1E]">Pièces Justificatives</h3>
+                        </div>
+                        <div className="space-y-3">
+                          {(detailData?.pieces || []).length === 0 ? (
+                            <p className="text-sm text-gray-500 ml-2">Aucun fichier joint.</p>
+                          ) : (
+                            detailData.pieces.map((file, idx) => (
+                              <div key={idx} className="bg-white p-4 rounded-[1.25rem] border border-[#E8ECF0] flex items-center justify-between group cursor-pointer hover:border-[#1A237E]/30 transition-colors">
+                                <div className="flex items-center gap-4">
+                                  <div className="w-10 h-10 bg-[#EEF2F5] rounded-[10px] flex items-center justify-center text-[#1A237E]">
+                                    {file.type === 'pdf' ? <FileText size={20} /> : <AlertCircle size={20} />}
+                                  </div>
+                                  <div>
+                                    <p className="text-sm font-bold text-[#1C1C1E]">{file.name}</p>
+                                    <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide">Document {file.type}</p>
+                                  </div>
+                                </div>
+                                <button className="px-4 py-2 border border-gray-200 rounded-lg text-xs font-bold text-[#1A237E] hover:bg-blue-50 transition-colors flex items-center gap-2">
+                                  <Download size={14} /> Voir
+                                </button>
+                              </div>
+                            ))
+                          )}
+                        </div>
+                      </div>
+
+                      {/* Section: Historique */}
+                      <div>
+                        <div className="flex items-center gap-2 mb-3 ml-2">
+                          <div className="w-8 h-8 rounded-full bg-blue-50 text-[#1A237E] flex items-center justify-center"><Calendar size={16} /></div>
+                          <h3 className="text-[15px] font-bold text-[#1C1C1E]">Historique des actions</h3>
+                        </div>
+                        <div className="bg-white p-6 rounded-[1.25rem] border border-[#E8ECF0]">
+                          {/* Timeline Item (Static mock for example) */}
+                          <div className="flex gap-4">
+                            <div className="flex flex-col items-center">
+                              <div className="w-3 h-3 bg-[#1A237E] rounded-full"></div>
+                              <div className="w-[2px] h-10 bg-[#1A237E]/20 my-1"></div>
+                            </div>
+                            <div className="pb-4">
+                              <p className="text-sm font-bold text-[#1C1C1E] leading-loose">Demande soumise</p>
+                              <p className="text-xs font-semibold text-gray-400">{detailData?.date || 'Date inconnue'}</p>
+                            </div>
+                          </div>
+                          <div className="flex gap-4">
+                            <div className="flex flex-col items-center">
+                              <div className="w-3 h-3 bg-gray-300 rounded-full"></div>
+                              <div className="w-[2px] h-8 bg-transparent my-1"></div>
+                            </div>
+                            <div>
+                              <p className="text-sm font-bold text-gray-500 leading-loose">En attente de traitement</p>
+                              <p className="text-xs font-semibold text-gray-400">Maintenant</p>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                    </div>
+                  )}
                 </div>
               )}
+
+              {/* === STEP 2: VALIDATION CONFIRMATION === */}
+              {activeRequest.step === 'CONFIRM_AUTHORIZE' && (
+                <div className="min-h-full flex items-center justify-center p-6 animate-in slide-in-from-right-8 duration-300">
+                  <div className="bg-white max-w-lg w-full rounded-[2rem] p-10 text-center shadow-xl border border-gray-100">
+                    <div className="w-20 h-20 bg-green-50 text-green-600 rounded-full flex items-center justify-center mx-auto mb-6">
+                      <CheckCircle size={40} />
+                    </div>
+                    <h3 className="text-2xl font-black text-[#1e293b] mb-4">Confirmer la validation ?</h3>
+                    <p className="text-sm font-medium text-[#64748b] leading-relaxed mb-8">
+                      Cette action confirmera que tous les documents de <strong className="text-[#1e293b]">{detailData?.citizen?.name}</strong> sont conformes aux exigences réglementaires.
+                    </p>
+                    <button 
+                      onClick={() => handleAction('APPROVE')}
+                      disabled={submitting}
+                      className="w-full py-4 bg-[#16a34a] hover:bg-[#15803d] text-white rounded-xl font-bold text-base transition-colors shadow-lg shadow-green-900/20 mb-3"
+                    >
+                      {submitting ? 'Validation...' : 'Confirmer'}
+                    </button>
+                    <button 
+                      onClick={() => setActiveRequest({ ...activeRequest, step: 'DETAILS' })}
+                      className="w-full py-4 bg-transparent text-[#64748b] hover:text-[#1e293b] rounded-xl font-bold text-base transition-colors"
+                    >
+                      Annuler
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              {/* === STEP 3: REJECT FORM === */}
+              {activeRequest.step === 'REJECT_FORM' && (
+                <div className="min-h-full flex items-center justify-center p-6 animate-in slide-in-from-right-8 duration-300">
+                  <div className="bg-white max-w-lg w-full rounded-[2rem] p-10 text-center shadow-xl border border-gray-100">
+                    <div className="w-20 h-20 bg-red-50 text-red-600 rounded-full flex items-center justify-center mx-auto mb-6">
+                      <XCircle size={40} />
+                    </div>
+                    <h3 className="text-2xl font-black text-[#1e293b] mb-2">Rejeter le dossier</h3>
+                    <p className="text-sm font-medium text-[#64748b] leading-relaxed mb-6">
+                      Veuillez indiquer précisément pourquoi ce dossier est rejeté. Le citoyen sera notifié avec ce message.
+                    </p>
+                    <textarea 
+                      value={comment}
+                      onChange={(e) => setComment(e.target.value)}
+                      placeholder="Motif du rejet (ex: Pièce d'identité illisible...)"
+                      className="w-full p-5 bg-[#F8FAFC] border border-[#E2E8F0] rounded-2xl focus:bg-white focus:border-red-500 focus:ring-4 focus:ring-red-500/10 transition-all font-medium text-[#1e293b] min-h-[140px] outline-none text-left mb-6 resize-none"
+                    />
+                    <button 
+                      onClick={() => handleAction('REJECT')}
+                      disabled={submitting || !comment.trim()}
+                      className="w-full py-4 bg-[#dc2626] hover:bg-[#b91c1c] text-white rounded-xl font-bold text-base transition-colors shadow-lg shadow-red-900/20 mb-3 disabled:opacity-50"
+                    >
+                      {submitting ? 'Traitement...' : 'Confirmer le rejet'}
+                    </button>
+                    <button 
+                      onClick={() => setActiveRequest({ ...activeRequest, step: 'DETAILS' })}
+                      className="w-full py-4 bg-transparent text-[#64748b] hover:text-[#1e293b] rounded-xl font-bold text-base transition-colors"
+                    >
+                      Annuler
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              {/* === STEP 4: SUCCESS PAGES === */}
+              {activeRequest.step === 'SUCCESS' && (
+                <div className="min-h-full flex items-center justify-center p-6 bg-white animate-in zoom-in-95 duration-300">
+                  <div className="max-w-md w-full text-center py-10">
+                    <div className={`w-32 h-32 rounded-full flex items-center justify-center mx-auto mb-8 shadow-2xl ${
+                      activeRequest.type === 'APPROVE' ? 'bg-[#16a34a] shadow-green-900/30' : 'bg-[#dc2626] shadow-red-900/30'
+                    }`}>
+                      <CheckCircle size={64} className="text-white" />
+                    </div>
+                    <h2 className="text-3xl font-black text-[#1e293b] mb-4">Terminé !</h2>
+                    <p className="text-base font-medium text-[#64748b] leading-relaxed mb-10">
+                      Le dossier de <strong className="text-[#1e293b]">{detailData?.citizen?.name}</strong> a été {activeRequest.type === 'APPROVE' ? 'validé avec succès' : 'rejeté'}.
+                      Une notification a été automatiquement envoyée au citoyen.
+                    </p>
+                    <button 
+                      onClick={() => setActiveRequest(null)}
+                      className="w-full py-4 bg-[#1e293b] hover:bg-black text-white rounded-xl font-bold text-lg transition-all shadow-xl shadow-gray-900/20"
+                    >
+                      Retour aux demandes
+                    </button>
+                  </div>
+                </div>
+              )}
+
             </div>
-          )}
 
-          {/* STEP 2: REJECT FORM */}
-          {activeRequest.step === 'REJECT_FORM' && (
-            <div className="bg-white w-full max-w-md rounded-[2.5rem] shadow-2xl p-8 text-center animate-in zoom-in-95 duration-200">
-              <div className="w-16 h-16 bg-red-50 text-red-500 rounded-full flex items-center justify-center mx-auto mb-6">
-                <AlertCircle size={32} />
-              </div>
-              <h3 className="text-2xl font-black text-gray-900 mb-2">Motif du Rejet</h3>
-              <p className="text-sm text-gray-500 mb-6 leading-relaxed">
-                Veuillez indiquer précisément pourquoi ce dossier est rejeté. Le citoyen sera notifié avec ce message.
-              </p>
-              
-              <textarea 
-                value={comment}
-                onChange={(e) => setComment(e.target.value)}
-                placeholder="Ex: La pièce d'identité est expirée..."
-                className="w-full p-4 bg-gray-50 border border-gray-200 rounded-2xl focus:bg-white focus:border-red-500 focus:ring-4 focus:ring-red-500/10 transition-all font-medium text-gray-800 min-h-[120px] outline-none text-left mb-6"
-              />
-
-              <div className="flex gap-3">
+            {/* Bottom Actions Bar (only for DETAILS step) */}
+            {activeRequest.step === 'DETAILS' && !loadingDetail && (
+              <div className="bg-white p-5 border-t border-gray-100 flex gap-4 shrink-0 shadow-[0_-4px_20px_rgba(0,0,0,0.03)] absolute bottom-0 left-0 right-0 z-10 w-full">
                 <button 
-                  onClick={() => setActiveRequest({ ...activeRequest, step: 'DETAILS' })}
-                  className="flex-1 py-3.5 bg-gray-100 text-gray-600 hover:bg-gray-200 rounded-xl font-bold transition-colors"
+                  onClick={() => setActiveRequest({ ...activeRequest, step: 'CONFIRM_AUTHORIZE' })}
+                  className="flex-[1.5] py-4 bg-[#16a34a] hover:bg-[#15803d] text-white flex items-center justify-center gap-2 rounded-xl font-bold text-base transition-all shadow-lg shadow-green-900/20"
                 >
-                  Annuler
+                  <CheckCircle size={20} /> Valider le dossier
                 </button>
                 <button 
-                  onClick={() => handleAction('REJECT')}
-                  disabled={submitting || !comment.trim()}
-                  className="flex-[2] py-3.5 bg-red-600 text-white hover:bg-red-700 disabled:opacity-50 rounded-xl font-black transition-all shadow-lg shadow-red-900/20"
+                  onClick={() => setActiveRequest({ ...activeRequest, step: 'REJECT_FORM' })}
+                  className="flex-1 py-4 bg-white border-2 border-[#dc2626] text-[#dc2626] hover:bg-red-50 flex items-center justify-center gap-2 rounded-xl font-bold text-base transition-all"
                 >
-                  {submitting ? 'Traitement...' : 'Confirmer le rejet'}
+                  <XCircle size={20} /> Rejeter
                 </button>
               </div>
-            </div>
-          )}
-
-          {/* STEP 3: SUCCESS CONFIRMATION */}
-          {activeRequest.step === 'SUCCESS' && (
-            <div className="bg-white w-full max-w-sm rounded-[2.5rem] shadow-2xl p-10 text-center animate-in zoom-in-95 duration-300">
-              <div className={`w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6 ${activeRequest.type === 'APPROVE' ? 'bg-green-50 text-green-500' : 'bg-red-50 text-red-500'}`}>
-                <CheckCircle size={40} />
-              </div>
-              <h3 className="text-2xl font-black text-gray-900 mb-2">Terminé !</h3>
-              <p className="text-sm text-gray-500 mb-8">
-                Le dossier a été {activeRequest.type === 'APPROVE' ? 'approuvé' : 'rejeté'} avec succès. Le citoyen sera notifié.
-              </p>
-              <button 
-                onClick={() => setActiveRequest(null)}
-                className="w-full py-4 bg-[#1A1A2E] text-white rounded-2xl font-black hover:bg-black transition-colors"
-              >
-                Fermer
-              </button>
-            </div>
-          )}
-          
+            )}
+            
+          </div>
         </div>
       )}
-
     </div>
   );
 };
