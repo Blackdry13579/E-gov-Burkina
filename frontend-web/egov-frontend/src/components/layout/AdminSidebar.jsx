@@ -7,7 +7,8 @@ import {
   ShieldCheck, 
   Settings,
   LogOut,
-  Activity
+  UserCircle,
+  BarChart2,
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import Emblem from '../common/Emblem';
@@ -17,51 +18,68 @@ const AdminSidebar = () => {
   const navigate = useNavigate();
 
   const navItems = [
-    { name: 'Tableau de bord', path: '/admin/dashboard', icon: <LayoutDashboard size={20} /> },
-    { name: 'Agents / RH', path: '/admin/agents', icon: <Users size={20} /> },
-    { name: 'Mes Demandes', path: '/admin/requests', icon: <FileText size={20} /> },
-    { name: 'Rôles & Perms', path: '/admin/roles', icon: <ShieldCheck size={20} /> },
-    { name: 'Configuration', path: '/admin/services', icon: <Settings size={20} /> },
-    { name: 'Logs de Sécurité', path: '/admin/security', icon: <ShieldCheck size={20} /> },
-    { name: 'Mon Profil', path: '/admin/profile', icon: <Users size={20} /> },
+    { name: 'Tableau de bord', path: '/admin/dashboard',  icon: LayoutDashboard },
+    { name: 'Gestion des demandes', path: '/admin/requests',   icon: FileText },
+    { name: 'Agents',          path: '/admin/agents',    icon: Users },
+    { name: 'Rôles & Perms',   path: '/admin/roles',     icon: ShieldCheck },
+    { name: 'Documents',       path: '/admin/services',  icon: Settings },
+    { name: 'Statistiques',    path: '/admin/security',  icon: BarChart2 },
+    { name: 'Mon Profil',      path: '/admin/profile',   icon: UserCircle },
   ];
 
   return (
-    <div className="w-64 h-screen flex flex-col fixed left-0 top-0" style={{ backgroundColor: '#1A237E' }}>
-      {/* Logo area — navy très foncé (AppColors.primaryDark) */}
-      <div className="p-6 flex items-center space-x-3" style={{ backgroundColor: '#0F2244' }}>
-        <Emblem className="w-10 h-10" />
+    /* Sidebar blanche avec ombre légère — style mobile screenshot */
+    <div
+      className="w-64 h-screen flex flex-col fixed left-0 top-0"
+      style={{
+        backgroundColor: '#FFFFFF',
+        borderRight: '1px solid #E2E8F0',
+        boxShadow: '2px 0 8px 0 rgba(0,0,0,0.04)',
+      }}
+    >
+      {/* Logo */}
+      <div className="px-6 py-5 flex items-center gap-3" style={{ borderBottom: '1px solid #F1F5F9' }}>
+        <Emblem className="w-9 h-9" />
         <div>
-          <h1 className="text-xl font-black text-white tracking-tight">E-GOV BURKINA</h1>
-          <p className="text-xs font-bold uppercase tracking-widest mt-0.5" style={{ color: '#EAB208' }}>Portail Administratif</p>
+          <h1 className="text-base font-black tracking-tight" style={{ color: '#1A237E' }}>
+            E-GOV BF
+          </h1>
+          <p className="text-[10px] font-bold uppercase tracking-widest" style={{ color: '#718096' }}>
+            Portail Administratif
+          </p>
         </div>
       </div>
 
-      <nav className="flex-1 mt-4 overflow-y-auto">
-        <ul className="space-y-1 px-3">
-          {navItems.map((item) => (
-            <li key={item.path}>
+      {/* Navigation */}
+      <nav className="flex-1 overflow-y-auto py-4 px-3">
+        <ul className="space-y-1">
+          {navItems.map(({ name, path, icon: Icon }) => (
+            <li key={path}>
               <NavLink
-                to={item.path}
+                to={path}
                 className={({ isActive }) =>
-                  `flex items-center gap-3 px-4 py-3 rounded-2xl font-medium transition-all ${
+                  `flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-semibold transition-all ${
                     isActive
-                      ? 'bg-white/10 text-white font-black'
-                      : 'text-white/70 hover:bg-white/5 hover:text-white'
+                      ? 'font-bold'
+                      : 'hover:bg-gray-50'
                   }`
                 }
+                style={({ isActive }) => ({
+                  /* Actif  : fond bleu très clair (comme le screenshot) + texte navy */
+                  /* Inactif: texte gris moyen */
+                  backgroundColor: isActive ? '#EFF3FA' : 'transparent',
+                  color: isActive ? '#1A237E' : '#4A5568',
+                  /* Barre verticale droite sur l'élément actif */
+                  borderRight: isActive ? '3px solid #1A237E' : '3px solid transparent',
+                })}
               >
                 {({ isActive }) => (
                   <>
-                    {/* Icône — doré si actif (AppColors.accent), blanc sinon */}
-                    <span style={{ color: isActive ? '#EAB208' : undefined }}>
-                      {item.icon}
-                    </span>
-                    <span>{item.name}</span>
-                    {/* Indicateur actif */}
-                    {isActive && (
-                      <span className="ml-auto w-2 h-2 rounded-full" style={{ backgroundColor: '#EAB208' }} />
-                    )}
+                    <Icon
+                      size={20}
+                      style={{ color: isActive ? '#1A237E' : '#94A3B8' }}
+                    />
+                    <span>{name}</span>
                   </>
                 )}
               </NavLink>
@@ -70,13 +88,15 @@ const AdminSidebar = () => {
         </ul>
       </nav>
 
-      <div className="p-4 mx-3 mb-4 rounded-2xl" style={{ backgroundColor: '#0F2244' }}>
+      {/* Déconnexion */}
+      <div className="px-3 pb-4" style={{ borderTop: '1px solid #F1F5F9' }}>
         <button
           onClick={() => { logout(); navigate('/admin/login'); }}
-          className="flex items-center gap-3 px-3 py-3 w-full text-left text-white/70 hover:text-white rounded-xl transition-colors group"
+          className="mt-3 flex items-center gap-3 px-4 py-3 w-full rounded-2xl text-sm font-semibold transition-all hover:bg-red-50 group"
+          style={{ color: '#718096' }}
         >
-          <LogOut size={20} className="group-hover:text-red-400 transition-colors" />
-          <span className="font-medium">Déconnexion</span>
+          <LogOut size={20} className="group-hover:text-red-500 transition-colors" style={{ color: '#94A3B8' }} />
+          <span className="group-hover:text-red-500 transition-colors">Déconnexion</span>
         </button>
       </div>
     </div>
