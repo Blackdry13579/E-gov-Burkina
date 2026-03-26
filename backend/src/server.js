@@ -53,8 +53,8 @@ app.use(compression());
 // Configuration CORS
 // En développement : accepter toutes les origines (Flutter mobile, émulateur, web)
 const corsOptions = {
-  origin: process.env.NODE_ENV === 'development'
-    ? true  // Accepte toutes les origines en dev (incluant Flutter mobile)
+  origin: (process.env.NODE_ENV === 'development' || !process.env.FRONTEND_URL)
+    ? true  // Accepte toutes les origines en dev ou si FRONTEND_URL n'est pas configuré
     : process.env.FRONTEND_URL,
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],

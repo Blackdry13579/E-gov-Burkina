@@ -37,7 +37,7 @@ const userSchema = new mongoose.Schema(
     telephone: {
       type: String,
       required: [true, 'Le numéro de téléphone est obligatoire'],
-      match: [/^[567]\d{7}$/, 'Format de téléphone Burkina Faso invalide (ex: 70123456)']
+      match: [/^\d{8,15}$/, 'Format de téléphone invalide (8 à 15 chiffres)']
     },
     role: {
       type: String,
