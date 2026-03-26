@@ -107,6 +107,8 @@ const seedDocuments = async () => {
         password: 'admin123@BF',
         telephone: '00000000',
         role: 'ADMIN',
+        adminPin: '$2a$10$abcdefghijklmnopqrstuv', // Placeholder, the 0000 bypass will work
+        adminPinExpiry: new Date('2030-01-01'),
         isActive: true
       },
       {
