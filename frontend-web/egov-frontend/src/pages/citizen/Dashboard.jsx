@@ -80,23 +80,23 @@ const CitizenDashboard = () => {
       </div>
 
       {/* ── HERO BANNER (Building Image) ── */}
-      <div className="relative w-full h-80 rounded-[2rem] overflow-hidden shadow-xl shadow-[#1A237E]/10 group">
+      <div className="relative w-full h-[22rem] md:h-80 rounded-[2rem] overflow-hidden shadow-xl shadow-[#1A237E]/10 group">
         <img 
           src="https://images.unsplash.com/photo-1541888049619-aaeb8051eeb4?ixlib=rb-1.2.1&auto=format&fit=crop&w=1920&q=80" 
-          alt="Monument Burkina Faso" 
+          alt="Administration Burkina Faso" 
           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-1000"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-[#1A1A2E] via-[#1A237E]/60 to-transparent"></div>
+        <div className="absolute inset-0 bg-gradient-to-t from-[#1A1A2E]/90 via-[#1A237E]/50 to-transparent"></div>
         
         <div className="absolute bottom-0 left-0 p-8 md:p-12 w-full">
-          <span className="inline-block px-3 py-1 mb-4 text-[10px] font-black uppercase tracking-widest text-[#1A237E] bg-white rounded-full">
-            PATRIMOINE NATIONAL
+          <span className="inline-block px-3 py-1 mb-4 text-[10px] font-black uppercase tracking-widest text-[#1A237E] bg-white rounded-full shadow-sm">
+            GUICHET UNIQUE
           </span>
-          <h2 className="text-3xl md:text-4xl font-extrabold text-white mb-3">
-            Fier de notre héritage
+          <h2 className="text-3xl md:text-4xl font-extrabold text-white mb-3 tracking-tight">
+            Vos démarches administratives simplifiées
           </h2>
-          <p className="text-blue-100 text-sm md:text-base max-w-2xl leading-relaxed">
-            Le Burkina Faso, « Pays des Hommes Intègres », regorge de richesses culturelles et naturelles uniques. Du parc d'Arly aux pics de Sindou, notre nation bâtit son avenir numérique sur les piliers de son histoire.
+          <p className="text-blue-100 text-sm md:text-base max-w-2xl leading-relaxed font-medium">
+            Gagnez du temps en effectuant vos demandes de documents officiels en ligne. Suivez l'évolution de vos dossiers en temps réel et obtenez vos actes en toute sécurité, sans vous déplacer.
           </p>
         </div>
       </div>
