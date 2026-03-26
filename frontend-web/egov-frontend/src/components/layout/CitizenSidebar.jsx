@@ -1,14 +1,15 @@
 import React from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import {
-  LayoutDashboard, FolderOpen, Bell, UserCircle, LogOut, Home, ChevronRight
+  LayoutDashboard, FolderOpen, FileText, Bell, UserCircle, LogOut, Home, ChevronRight
 } from 'lucide-react';
 import Emblem from '../common/Emblem';
 import { useAuth } from '../../context/AuthContext';
 
 const navItems = [
-  { to: '/services',       label: 'Catalogue des Services', icon: LayoutDashboard },
-  { to: '/demandes',       label: 'Mes Demandes',           icon: FolderOpen },
+  { to: '/accueil',        label: 'Accueil',                icon: LayoutDashboard },
+  { to: '/services',       label: 'Catalogue des Services', icon: FolderOpen },
+  { to: '/demandes',       label: 'Mes Demandes',           icon: FileText },
   { to: '/notifications',  label: 'Notifications',          icon: Bell },
   { to: '/profil',         label: 'Mon Profil',             icon: UserCircle },
 ];

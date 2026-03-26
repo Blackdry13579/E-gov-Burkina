@@ -9,6 +9,7 @@ import AgentLayout from './components/layout/AgentLayout';
 
 // ─── CITIZEN PAGES ────────────────────────────────────────────────────────────
 import Landing from './pages/citizen/Landing';
+import CitizenDashboard from './pages/citizen/Dashboard';
 import Login from './pages/citizen/Login';
 import Register from './pages/citizen/Register';
 import ServicesCatalog from './pages/citizen/ServicesCatalog';
@@ -62,6 +63,7 @@ function AppRoutes() {
         
         {/* Protected Citizen Routes in Layout */}
         <Route element={<CitizenLayout />}>
+          <Route path="/accueil" element={<CitizenDashboard />} />
           <Route path="/services" element={<ServicesCatalog />} />
           <Route path="/services/:id" element={<ServiceDetail />} />
           <Route path="/demande/etape1" element={<FormStep1 />} />
