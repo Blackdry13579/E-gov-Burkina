@@ -82,7 +82,7 @@ const CitizenDashboard = () => {
       {/* ── HERO BANNER (Building Image) ── */}
       <div className="relative w-full h-[22rem] md:h-80 rounded-[2rem] overflow-hidden shadow-xl shadow-[#1A237E]/10 group">
         <img 
-          src="https://images.unsplash.com/photo-1541888049619-aaeb8051eeb4?ixlib=rb-1.2.1&auto=format&fit=crop&w=1920&q=80" 
+          src="/building.png" 
           alt="Administration Burkina Faso" 
           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-1000"
         />
