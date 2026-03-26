@@ -201,5 +201,3 @@ const Requests = () => {
 };
 
 export default Requests;
-
-export default Requests;

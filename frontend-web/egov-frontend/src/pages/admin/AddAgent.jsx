@@ -222,4 +222,3 @@ const AddAgent = () => {
 };
 
 export default AddAgent;
-```
