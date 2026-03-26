@@ -551,13 +551,13 @@ const Requests = () => {
               <div className="bg-white p-5 border-t border-gray-100 flex gap-4 shrink-0 shadow-[0_-4px_20px_rgba(0,0,0,0.03)] absolute bottom-0 left-0 right-0 z-10 w-full">
                 <button 
                   onClick={() => setActiveRequest({ ...activeRequest, step: 'CONFIRM_AUTHORIZE' })}
-                  className="flex-[1.5] py-4 bg-[#16a34a] hover:bg-[#15803d] text-white flex items-center justify-center gap-2 rounded-xl font-bold text-base transition-all shadow-lg shadow-green-900/20"
+                  className="flex-1 h-14 bg-[#16a34a] hover:bg-[#15803d] text-white flex items-center justify-center gap-2 rounded-xl font-bold text-base transition-all shadow-lg shadow-green-900/20"
                 >
                   <CheckCircle size={20} /> Valider le dossier
                 </button>
                 <button 
                   onClick={() => setActiveRequest({ ...activeRequest, step: 'REJECT_FORM' })}
-                  className="flex-1 py-4 bg-white border-2 border-[#dc2626] text-[#dc2626] hover:bg-red-50 flex items-center justify-center gap-2 rounded-xl font-bold text-base transition-all"
+                  className="flex-1 h-14 bg-white border-2 border-[#dc2626] text-[#dc2626] hover:bg-red-50 flex items-center justify-center gap-2 rounded-xl font-bold text-base transition-all"
                 >
                   <XCircle size={20} /> Rejeter
                 </button>
