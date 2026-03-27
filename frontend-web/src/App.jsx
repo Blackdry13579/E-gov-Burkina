@@ -24,6 +24,7 @@ import Notifications from './pages/citizen/Notifications';
 import Profile from './pages/citizen/Profile';
 import EditProfile from './pages/citizen/EditProfile';
 import CitizenLayout from './components/layout/CitizenLayout';
+
 // ─── ADMIN PAGES ──────────────────────────────────────────────────────────────
 import LoginAdmin from './pages/admin/Login';
 import AdminDashboard from './pages/admin/Dashboard';
@@ -128,4 +129,3 @@ function App() {
 }
 
 export default App;
-

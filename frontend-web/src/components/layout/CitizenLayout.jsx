@@ -20,16 +20,8 @@ const CitizenLayout = () => {
       <CitizenSidebar />
 
       <div className="flex-1 flex flex-col overflow-hidden relative lg:ml-64">
-        {/* Desktop Header Topbar */}
-        <header className="hidden lg:flex items-center justify-between px-8 py-4 bg-white border-b border-gray-100 shadow-sm">
-          <div>
-            <p className="text-xs text-gray-400 font-medium uppercase tracking-wider">République du Burkina Faso</p>
-            <h2 className="text-lg font-bold text-gray-800">Espace Citoyen</h2>
-          </div>
-          <div className="flex items-center gap-4">
-            <span className="text-sm text-gray-600 font-medium">{user?.name || 'Citoyen'}</span>
-          </div>
-        </header>
+        {/* Desktop Header Topbar - REMOVED AS PER USER REQUEST */}
+
 
         {/* Main Content Area — Scrollable */}
         <main className="flex-1 overflow-y-auto pb-20 lg:pb-6 relative z-0">

@@ -33,17 +33,18 @@ const CitizenSidebar = () => {
       }}
     >
       {/* ── Logo ── */}
-      <div className="px-5 pt-6 pb-5 flex items-center gap-3">
+      <div className="px-6 pt-8 pb-6 flex items-center gap-4">
         <Emblem className="w-12 h-12 shrink-0 drop-shadow-sm" />
-        <div>
-          <p className="text-base font-black tracking-tight leading-none" style={{ color: '#1A1A2E' }}>
-            E-Gov Burkina
+        <div className="flex flex-col">
+          <p className="text-sm font-black tracking-tight leading-tight uppercase" style={{ color: '#1A3A5C' }}>
+            Burkina Faso
           </p>
-          <p className="text-[10px] font-bold uppercase tracking-[0.18em] mt-0.5" style={{ color: '#94A3B8' }}>
-            Portail Citoyen
+          <p className="text-[10px] font-bold uppercase tracking-[0.15em] mt-0.5" style={{ color: '#94A3B8' }}>
+            E-Services Officiels
           </p>
         </div>
       </div>
+
 
       {/* ── Divider ── */}
       <div className="mx-5 mb-4" style={{ height: 1, backgroundColor: '#EFF3FA' }} />
