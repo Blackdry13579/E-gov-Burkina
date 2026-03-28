@@ -112,7 +112,7 @@ const UnifiedLogin = () => {
           <div className="absolute inset-0 bg-gradient-to-br from-[#0F2244]/80 via-[#1A237E]/60 to-[#2952A3]/40" />
 
           {/* Content */}
-          <div className="relative z-10 flex flex-col justify-start gap-12 p-6 lg:p-10 w-full h-full overflow-y-auto custom-scrollbar">
+          <div className="relative z-10 flex flex-col justify-start gap-12 p-6 lg:p-10 w-full h-full overflow-hidden">
 
             {/* Top: Brand */}
             <div className="flex items-center gap-3">
@@ -164,7 +164,7 @@ const UnifiedLogin = () => {
         </div>
 
         {/* ── Right: Form ── */}
-        <div className="flex-1 flex flex-col items-center justify-center p-8 md:p-10 lg:p-14 bg-white overflow-y-auto">
+        <div className="flex-1 flex flex-col items-center justify-center p-8 md:p-10 lg:p-14 bg-white overflow-hidden">
           <div className="w-full max-w-sm mx-auto space-y-8">
 
             {/* Mobile brand */}
