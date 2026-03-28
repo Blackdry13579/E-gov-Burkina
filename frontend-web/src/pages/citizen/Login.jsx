@@ -147,9 +147,15 @@ const Login = () => {
                  Pas de compte ? <span className="text-[#1A237E] underline decoration-2 underline-offset-4">Inscription</span>
               </Link>
               
-              <Link to="/admin/login" className="text-[8px] font-bold text-gray-300 hover:text-[#1A237E] uppercase tracking-[0.2em] transition-colors block">
-                 Espace Administration
-              </Link>
+              <div className="flex items-center justify-center gap-4">
+                <Link to="/agent/login" className="text-[8px] font-bold text-gray-300 hover:text-[#1A237E] uppercase tracking-[0.2em] transition-colors">
+                   Espace Agent
+                </Link>
+                <span className="text-gray-200">•</span>
+                <Link to="/admin/login" className="text-[8px] font-bold text-gray-300 hover:text-[#1A237E] uppercase tracking-[0.2em] transition-colors">
+                   Espace Administration
+                </Link>
+              </div>
             </div>
 
             {/* Footer Compact */}
