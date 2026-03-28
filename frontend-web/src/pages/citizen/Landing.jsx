@@ -9,7 +9,7 @@ const Landing = () => {
       <header className="flex items-center justify-between px-4 py-3 bg-white shadow-sm sticky top-0 z-50">
         <div className="flex items-center space-x-2">
           <Emblem className="w-8 h-8" />
-          <span className="text-xl font-bold text-[#1A237E] tracking-tight">E-Gov Burkina</span>
+          <span className="text-xl font-bold text-[#1A237E] tracking-tight uppercase">E-CITOYEN</span>
         </div>
       </header>
   
@@ -102,8 +102,8 @@ const Landing = () => {
             <div className="flex items-center space-x-3">
               <Emblem className="w-12 h-12 opacity-90" />
               <div>
-                <span className="text-2xl font-bold tracking-tight block">E-Gov Burkina</span>
-                <span className="text-[10px] text-blue-300 font-bold tracking-widest uppercase">Portail Officiel des Services Publics</span>
+                <span className="text-2xl font-bold tracking-tight block uppercase">E-CITOYEN</span>
+                <span className="text-[10px] text-blue-300 font-bold tracking-widest uppercase">Portail National des Services</span>
               </div>
             </div>
             
