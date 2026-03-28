@@ -160,15 +160,6 @@ const UnifiedLogin = () => {
                 ))}
               </div>
             </div>
-
-            {/* Bottom: Legal */}
-            <div className="flex items-center gap-2 px-4 py-2 bg-white/5 rounded-full border border-white/10 w-fit mt-auto shrink-0">
-              <span className="text-[8px] font-black text-white/50 uppercase tracking-[0.2em] flex items-center gap-2">
-                <span className="w-1.5 h-1.5 rounded-full bg-red-400/60" />
-                Unité · Progrès · Justice
-                <span className="w-1.5 h-1.5 rounded-full bg-green-400/60" />
-              </span>
-            </div>
           </div>
         </div>
 
