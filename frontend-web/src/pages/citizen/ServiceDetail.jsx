@@ -82,9 +82,16 @@ const ServiceDetail = () => {
               {service.name}
             </h1>
             
-            <p className="text-sm text-gray-500 max-w-xl font-medium leading-relaxed mb-10">
+            <p className="text-sm text-gray-500 max-w-xl font-medium leading-relaxed mb-8">
               Service officiel de délivrance des documents sécurisés de la République du Burkina Faso. Procédure dématérialisée et sécurisée.
             </p>
+
+            <button 
+              onClick={() => navigate('/demande/etape1', { state: { serviceId: id, serviceName: service.name } })}
+              className="px-8 py-3.5 bg-[#1A3A5C] text-white font-black rounded-xl shadow-xl shadow-blue-900/20 hover:bg-[#0f2440] hover:scale-[1.02] active:scale-[0.98] transition-all uppercase tracking-[0.15em] text-[11px] md:text-xs flex items-center gap-2 mb-12"
+            >
+              <CheckCircle2 size={18} /> Faire la Demande
+            </button>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 w-full">
               <div className="bg-gray-50 p-6 rounded-2xl border border-gray-100 flex flex-col items-center gap-2">
@@ -189,18 +196,18 @@ const ServiceDetail = () => {
               ))}
             </div>
           </section>
-        </div>
-      </div>
 
-      <div className="fixed bottom-0 left-0 lg:left-64 right-0 pb-20 lg:pb-0 p-4 md:p-6 bg-white/90 backdrop-blur-xl border-t border-gray-100 z-40 flex justify-center">
-        <div className="w-full max-w-md">
-          <button 
-            onClick={() => navigate('/demande/etape1', { state: { serviceId: id, serviceName: service.name } })}
-            className="w-full py-4 bg-[#1A3A5C] text-white font-black rounded-2xl shadow-2xl shadow-blue-900/20 hover:scale-[1.02] active:scale-[0.98] transition-all flex justify-center items-center gap-3 text-[11px] md:text-xs uppercase tracking-widest"
-          >
-            <CheckCircle2 size={20} />
-            Démarrer la demande
-          </button>
+          {/* Action Principale - Fin de page */}
+          <div className="mt-12 flex justify-center pb-8">
+            <button 
+              onClick={() => navigate('/demande/etape1', { state: { serviceId: id, serviceName: service.name } })}
+              className="w-full md:w-auto px-12 py-4 bg-[#1A3A5C] text-white font-black rounded-2xl shadow-2xl shadow-blue-900/20 hover:scale-[1.02] hover:bg-[#0f2440] active:scale-[0.98] transition-all flex justify-center items-center gap-3 text-[11px] md:text-xs uppercase tracking-[0.15em]"
+            >
+              <CheckCircle2 size={20} />
+              Démarrer la demande officielle
+            </button>
+          </div>
+
         </div>
       </div>
     </div>
