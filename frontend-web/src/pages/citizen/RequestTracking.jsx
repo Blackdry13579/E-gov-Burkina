@@ -52,6 +52,15 @@ const RequestTracking = () => {
     }).replace(',', ' à');
   };
 
+  const handleDownload = () => {
+    const pdfUrl = demande._raw?.documentPDF?.url || (typeof demande._raw?.documentPDF === 'string' ? demande._raw?.documentPDF : null);
+    if (pdfUrl) {
+      window.open(pdfUrl, '_blank');
+    } else {
+      alert("Le document numérique n'est pas encore totalement synchronisé. Veuillez réessayer dans quelques instants.");
+    }
+  };
+
   return (
     <div className="flex flex-col min-h-screen bg-[#F4F6F8]">
       <div className="flex-1 overflow-y-auto pt-2 pb-12">
@@ -170,7 +179,7 @@ const RequestTracking = () => {
                       L'administration a signé numériquement votre document. Il est maintenant certifié et prêt à l'emploi.
                     </p>
                   </div>
-                  <button className="bg-white text-[#1A3A5C] px-8 py-5 rounded-2xl font-black text-sm hover:bg-blue-50 transition-all flex items-center justify-center gap-3 shadow-lg group">
+                  <button onClick={handleDownload} className="bg-white text-[#1A3A5C] px-8 py-5 rounded-2xl font-black text-sm hover:bg-blue-50 transition-all flex items-center justify-center gap-3 shadow-lg group">
                     <FileDown size={24} className="group-hover:translate-y-0.5 transition-transform" />
                     TÉLÉCHARGER LE PDF (SIGNÉ)
                   </button>
