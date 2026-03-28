@@ -4,7 +4,6 @@ import { useAuth } from '../context/AuthContext';
  * Convenience hook for authentication.
  * Wraps the raw context and can provide additional helpers.
  */
-
 export const useAuthUser = () => {
   const auth = useAuth();
   

@@ -131,7 +131,6 @@ export const useAdminRoles = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Mock or fetch
     setRoles([
       { id: 'ROLE-01', name: 'Administrateur', permissions: ['ALL'], active: true },
       { id: 'ROLE-02', name: 'Agent Mairie', permissions: ['READ_REQ', 'WRITE_DECISION'], active: true },

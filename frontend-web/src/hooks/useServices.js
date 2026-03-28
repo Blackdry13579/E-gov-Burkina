@@ -28,7 +28,6 @@ export const useServices = () => {
 
 /**
  * Hook to manage a single service detail
- * @param {string} id - Service ID
  */
 export const useServiceDetail = (id) => {
   const [service, setService] = useState(null);
@@ -39,6 +38,7 @@ export const useServiceDetail = (id) => {
     if (!id) return;
     const fetchDetail = async () => {
       try {
+        setLoading(true);
         const data = await getServiceDetail(id);
         setService(data);
       } catch (err) {

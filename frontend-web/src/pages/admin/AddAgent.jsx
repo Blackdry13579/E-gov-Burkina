@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, Save } from 'lucide-react';
-import { createUser } from '../../services/adminService';
+import { createAgent } from '../../services/adminService';
 
 const AddAgent = () => {
   const navigate = useNavigate();
@@ -29,7 +29,7 @@ const AddAgent = () => {
     }
     setSubmitting(true);
     try {
-      await createUser(formData);
+      await createAgent(formData);
       alert('Agent créé avec succès !');
       navigate('/admin/users');
     } catch (error) {

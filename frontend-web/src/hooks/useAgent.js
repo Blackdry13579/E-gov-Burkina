@@ -1,5 +1,8 @@
 import { useState, useEffect, useCallback } from 'react';
-import { getStats, getRequests, getRequestDetail, updateRequestStatus, getProfile } from '../services/agentService';
+import { 
+  getStats, getRequests, getRequestDetail, 
+  updateRequestStatus, getProfile 
+} from '../services/agentService';
 
 /**
  * Hook to manage agent dashboard stats
@@ -55,7 +58,6 @@ export const useAgentRequests = () => {
 
 /**
  * Hook to manage a single request for an agent
- * @param {string} id - Request ID
  */
 export const useAgentRequestDetail = (id) => {
   const [request, setRequest] = useState(null);

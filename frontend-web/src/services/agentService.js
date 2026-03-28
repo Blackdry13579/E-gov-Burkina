@@ -89,6 +89,15 @@ export const rejectRequest = async (id, reason) => {
   });
 };
 
+export const updateRequestStatus = async (id, status, motif = '') => {
+  if (status === 'VALIDÉ' || status === 'VALIDEE') return approveRequest(id, motif);
+  if (status === 'REJETÉ' || status === 'REJETEE') return rejectRequest(id, motif);
+  return request(`/agent/demandes/${id}/update-status`, {
+    method: 'PUT',
+    body: JSON.stringify({ status, motif }),
+  });
+};
+
 export const takeCharge = async (id) => {
   return request(`/agent/demandes/${id}/prendre-en-charge`, { method: 'PUT' });
 };
