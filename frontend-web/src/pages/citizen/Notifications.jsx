@@ -62,7 +62,7 @@ const Notifications = () => {
 
 
       <div className="p-4 flex-1">
-        <div className="flex items-center justify-between mb-6 mt-4 lg:mt-8">
+        <div className="flex items-center justify-between mb-6 mt-1">
           <div className="flex items-center lg:hidden">
             <button onClick={() => navigate(-1)} className="p-2 hover:bg-white rounded-full transition-colors mr-2">
               <ArrowLeft size={20} className="text-gray-600" />

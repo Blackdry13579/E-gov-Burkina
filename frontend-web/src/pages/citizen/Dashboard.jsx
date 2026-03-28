@@ -124,7 +124,7 @@ const CitizenDashboard = () => {
     <div className="flex flex-col min-h-screen bg-gray-50 pb-10">
 
       <div className="p-4 flex-1 mt-0">
-        <div className="max-w-6xl mx-auto space-y-10">
+        <div className="max-w-6xl mx-auto space-y-6">
           
           {/* Greeting Section */}
           <div className="flex flex-col md:flex-row md:items-start justify-between gap-6 px-2">

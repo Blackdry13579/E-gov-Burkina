@@ -71,7 +71,7 @@ const MyRequests = () => {
     <div className="flex flex-col min-h-screen bg-gray-50 pb-10">
 
       <div className="p-4 flex-1 mt-0">
-        <div className="max-w-4xl mx-auto space-y-6">
+        <div className="max-w-4xl mx-auto space-y-4">
           
           {/* ── Page Title (Mobile Only) ── */}
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 lg:hidden">
