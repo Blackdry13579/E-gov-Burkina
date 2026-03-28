@@ -15,7 +15,9 @@ const AgentDashboard = () => {
     </div>
   );
 
-  const pendingRequests = requests?.filter(req => req.status === 'EN ATTENTE').slice(0, 3) || [];
+  const allPending = requests?.filter(req => req.status === 'EN ATTENTE') || [];
+  const pendingRequests = allPending.slice(0, 3);
+  const pendingCount = allPending.length;
 
   return (
     <div className="space-y-6">
@@ -29,7 +31,7 @@ const AgentDashboard = () => {
             <span className="text-xs text-blue-300 font-medium uppercase tracking-wide">Cité Administrative — Mairie de Ouagadougou</span>
           </div>
           <h1 className="text-2xl font-extrabold mt-1">Bienvenue, Agent {user?.name?.split(' ').pop() || 'Sawadogo'} 👋</h1>
-          <p className="text-blue-200 text-sm mt-1">Aujourd'hui, vous avez <span className="font-bold text-white">{stats.pending} dossiers</span> en attente de traitement.</p>
+          <p className="text-blue-200 text-sm mt-1">Aujourd'hui, vous avez <span className="font-bold text-white">{pendingCount} dossiers</span> en attente de traitement.</p>
         </div>
       </div>
 
@@ -44,7 +46,7 @@ const AgentDashboard = () => {
               <TrendingUp size={10} /> {stats.pendingGrowth}
             </span>
           </div>
-          <p className="text-2xl font-extrabold text-gray-900">{stats.pending}</p>
+          <p className="text-2xl font-extrabold text-gray-900">{pendingCount}</p>
           <p className="text-sm text-gray-500 mt-0.5">Demandes en attente</p>
         </div>
 
@@ -118,7 +120,7 @@ const AgentDashboard = () => {
                 </div>
                 <div>
                   <p className="text-sm font-semibold text-gray-800">Dossiers en attente</p>
-                  <p className="text-xs text-gray-500">{stats.pending} requêtes à traiter</p>
+                  <p className="text-xs text-gray-500">{pendingCount} requêtes à traiter</p>
                 </div>
               </div>
               <ArrowRight size={16} className="text-gray-400 group-hover:text-[#1A237E] transition-colors" />
