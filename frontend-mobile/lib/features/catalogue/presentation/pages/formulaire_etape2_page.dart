@@ -292,13 +292,16 @@ class _FormulaireEtape2PageState extends State<FormulaireEtape2Page> {
                 ),
                 backgroundColor: const Color(0xFFf1f5f9),
               ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Icon(Icons.arrow_back_rounded, size: 18),
-                  const SizedBox(width: 6),
-                  Text('Retour', style: GoogleFonts.publicSans(fontWeight: FontWeight.bold)),
-                ],
+              child: const FittedBox(
+                fit: BoxFit.scaleDown,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(Icons.arrow_back_rounded, size: 18),
+                    SizedBox(width: 6),
+                    Text('Retour', style: TextStyle(fontWeight: FontWeight.bold)),
+                  ],
+                ),
               ),
             ),
           ),
@@ -340,13 +343,16 @@ class _FormulaireEtape2PageState extends State<FormulaireEtape2Page> {
                 foregroundColor: Colors.white,
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
               ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text('Suivant', style: GoogleFonts.publicSans(fontWeight: FontWeight.bold)),
-                  const SizedBox(width: 8),
-                  const Icon(Icons.arrow_forward_rounded, size: 20),
-                ],
+              child: const FittedBox(
+                fit: BoxFit.scaleDown,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text('Suivant', style: TextStyle(fontWeight: FontWeight.bold)),
+                    SizedBox(width: 8),
+                    Icon(Icons.arrow_forward_rounded, size: 20),
+                  ],
+                ),
               ),
             ),
           ),
