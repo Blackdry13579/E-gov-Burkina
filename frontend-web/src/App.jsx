@@ -37,6 +37,7 @@ import RolePermissions from './pages/admin/RolePermissions';
 import ServicesConfig from './pages/admin/ServicesConfig';
 import DocumentsConfig from './pages/admin/DocumentsConfig';
 import SecurityLogs from './pages/admin/SecurityLogs';
+import AdminLogs from './pages/admin/AdminLogs';
 import AdminProfile from './pages/admin/Profile';
 
 // ─── AGENT PAGES ──────────────────────────────────────────────────────────────
@@ -92,6 +93,7 @@ function AppRoutes() {
             <Route path="services"        element={<ServicesConfig />} />
             <Route path="documents"       element={<DocumentsConfig />} />
             <Route path="security"        element={<SecurityLogs />} />
+            <Route path="logs"            element={<AdminLogs />} />
             <Route path="profile"         element={<AdminProfile />} />
           </Route>
         </Route>
@@ -114,7 +116,7 @@ function AppRoutes() {
           </Route>
         </Route>
 
-        <Route path="*" element={<Navigate to="/admin/login" replace />} />
+        <Route path="*" element={<Navigate to="/login" replace />} />
       </Routes>
     </BrowserRouter>
   );

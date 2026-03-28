@@ -10,24 +10,24 @@ import {
   UserCircle,
   LogOut,
   ChevronRight,
+  Shield,
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
-import Emblem from '../common/Emblem';
 
 const groups = [
   {
     label: 'Principal',
     items: [
-      { name: 'Tableau de bord',     path: '/admin/dashboard', icon: LayoutDashboard },
-      { name: 'Gestion des demandes',path: '/admin/requests',  icon: FileText },
+      { name: 'Tableau de bord',      path: '/admin/dashboard', icon: LayoutDashboard },
+      { name: 'Gestion des demandes', path: '/admin/requests',  icon: FileText },
     ],
   },
   {
     label: 'Administration',
     items: [
-      { name: 'Utilisateurs', path: '/admin/users',   icon: Users },
-      { name: 'Rôles & Perms',path: '/admin/roles',    icon: ShieldCheck },
-      { name: 'Documents',    path: '/admin/services', icon: FolderOpen },
+      { name: 'Utilisateurs',                  path: '/admin/users',    icon: Users },
+      { name: 'Rôles & Perms',                 path: '/admin/roles',    icon: ShieldCheck },
+      { name: 'Documents & Services',          path: '/admin/services', icon: FolderOpen },
     ],
   },
   {
@@ -35,6 +35,7 @@ const groups = [
     items: [
       { name: 'Statistiques', path: '/admin/security', icon: BarChart2 },
       { name: 'Mon Profil',   path: '/admin/profile',  icon: UserCircle },
+      { name: 'Sécurité & Logs', path: '/admin/logs',  icon: Shield },
     ],
   },
 ];
@@ -46,7 +47,7 @@ const AdminSidebar = () => {
 
   return (
     <div
-      className="w-64 h-screen flex flex-col fixed left-0 top-0 select-none"
+      className="w-72 h-screen flex flex-col fixed left-0 top-0 select-none"
       style={{
         backgroundColor: '#FFFFFF',
         borderRight: '1px solid #EFF3FA',
@@ -55,14 +56,15 @@ const AdminSidebar = () => {
     >
       {/* ── Logo ── */}
       <div className="px-5 pt-6 pb-5 flex items-center gap-3">
-        {/* Emblème national directement, plus lisible */}
-        <Emblem className="w-12 h-12 shrink-0 drop-shadow-sm" />
+        <div className="w-11 h-11 rounded-xl bg-[#1A237E] flex items-center justify-center shrink-0">
+          <UserCircle size={24} className="text-white" />
+        </div>
         <div>
           <p className="text-base font-black tracking-tight leading-none" style={{ color: '#1A1A2E' }}>
             E-Gov Burkina
           </p>
           <p className="text-[10px] font-bold uppercase tracking-[0.18em] mt-0.5" style={{ color: '#94A3B8' }}>
-            Portail Admin
+            Profil Administrateur
           </p>
         </div>
       </div>
@@ -97,7 +99,6 @@ const AdminSidebar = () => {
                           if (!isActive) e.currentTarget.style.backgroundColor = 'transparent';
                         }}
                       >
-                        {/* Active pill indicator */}
                         {isActive && (
                           <span
                             className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-6 rounded-r-full"
@@ -105,7 +106,6 @@ const AdminSidebar = () => {
                           />
                         )}
 
-                        {/* Icon */}
                         <div
                           className="w-8 h-8 rounded-xl flex items-center justify-center shrink-0 transition-colors"
                           style={{
@@ -118,7 +118,6 @@ const AdminSidebar = () => {
                           />
                         </div>
 
-                        {/* Label */}
                         <span
                           className="flex-1 text-sm font-semibold transition-colors"
                           style={{ color: isActive ? '#1A237E' : '#4A5568' }}
@@ -126,7 +125,6 @@ const AdminSidebar = () => {
                           {name}
                         </span>
 
-                        {/* Arrow on active */}
                         {isActive && (
                           <ChevronRight size={14} style={{ color: '#1A237E', opacity: 0.5 }} />
                         )}
@@ -147,12 +145,11 @@ const AdminSidebar = () => {
           className="flex items-center gap-3 px-3 py-3 rounded-2xl mb-1"
           style={{ backgroundColor: '#F8FAFF' }}
         >
-          {/* Emblème à la place de l'initiale */}
           <div
-            className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0 border"
-            style={{ backgroundColor: '#EFF3FA', borderColor: '#E2E8F0' }}
+            className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0 text-white font-black text-sm"
+            style={{ backgroundColor: '#1A237E' }}
           >
-            <Emblem className="w-7 h-7" />
+            {initial}
           </div>
           <div className="flex-1 min-w-0">
             <p className="text-xs font-black truncate" style={{ color: '#1A1A2E' }}>
@@ -166,7 +163,7 @@ const AdminSidebar = () => {
 
         {/* Logout */}
         <button
-          onClick={() => { logout(); navigate('/admin/login'); }}
+          onClick={() => { logout(); navigate('/login'); }}
           className="flex items-center gap-3 px-3 py-2.5 w-full rounded-2xl text-sm font-semibold transition-all group"
           style={{ color: '#94A3B8' }}
           onMouseEnter={(e) => {

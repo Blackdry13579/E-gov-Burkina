@@ -10,6 +10,8 @@ const Requests = () => {
   const [search, setSearch] = useState('');
   const [typeFilter, setTypeFilter] = useState('ALL');
   const [statusFilter, setStatusFilter] = useState('ALL');
+  const [periodeFilter, setPeriodeFilter] = useState('ALL');
+  const [customDate, setCustomDate] = useState('');
   
   // Validation flow state
   // null = closed, { data, step } where step = 'DETAILS' | 'REJECT_FORM' | 'SUCCESS'
@@ -88,8 +90,25 @@ const Requests = () => {
     const matchesSearch = r.citizen.toLowerCase().includes(search.toLowerCase()) || 
                           r.id.toLowerCase().includes(search.toLowerCase());
     const matchesStatus = statusFilter === 'ALL' || r.status.toUpperCase().includes(statusFilter);
-    const matchesType = typeFilter === 'ALL' || r.document.includes(typeFilter); // Simplifié
-    return matchesSearch && matchesStatus && matchesType;
+    const matchesType = typeFilter === 'ALL' || r.document.toLowerCase().includes(typeFilter.toLowerCase());
+    
+    let matchesPeriode = true;
+    if (periodeFilter !== 'ALL' && r.date) {
+      const today = new Date();
+      const reqDate = new Date(r.date);
+      if (periodeFilter === 'TODAY') {
+        matchesPeriode = reqDate.toDateString() === today.toDateString();
+      } else if (periodeFilter === 'WEEK') {
+        const weekAgo = new Date(today); weekAgo.setDate(today.getDate() - 7);
+        matchesPeriode = reqDate >= weekAgo;
+      } else if (periodeFilter === 'MONTH') {
+        matchesPeriode = reqDate.getMonth() === today.getMonth() && reqDate.getFullYear() === today.getFullYear();
+      } else if (periodeFilter === 'CUSTOM' && customDate) {
+        matchesPeriode = reqDate.toDateString() === new Date(customDate).toDateString();
+      }
+    }
+    
+    return matchesSearch && matchesStatus && matchesType && matchesPeriode;
   });
 
   const totalItems = filteredRequests.length;
@@ -109,6 +128,12 @@ const Requests = () => {
   return (
     <div className="font-sans pb-20">
       
+      {/* ── Page Title ── */}
+      <div className="mb-6">
+        <h1 className="text-2xl font-black text-[#1A237E] uppercase tracking-tight">Gestion des Demandes</h1>
+        <p className="text-sm text-gray-400 font-medium mt-1">Suivi et traitement de toutes les demandes citoyennes.</p>
+      </div>
+
       {/* ── Filters Bar ── */}
       <div className="flex flex-col xl:flex-row xl:items-center gap-4 mb-8">
         <div className="relative flex-1 max-w-2xl">
@@ -122,7 +147,8 @@ const Requests = () => {
           />
         </div>
 
-        <div className="flex items-center gap-3 overflow-x-auto pb-2 xl:pb-0">
+        <div className="flex items-center gap-3 overflow-x-auto pb-2 xl:pb-0 flex-wrap">
+          {/* Type de document */}
           <div className="relative shrink-0">
             <select 
               value={typeFilter}
@@ -132,7 +158,7 @@ const Requests = () => {
               <option value="ALL">Type de Document</option>
               <option value="CNI">CNI</option>
               <option value="Passeport">Passeport</option>
-              <option value="Naissance">Acte de Naissance</option>
+              <option value="Acte de Naissance">Acte de Naissance</option>
             </select>
             <Filter size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
             <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none">
@@ -140,6 +166,7 @@ const Requests = () => {
             </div>
           </div>
 
+          {/* Statut */}
           <div className="relative shrink-0">
             <select 
               value={statusFilter}
@@ -148,7 +175,6 @@ const Requests = () => {
             >
               <option value="ALL">Statut</option>
               <option value="ATTENTE">En attente</option>
-              <option value="COURS">En cours</option>
               <option value="VALID">Approuvée</option>
               <option value="REJET">Rejetée</option>
             </select>
@@ -158,17 +184,34 @@ const Requests = () => {
             </div>
           </div>
 
+          {/* Période */}
           <div className="relative shrink-0">
             <select 
+              value={periodeFilter}
+              onChange={(e) => { setPeriodeFilter(e.target.value); setCurrentPage(1); }}
               className="appearance-none pl-10 pr-10 py-3 bg-white border border-gray-100 rounded-[1.25rem] text-sm font-semibold text-gray-700 outline-none focus:ring-2 focus:ring-[#1A237E]/20 cursor-pointer shadow-sm"
             >
-              <option>Période</option>
+              <option value="ALL">Période</option>
+              <option value="TODAY">Aujourd'hui</option>
+              <option value="WEEK">Cette semaine</option>
+              <option value="MONTH">Ce mois</option>
+              <option value="CUSTOM">Choisir une date</option>
             </select>
             <Calendar size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
             <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none">
               <svg width="10" height="6" viewBox="0 0 10 6" fill="none"><path d="M1 1L5 5L9 1" stroke="#64748B" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
             </div>
           </div>
+
+          {/* Date picker si CUSTOM */}
+          {periodeFilter === 'CUSTOM' && (
+            <input
+              type="date"
+              value={customDate}
+              onChange={(e) => { setCustomDate(e.target.value); setCurrentPage(1); }}
+              className="py-3 px-4 bg-white border border-gray-100 rounded-[1.25rem] text-sm font-semibold text-gray-700 outline-none focus:ring-2 focus:ring-[#1A237E]/20 shadow-sm"
+            />
+          )}
         </div>
       </div>
 

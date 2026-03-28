@@ -11,7 +11,7 @@ const AdminLayout = () => {
     /* AppColors.background = #F5F7FA */
     <div className="flex min-h-screen font-sans" style={{ backgroundColor: '#F5F7FA' }}>
       <AdminSidebar />
-      <div className="flex-1 ml-64 flex flex-col">
+      <div className="flex-1 ml-72 flex flex-col">
         {/* Header — fond blanc, bordure AppColors.divider */}
         <header className="h-20 bg-white flex items-center justify-between px-8" style={{ borderBottom: '1px solid #E2E8F0' }}>
           {/* Devise centrée */}
@@ -23,7 +23,6 @@ const AdminLayout = () => {
           {/* Info utilisateur */}
           <div className="flex items-center gap-3 ml-auto">
             <div className="text-right mr-2">
-              <p className="text-xs font-bold uppercase tracking-widest" style={{ color: '#718096' }}>Connecté</p>
               <p className="text-sm font-black" style={{ color: '#1A237E' }}>{user?.name}</p>
             </div>
             {/* Avatar — dégradé primary → primaryLight (AppColors) */}

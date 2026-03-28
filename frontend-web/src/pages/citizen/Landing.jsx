@@ -45,7 +45,6 @@ const Landing = () => {
               <h2 className="text-2xl font-extrabold text-[#1A237E]">Nos services en ligne</h2>
               <p className="text-xs text-gray-400 font-bold mt-1 tracking-wide uppercase">Accès rapide par catégorie</p>
             </div>
-            <Link to="/services" className="text-sm font-bold text-institutional hover:underline">Voir tout le catalogue →</Link>
           </div>
           <div className="flex flex-row space-x-4 overflow-x-auto no-scrollbar pb-6 -mx-4 px-4 lg:grid lg:grid-cols-4 lg:space-x-0 lg:gap-6 lg:overflow-x-visible">
             <Link to="/services" className="min-w-[170px] flex-1 bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex flex-col items-center text-center hover:shadow-md transition-all active:scale-95 group">
@@ -109,12 +108,8 @@ const Landing = () => {
             </div>
             
             <div className="flex flex-wrap gap-8 text-sm font-bold text-blue-200">
-              <Link to="/services" className="hover:text-white transition-colors">Catalogue</Link>
-              <Link to="/demandes" className="hover:text-white transition-colors">Suivi Dossier</Link>
-              <Link to="/agent/login" className="hover:text-white transition-colors text-blue-400">Accès Agent</Link>
-              <Link to="/admin/login" className="hover:text-white transition-colors text-blue-400 font-extrabold flex items-center gap-1">
-                <span className="w-1.5 h-1.5 rounded-full bg-blue-400"></span> Admin
-              </Link>
+              <Link to="/login" className="hover:text-white transition-colors">Catalogue</Link>
+              <Link to="/login" className="hover:text-white transition-colors">Suivi Dossier</Link>
             </div>
           </div>
           
