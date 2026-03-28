@@ -39,7 +39,7 @@ const registerSchema = [
  * Schéma de validation pour la connexion
  */
 const loginSchema = [
-  body('email').isEmail().withMessage('Email invalide').normalizeEmail(),
+  body('email').trim().notEmpty().withMessage('Identifiant ou Email obligatoire'),
   body('password').notEmpty().withMessage('Mot de passe obligatoire')
 ];
 

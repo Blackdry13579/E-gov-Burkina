@@ -68,10 +68,15 @@ exports.register = asyncHandler(async (req, res, next) => {
  * Connexion utilisateur
  */
 exports.login = asyncHandler(async (req, res, next) => {
-  const { email, password } = req.body;
+  const { email, password } = req.body; // 'email' holds the identifier (email or matricule)
 
-  // 1. Chercher l'utilisateur avec password
-  const user = await User.findByEmail(email);
+  // 1. Chercher l'utilisateur avec password (par email ou par matricule)
+  const user = await User.findOne({
+    $or: [
+      { email: email.toLowerCase() },
+      { matricule: email }
+    ]
+  }).select('+password');
 
   if (!user || !(await user.comparePassword(password))) {
     return next(new AppError('Identifiants incorrects', 401));
