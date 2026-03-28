@@ -80,14 +80,14 @@ const Confirmation = () => {
           {/* Buttons */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <button 
-              onClick={() => navigate('/demandes')}
+              onClick={() => navigate('/citoyen/demandes')}
               className="w-full py-5 bg-white border-2 border-gray-100 text-gray-500 font-black text-xs uppercase tracking-widest rounded-2xl hover:bg-gray-50 transition-all flex justify-center items-center gap-3 shadow-sm"
             >
               <LayoutDashboard size={18} />
               Mes demandes
             </button>
             <button 
-              onClick={() => navigate(`/suivi/${reference}`)}
+              onClick={() => navigate(`/citoyen/suivi/${reference}`)}
               className="w-full py-5 bg-[#1A3A5C] text-white font-black text-xs uppercase tracking-widest rounded-2xl shadow-xl shadow-blue-900/10 hover:scale-[1.01] active:scale-[0.98] transition-all flex justify-center items-center gap-3"
             >
               <Search size={18} />

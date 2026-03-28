@@ -1,14 +1,9 @@
-import React, { useEffect, useState } from 'react';
-import { getAgentProfile } from '../../services/api';
+import React from 'react';
+import { useAgentProfile } from '../../hooks/useAgent';
 import { UserCircle, Mail, Phone, Building2, Calendar, Star, CheckCircle, XCircle, Award } from 'lucide-react';
 
 const AgentProfile = () => {
-  const [profile, setProfile] = useState(null);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    getAgentProfile().then(d => { setProfile(d); setLoading(false); });
-  }, []);
+  const { profile, loading } = useAgentProfile();
 
   if (loading) return (
     <div className="flex justify-center py-20">

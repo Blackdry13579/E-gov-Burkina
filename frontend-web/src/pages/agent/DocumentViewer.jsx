@@ -1,31 +1,21 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { ArrowLeft, ZoomIn, ZoomOut, RotateCw, RotateCcw, Download, FileText, Image, Loader2 } from 'lucide-react';
-import { getAgentRequestDetail } from '../../services/api';
+import { useAgentRequestDetail } from '../../hooks/useAgent';
 
 const DocumentViewer = () => {
   const { id, docIndex } = useParams();
   const navigate = useNavigate();
   const [zoom, setZoom] = useState(100);
   const [rotation, setRotation] = useState(0);
+  const { request, loading, error } = useAgentRequestDetail(id);
   const [pieces, setPieces] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
 
   useEffect(() => {
-    const fetchDetail = async () => {
-      setLoading(true);
-      try {
-        const data = await getAgentRequestDetail(id);
-        setPieces(data.pieces || []);
-      } catch (err) {
-        setError(err.message);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchDetail();
-  }, [id]);
+    if (request && request.pieces) {
+      setPieces(request.pieces);
+    }
+  }, [request]);
 
   const currentDoc = pieces[parseInt(docIndex, 10)] || pieces[0];
 

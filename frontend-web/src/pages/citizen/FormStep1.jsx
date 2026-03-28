@@ -19,7 +19,7 @@ const FormStep1 = () => {
 
   const handleNext = (e) => {
     e.preventDefault();
-    navigate('/demande/etape2', { 
+    navigate('/citoyen/demande/etape2', { 
       state: { serviceId, serviceName, donnees } 
     });
   };

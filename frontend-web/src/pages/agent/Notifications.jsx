@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { getAgentNotifications } from '../../services/api';
+import React from 'react';
+import { useNotifications } from '../../hooks/useNotifications';
 import { Bell, Mail, MessageSquare, ShieldAlert, RefreshCw, Megaphone } from 'lucide-react';
 
 const typeConfig = {
@@ -17,12 +17,7 @@ const channelColors = {
 };
 
 const Notifications = () => {
-  const [notifs, setNotifs] = useState([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    getAgentNotifications().then(d => { setNotifs(d); setLoading(false); });
-  }, []);
+  const { notifications: notifs, loading, markAllRead } = useNotifications();
 
   const unreadCount = notifs.filter(n => !n.read).length;
 
@@ -35,7 +30,7 @@ const Notifications = () => {
         </div>
         {unreadCount > 0 && (
           <button
-            onClick={() => setNotifs(n => n.map(x => ({ ...x, read: true })))}
+            onClick={markAllRead}
             className="text-xs font-semibold text-[#1A237E] hover:underline"
           >
             Tout marquer lu

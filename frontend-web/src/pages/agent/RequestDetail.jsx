@@ -1,17 +1,12 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { getAgentRequestDetail } from '../../services/api';
+import { useAgentRequestDetail } from '../../hooks/useAgent';
 import { ArrowLeft, User, Calendar, Phone, MapPin, FileText, Eye, CheckCircle, XCircle } from 'lucide-react';
 
 const RequestDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const [request, setRequest] = useState(null);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    getAgentRequestDetail(id).then(d => { setRequest(d); setLoading(false); });
-  }, [id]);
+  const { request, loading } = useAgentRequestDetail(id);
 
   if (loading) return (
     <div className="flex justify-center py-20">

@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { FileText, Clock, Users, UserCheck, TrendingUp, TrendingDown, Activity, Minus } from 'lucide-react';
-import { fetchDashboardStats, fetchRecentActivities } from '../../services/api';
+import { useAdminStats, useAdminActivities } from '../../hooks/useAdmin';
 
 /* ─── Composant graphique : Graphique à barres ─── */
 const BarChart = () => {
@@ -108,29 +108,10 @@ const DonutChart = () => {
 
 /* ─── Dashboard principal ─── */
 const Dashboard = () => {
-  const [stats,      setStats]      = useState(null);
-  const [activities, setActivities] = useState([]);
-  const [loading,    setLoading]    = useState(true);
+  const { stats, loading: statsLoading } = useAdminStats();
+  const { activities, loading: activitiesLoading } = useAdminActivities();
 
-  useEffect(() => {
-    const loadData = async () => {
-      try {
-        const [statsData, activitiesData] = await Promise.all([
-          fetchDashboardStats(),
-          fetchRecentActivities(),
-        ]);
-        setStats(statsData);
-        setActivities(activitiesData);
-      } catch (error) {
-        console.error('Failed to load dashboard data', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-    loadData();
-  }, []);
-
-  if (loading || !stats) {
+  if (statsLoading || !stats) {
     return (
       <div className="flex items-center justify-center h-64">
         <div className="w-12 h-12 border-4 border-t-[#1A237E] border-blue-50 rounded-full animate-spin" />

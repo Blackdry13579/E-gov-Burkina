@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { ArrowLeft, UserCircle, Star, CheckCircle, Clock } from 'lucide-react';
-import { fetchUsers, toggleUserStatus } from '../../services/api';
+import { getUsers, toggleUserStatus } from '../../services/adminService';
 
 const AgentProfile = () => {
   const { id } = useParams();
@@ -12,7 +12,7 @@ const AgentProfile = () => {
   useEffect(() => {
     const loadAgent = async () => {
       try {
-        const agents = await fetchUsers();
+        const agents = await getUsers();
         const found = agents.find(a => a.id === id);
         setAgent(found);
       } catch (error) {

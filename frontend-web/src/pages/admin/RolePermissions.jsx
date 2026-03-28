@@ -1,24 +1,22 @@
-import React, { useEffect, useState } from 'react';
-import { fetchRoles, updatePermissions } from '../../services/api';
+import React, { useState, useEffect } from 'react';
+import { useAdminRoles } from '../../hooks/useAdmin';
+import { updatePermissions } from '../../services/adminService';
 import { Save, AlertTriangle } from 'lucide-react';
 
 const RolePermissions = () => {
+  const { roles: fetchedRoles, loading } = useAdminRoles();
   const [roles, setRoles] = useState([]);
   const [selectedRole, setSelectedRole] = useState(null);
   const [permissions, setPermissions] = useState({});
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
-    const loadRoles = async () => {
-      const data = await fetchRoles();
-      setRoles(data);
-      if (data.length > 0) {
-        setSelectedRole(data[0]);
-        setPermissions(data[0].permissions);
-      }
-    };
-    loadRoles();
-  }, []);
+    if (fetchedRoles && fetchedRoles.length > 0) {
+      setRoles(fetchedRoles);
+      setSelectedRole(fetchedRoles[0]);
+      setPermissions(fetchedRoles[0].permissions || {});
+    }
+  }, [fetchedRoles]);
 
   const handleRoleChange = (roleId) => {
     const role = roles.find(r => r.id === roleId);

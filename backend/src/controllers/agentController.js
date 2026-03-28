@@ -34,7 +34,7 @@ exports.getDemandesAgent = asyncHandler(async (req, res) => {
   const demandes = await Demande.find(filter)
     .populate('citoyenId', 'nom prenom email')
     .populate('documentTypeId', 'code nom service')
-    .sort({ statut: 1, dateSoumission: 1 }) // EN_ATTENTE est alphanumériquement avant EN_COURS
+    .sort({ statut: 1, dateSoumission: -1 }) // Newest first within each status group
     .skip(skip)
     .limit(limit);
 

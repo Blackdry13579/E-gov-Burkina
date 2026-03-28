@@ -62,7 +62,7 @@ function AppRoutes() {
         <Route path="/" element={<Landing />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
-        
+
         {/* Protected Citizen Routes in Layout */}
         <Route element={<PrivateRoute requiredRole="citizen" redirectTo="/login" />}>
           <Route element={<CitizenLayout />}>

@@ -1,24 +1,9 @@
-import React, { useEffect, useState } from 'react';
-import { fetchRecentActivities } from '../../services/api';
+import React from 'react';
+import { useAdminActivities } from '../../hooks/useAdmin';
 import { Activity, CheckCircle, LogIn, FilePlus } from 'lucide-react';
 
 const RecentActivities = () => {
-  const [activities, setActivities] = useState([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const loadActivities = async () => {
-      try {
-        const data = await fetchRecentActivities();
-        setActivities(data);
-      } catch (error) {
-        console.error('Erreur', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-    loadActivities();
-  }, []);
+  const { activities, loading } = useAdminActivities();
 
   const getIcon = (type) => {
     switch (type) {

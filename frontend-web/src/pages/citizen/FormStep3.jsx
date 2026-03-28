@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import Emblem from '../../components/common/Emblem';
-import { submitCitizenRequest } from '../../services/api';
+import { submitRequest } from '../../services/citizenService';
 import { Bell, ArrowLeft, CheckCircle2, CreditCard, ShieldCheck, Info, ChevronRight, Loader2, Smartphone } from 'lucide-react';
 
 const FormStep3 = () => {
@@ -18,7 +18,7 @@ const FormStep3 = () => {
     e.preventDefault();
     setLoading(true);
     try {
-      const response = await submitCitizenRequest({
+      const response = await submitRequest({
         documentTypeId: serviceId,
         donnees,
         fichiers,
@@ -28,7 +28,7 @@ const FormStep3 = () => {
           telephone: phoneNumber
         }
       });
-      navigate('/demande/confirmation', { 
+      navigate('/citoyen/demande/confirmation', { 
         state: { 
           reference: response.data?.reference,
           serviceName: serviceName

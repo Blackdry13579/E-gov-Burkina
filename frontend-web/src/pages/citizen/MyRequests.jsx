@@ -1,23 +1,17 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { 
   ClipboardList, Filter, FileText, 
-  Clock, CheckCircle, AlertCircle, ChevronRight, Hash, Calendar,
-  Bell
+  Clock, CheckCircle, AlertCircle, ChevronRight, Hash, Calendar
 } from 'lucide-react';
-import { getCitizenRequests } from '../../services/api';
+import { useRequests } from '../../hooks/useRequests';
 import Emblem from '../../components/common/Emblem';
 
 const MyRequests = () => {
-  const [requests, setRequests] = useState([]);
+  const { requests, loading } = useRequests();
   const [filter, setFilter] = useState('Tout');
   const navigate = useNavigate();
-
   const filters = ['Tout', 'En attente', 'Validé', 'Rejeté'];
-
-  useEffect(() => {
-    getCitizenRequests().then(data => setRequests(data));
-  }, []);
 
   const getFilteredRequests = () => {
     if (filter === 'Tout') return requests;

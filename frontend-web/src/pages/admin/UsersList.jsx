@@ -1,27 +1,12 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { NavLink } from 'react-router-dom';
-import { fetchUsers } from '../../services/api';
+import { useAdminUsers } from '../../hooks/useAdmin';
 import { Search, Filter, Plus, User, Shield, Briefcase, ChevronRight } from 'lucide-react';
 
 const UsersList = () => {
-  const [usersList, setUsersList] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const { users: usersList, loading } = useAdminUsers();
   const [activeTab, setActiveTab] = useState('Tous'); // Tous, Citoyens, Agents, RH
   const [searchQuery, setSearchQuery] = useState('');
-
-  useEffect(() => {
-    const loadUsers = async () => {
-      try {
-        const data = await fetchUsers();
-        setUsersList(data);
-      } catch (error) {
-        console.error('Erreur de chargement des utilisateurs', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-    loadUsers();
-  }, []);
 
   const filteredUsers = usersList.filter(user => {
     // Role filter

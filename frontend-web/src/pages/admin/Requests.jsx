@@ -1,10 +1,10 @@
-import React, { useEffect, useState } from 'react';
-import { fetchRequests, approveRequest, rejectRequest, getAgentRequestDetail } from '../../services/api';
+import React, { useState } from 'react';
+import { useAdminRequests } from '../../hooks/useAdmin';
+import { approveRequest, rejectRequest, getRequestDetail as getAgentRequestDetail } from '../../services/agentService';
 import { Search, Filter, CheckCircle, XCircle, AlertCircle, ChevronLeft, ChevronRight, Calendar, FileText, Download } from 'lucide-react';
 
 const Requests = () => {
-  const [requests, setRequests] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const { requests, loading } = useAdminRequests();
   
   // Filters
   const [search, setSearch] = useState('');
@@ -25,20 +25,8 @@ const Requests = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 5;
 
-  useEffect(() => {
-    loadRequests();
-  }, []);
-
-  const loadRequests = async () => {
-    setLoading(true);
-    try {
-      const data = await fetchRequests();
-      setRequests(data);
-    } catch (error) {
-      console.error('Erreur', error);
-    } finally {
-      setLoading(false);
-    }
+  const loadRequests = () => {
+    // This is now handled by the hook
   };
 
   const handleOpenDetails = async (reqSummary) => {

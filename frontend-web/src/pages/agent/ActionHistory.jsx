@@ -1,14 +1,9 @@
-import React, { useEffect, useState } from 'react';
-import { getAgentHistory } from '../../services/api';
+import React from 'react';
+import { useAgentHistory } from '../../hooks/useAgent';
 import { CheckCircle, XCircle, Clock, Filter } from 'lucide-react';
 
 const ActionHistory = () => {
-  const [history, setHistory] = useState([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    getAgentHistory().then(d => { setHistory(d); setLoading(false); });
-  }, []);
+  const { history, loading } = useAgentHistory();
 
   return (
     <div className="space-y-5 max-w-3xl">

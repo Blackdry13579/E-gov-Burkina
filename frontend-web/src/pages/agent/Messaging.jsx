@@ -1,15 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { getAgentMessages } from '../../services/api';
+import { useNotifications } from '../../hooks/useNotifications';
 import { Send, Phone, Shield } from 'lucide-react';
 
 const Messaging = () => {
-  const [messages, setMessages] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const { notifications: messages, loading } = useNotifications();
   const [input, setInput] = useState('');
-
-  useEffect(() => {
-    getAgentMessages().then(d => { setMessages(d); setLoading(false); });
-  }, []);
 
   const handleSend = () => {
     if (!input.trim()) return;

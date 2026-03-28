@@ -1,33 +1,31 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { 
-  Bell, CheckCircle2, Info, Mail, 
+  Bell, CheckCircle2, Mail, 
   XCircle, AlertCircle, ArrowLeft,
   CheckCheck
 } from 'lucide-react';
 import Emblem from '../../components/common/Emblem';
-
-import { getCitizenNotifications } from '../../services/api';
-
+import { useNotifications } from '../../hooks/useNotifications';
 
 const Notifications = () => {
   const navigate = useNavigate();
-  const [notifications, setNotifications] = useState([]);
+  const { notifications, loading, markAllRead } = useNotifications();
   const [filter, setFilter] = useState('Tout');
   
   const filters = ['Tout', 'Demandes', 'Services'];
 
-  useEffect(() => {
-    getCitizenNotifications().then(data => {
-      // Filtrage strict : Ne garder que ce qui est pour un citoyen
-      const filtered = data.filter(n => {
-        const text = (n.titre + ' ' + n.message).toLowerCase();
-        const agentTerms = ['nouvelle demande', 'à traiter', 'agent', 'mairie', 'assigné', 'instruction', 'commission'];
-        return !agentTerms.some(term => text.includes(term));
-      });
-      setNotifications(filtered);
+  const filteredNotifications = useMemo(() => {
+    // Basic role filtering (could be better on backend but keeping it clean here)
+    const citizenOnly = notifications.filter(n => {
+      const text = (n.titre + ' ' + n.message).toLowerCase();
+      const agentTerms = ['nouvelle demande', 'à traiter', 'agent', 'mairie', 'assigné', 'instruction', 'commission'];
+      return !agentTerms.some(term => text.includes(term));
     });
-  }, []);
+
+    if (filter === 'Tout') return citizenOnly;
+    return citizenOnly.filter(n => n.type.includes(filter.toUpperCase()));
+  }, [notifications, filter]);
 
   const getIcon = (type, lu) => {
     const iconSize = 20;
@@ -93,17 +91,17 @@ const Notifications = () => {
           ))}
         </div>
 
-        {notifications.length === 0 ? (
+        {filteredNotifications.length === 0 ? (
           <div className="text-center py-20">
             <div className="text-5xl mb-4 opacity-20">📭</div>
-            <p className="text-gray-500 font-medium">Vous n'avez pas encore de notifications.</p>
+            <p className="text-gray-500 font-medium tracking-tight">Vous n'avez pas encore de notifications.</p>
           </div>
         ) : (
           <>
             <section className="mb-6">
-              <h2 className="text-xs font-bold text-gray-400 tracking-widest uppercase mb-3">Aujourd'hui</h2>
+              <h2 className="text-xs font-bold text-gray-400 tracking-widest uppercase mb-3 px-2">Récent</h2>
               <div className="space-y-3">
-                {notifications.slice(0, 2).map((notif) => (
+                {filteredNotifications.map((notif) => (
                   <div key={notif.id} className={`bg-white p-4 rounded-2xl border transition-all relative overflow-hidden ${!notif.lu ? 'border-institutional/20 shadow-sm bg-blue-50/30' : 'border-gray-100 shadow-none'}`}>
                     {!notif.lu && <div className="absolute top-0 left-0 w-1 h-full bg-institutional"></div>}
                     <div className="flex items-start space-x-4">
@@ -122,39 +120,6 @@ const Notifications = () => {
                       <p className={`text-xs ${!notif.lu ? 'text-gray-800' : 'text-gray-500'} mb-2 leading-relaxed`}>{notif.message}</p>
                       {notif.badge_statut && (
                         <span className={`text-[9px] font-bold px-2 py-0.5 rounded uppercase tracking-wide inline-block ${notif.badge_statut === 'DÉLIVRÉ' ? 'bg-green-100 text-green-700' : notif.badge_statut === 'EN ATTENTE' ? 'bg-white border border-gray-300 text-gray-600' : 'bg-gray-100 text-gray-700'}`}>
-                          {notif.badge_statut}
-                        </span>
-                      )}
-                      </div>
-                    </div>
-                  </div>
-
-                ))}
-              </div>
-            </section>
-
-            <section className="mb-6">
-              <h2 className="text-xs font-bold text-gray-400 tracking-widest uppercase mb-3">Hier</h2>
-              <div className="space-y-3">
-                {notifications.slice(2).map((notif) => (
-                  <div key={notif.id} className={`bg-white p-4 rounded-2xl border transition-all relative overflow-hidden ${!notif.lu ? 'border-institutional/20 shadow-sm bg-blue-50/30' : 'border-gray-100 shadow-none opacity-80'}`}>
-                     {!notif.lu && <div className="absolute top-0 left-0 w-1 h-full bg-institutional"></div>}
-                    <div className="flex items-start space-x-4">
-                      <div className="shrink-0 pt-0.5">
-                        {getIcon(notif.type, notif.lu)}
-                      </div>
-                      <div className="flex-1">
-                        <div className="flex justify-between items-start mb-1">
-                          <h3 className={`text-sm ${!notif.lu ? 'font-bold text-[#1A3A5C]' : 'font-medium text-gray-600'}`}>
-                            {notif.titre}
-                            {!notif.lu && <span className="ml-2 inline-block w-2 h-2 rounded-full bg-institutional"></span>}
-                          </h3>
-
-                        <span className="text-[10px] text-gray-400 font-medium">{notif.created_at?.replace('Hier ', '')}</span>
-                      </div>
-                      <p className={`text-xs ${!notif.lu ? 'text-gray-800' : 'text-gray-500'} mb-2 leading-relaxed`}>{notif.message}</p>
-                      {notif.badge_statut && (
-                        <span className={`text-[9px] font-bold px-2 py-0.5 rounded uppercase tracking-wide inline-block ${notif.badge_statut === 'REJETÉ' ? 'bg-red-50 text-red-600' : 'bg-gray-100 text-gray-700'}`}>
                           {notif.badge_statut}
                         </span>
                       )}

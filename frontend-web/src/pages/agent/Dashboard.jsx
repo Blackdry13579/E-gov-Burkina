@@ -1,17 +1,12 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { NavLink } from 'react-router-dom';
-import { getAgentStats } from '../../services/api';
-import { useAuth } from '../../context/AuthContext';
+import { useAuthUser } from '../../hooks/useAuth';
+import { useAgentStats } from '../../hooks/useAgent';
 import { Clock, CheckCircle, TrendingUp, FileText, Building2, ArrowRight } from 'lucide-react';
 
 const AgentDashboard = () => {
-  const [stats, setStats] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const { user } = useAuth();
-
-  useEffect(() => {
-    getAgentStats().then(d => { setStats(d); setLoading(false); });
-  }, []);
+  const { stats, loading } = useAgentStats();
+  const { user } = useAuthUser();
 
   if (loading) return (
     <div className="flex items-center justify-center h-64">

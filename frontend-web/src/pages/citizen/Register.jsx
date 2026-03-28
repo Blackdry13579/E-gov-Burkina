@@ -1,21 +1,19 @@
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import Emblem from '../../components/common/Emblem';
-import { simulateCitizenRegister } from '../../services/api';
-import { useAuth } from '../../context/AuthContext';
-import { User, Phone, Lock, Loader2, ArrowRight, ChevronLeft, CreditCard, Calendar, Shield } from 'lucide-react';
+import { registerCitizen } from '../../services/authService';
+import { useAuthUser } from '../../hooks/useAuth';
+import { User, Phone, Lock, Loader2, ArrowRight, ChevronLeft, Shield } from 'lucide-react';
 
 const Register = () => {
   const navigate = useNavigate();
-  const { loginWithToken } = useAuth();
+  const { loginWithToken } = useAuthUser();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   
   const [formData, setFormData] = useState({
     nom: '',
     prenom: '',
-    cnib: '',
-    dateNaissance: '',
     email: '',
     telephone: '',
     password: '',
@@ -39,17 +37,11 @@ const Register = () => {
 
     setLoading(true);
     try {
-      const response = await simulateCitizenRegister({
-        nom: formData.nom,
-        prenom: formData.prenom,
-        email: formData.email,
-        telephone: formData.telephone,
-        password: formData.password
-      });
+      const response = await registerCitizen(formData);
 
       if (response.success) {
         loginWithToken(response.token, response.user);
-        navigate('/accueil');
+        navigate('/citoyen/accueil');
       } else {
         setError(response.message || "Erreur lors de l'inscription.");
       }

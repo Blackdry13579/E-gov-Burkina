@@ -1,9 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import Emblem from '../../components/common/Emblem';
 
-import { getCitizenProfile } from '../../services/api';
-import { useAuth } from '../../context/AuthContext';
+import { useAuthUser } from '../../hooks/useAuth';
 import { 
   User, CreditCard, Phone, Mail, 
   MapPin, Lock, Bell, LogOut, 
@@ -14,13 +13,8 @@ import {
 
 
 const Profile = () => {
-  const { logout } = useAuth();
+  const { user: profile, logout } = useAuthUser();
   const navigate = useNavigate();
-  const [profile, setProfile] = useState(null);
-
-  useEffect(() => {
-    getCitizenProfile().then(data => setProfile(data));
-  }, []);
 
   const handleLogout = () => {
     logout();

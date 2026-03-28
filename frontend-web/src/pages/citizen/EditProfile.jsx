@@ -1,7 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Emblem from '../../components/common/Emblem';
-import { getCitizenProfile, updateCitizenProfile } from '../../services/api';
+import { useAuthUser } from '../../hooks/useAuth';
+import { updateProfile } from '../../services/authService';
 import { 
   User, CreditCard, Phone, Mail, 
   MapPin, Save, X, ArrowLeft,
@@ -12,26 +13,16 @@ import {
 
 const EditProfile = () => {
   const navigate = useNavigate();
+  const { user } = useAuthUser();
+  
   const [formData, setFormData] = useState({
-    nom_complet: '',
-    cnib: '',
-    telephone: '',
-    email: '',
-    adresse: ''
+    nom_complet: user?.name || '',
+    cnib: user?.cnib || '',
+    telephone: user?.phone || '',
+    email: user?.email || '',
+    adresse: user?.address || ''
   });
   const [loading, setLoading] = useState(false);
-
-  useEffect(() => {
-    getCitizenProfile().then(data => {
-      setFormData({
-        nom_complet: data.nom_complet,
-        cnib: data.cnib,
-        telephone: data.telephone.replace('+226 ', ''),
-        email: data.email,
-        adresse: data.adresse
-      });
-    });
-  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();

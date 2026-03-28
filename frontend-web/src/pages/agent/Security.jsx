@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { getAgentSessions } from '../../services/api';
-import { useAuth } from '../../context/AuthContext';
+import { getSessions } from '../../services/agentService';
+import { useAuthUser } from '../../hooks/useAuth';
 import { Shield, Monitor, Smartphone, LogOut, Key, Trash2, MapPin, Clock, CheckCircle } from 'lucide-react';
 
 const AgentSecurity = () => {
@@ -10,11 +10,11 @@ const AgentSecurity = () => {
   const [changingPass, setChangingPass] = useState(false);
   const [pwForm, setPwForm] = useState({ current: '', next: '', confirm: '' });
   const [pwMsg, setPwMsg] = useState('');
-  const { logout } = useAuth();
+  const { logout } = useAuthUser();
   const navigate = useNavigate();
 
   useEffect(() => {
-    getAgentSessions().then(d => { setSessions(d); setLoading(false); });
+    getSessions().then(d => { setSessions(d); setLoading(false); });
   }, []);
 
   const handleChangePassword = async (e) => {

@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { approveRequest, rejectRequest } from '../../services/api';
+import { useAgentRequestDetail } from '../../hooks/useAgent';
 import { CheckCircle, XCircle, ArrowLeft, MessageSquare, AlertTriangle } from 'lucide-react';
 
 const RequestDecision = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { updateStatus } = useAgentRequestDetail(id);
+  
   const [comment, setComment] = useState('');
   const [step, setStep] = useState('idle'); // idle | loading | success | error
   const [action, setAction] = useState(null);
@@ -14,12 +16,12 @@ const RequestDecision = () => {
   const handleApprove = async () => {
     setAction('approve');
     setStep('loading');
-    try {
-      const res = await approveRequest(id, comment);
-      setMessage(res.message);
+    const res = await updateStatus('VALIDÉ', comment);
+    if (res.success) {
+      setMessage('Le dossier a été approuvé avec succès.');
       setStep('success');
-    } catch (e) {
-      setMessage(e.message);
+    } else {
+      setMessage(res.error);
       setStep('error');
     }
   };
@@ -32,12 +34,12 @@ const RequestDecision = () => {
     }
     setAction('reject');
     setStep('loading');
-    try {
-      const res = await rejectRequest(id, comment);
-      setMessage(res.message);
+    const res = await updateStatus('REJETÉ', comment);
+    if (res.success) {
+      setMessage('Le dossier a été rejeté.');
       setStep('success');
-    } catch (e) {
-      setMessage(e.message);
+    } else {
+      setMessage(res.error);
       setStep('error');
     }
   };

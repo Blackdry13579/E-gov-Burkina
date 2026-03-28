@@ -1,20 +1,20 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useAdminDocuments } from '../../hooks/useAdmin';
 import { FileText, Plus, Trash2, Edit3, X, Save, Clock, CreditCard, ShieldCheck } from 'lucide-react';
-
-const initialDocs = [
-  { id: 'DOC-01', name: 'Acte de Naissance', desc: 'Extrait intégral ou copie certifiée conforme', price: '500 FCFA', duration: '48h', active: true },
-  { id: 'DOC-02', name: 'CNI (Carte Nationale d\'Identité)', desc: 'Document d\'identité officiel burkinabè', price: '1 000 FCFA', duration: '7 jours', active: true },
-  { id: 'DOC-03', name: 'Passeport Ordinaire', desc: 'Titre de voyage international', price: '50 000 FCFA', duration: '14 jours', active: true },
-];
 
 const emptyDoc = { name: '', desc: '', price: '', duration: '', active: true };
 
 const DocumentsConfig = () => {
-  const [documents, setDocuments] = useState(initialDocs);
+  const { documents: fetchedDocs, loading } = useAdminDocuments();
+  const [documents, setDocuments] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [editingDoc, setEditingDoc] = useState(null); // null = nouveau, sinon l'objet doc
   const [form, setForm] = useState(emptyDoc);
   const [deleteConfirm, setDeleteConfirm] = useState(null);
+
+  useEffect(() => {
+    if (fetchedDocs) setDocuments(fetchedDocs);
+  }, [fetchedDocs]);
 
   const openAdd = () => {
     setEditingDoc(null);
@@ -70,7 +70,9 @@ const DocumentsConfig = () => {
 
       {/* Documents Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-        {documents.map(doc => (
+        {loading ? (
+          <div className="col-span-2 py-20 text-center text-gray-400 font-bold">Chargement du catalogue...</div>
+        ) : documents.map(doc => (
           <div key={doc.id} className="bg-white rounded-[2.5rem] border border-gray-100 shadow-sm p-8 hover:shadow-xl hover:shadow-blue-900/5 transition-all group relative overflow-hidden">
             <div className={`absolute top-0 right-0 w-24 h-24 blur-3xl opacity-10 -mr-12 -mt-12 ${doc.active ? 'bg-green-500' : 'bg-gray-400'}`}></div>
 

@@ -1,13 +1,9 @@
-import React, { useState } from 'react';
+import React from 'react';
+import { useAdminServices } from '../../hooks/useAdmin';
 import { Building2, MapPin, Plus, Edit2, Trash2, ShieldCheck, Globe } from 'lucide-react';
 
 const ServicesConfig = () => {
-  const [services] = useState([
-    { id: 'SRV-001', name: 'Mairie de Ouagadougou', region: 'Centre', type: 'Mairie Principale', active: true },
-    { id: 'SRV-002', name: 'Mairie de Bobo-Dioulasso', region: 'Hauts-Bassins', type: 'Mairie Principale', active: true },
-    { id: 'SRV-003', name: 'Ministère de la Justice', region: 'National', type: 'Ministère', active: true },
-    { id: 'SRV-004', name: 'Police Nationale - Arrondissement 4', region: 'Centre', type: 'Commissariat', active: false },
-  ]);
+  const { services, loading } = useAdminServices();
 
   return (
     <div className="font-sans max-w-6xl mx-auto pb-20">

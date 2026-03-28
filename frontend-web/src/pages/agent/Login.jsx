@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import Emblem from '../../components/common/Emblem';
-import { simulateAgentLogin } from '../../services/api';
-import { useAuth } from '../../context/AuthContext';
+import { login as apiLogin } from '../../services/authService';
+import { useAuthUser } from '../../hooks/useAuth';
 import { Briefcase, Lock, Eye, EyeOff, Loader2, ArrowRight, ShieldCheck } from 'lucide-react';
 
 const AgentLogin = () => {
@@ -12,7 +12,7 @@ const AgentLogin = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
-  const { loginWithToken } = useAuth();
+  const { loginWithToken } = useAuthUser();
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
@@ -20,7 +20,7 @@ const AgentLogin = () => {
     setError('');
     setLoading(true);
     try {
-      const response = await simulateAgentLogin(matricule, password);
+      const response = await apiLogin({ matricule, password });
       loginWithToken(response.token, response.user);
       navigate('/agent/dashboard');
     } catch (err) {

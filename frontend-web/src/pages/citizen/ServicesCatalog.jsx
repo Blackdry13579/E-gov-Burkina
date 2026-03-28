@@ -1,24 +1,18 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { 
   Search, Filter, FileText, Shield, FileCheck, 
-  CreditCard, Truck, ArrowRight, LayoutGrid,
-  Bell
+  CreditCard, Truck, ArrowRight, LayoutGrid
 } from 'lucide-react';
-import { getCitizenServices } from '../../services/api';
+import { useServices } from '../../hooks/useServices';
 import Emblem from '../../components/common/Emblem';
 
 const ServicesCatalog = () => {
-  const [services, setServices] = useState([]);
+  const { services, loading } = useServices();
   const [filter, setFilter] = useState('Tout');
   const [searchQuery, setSearchQuery] = useState('');
   const navigate = useNavigate();
-  
   const filters = ['Tout', 'Identité', 'État Civil', 'Justice', 'Transports'];
-
-  useEffect(() => {
-    getCitizenServices().then(data => setServices(data));
-  }, []);
 
   const getIcon = (categorie) => {
     switch(categorie) {

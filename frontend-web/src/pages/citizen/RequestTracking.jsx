@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { getCitizenRequestTracking as getDemandeDetails } from '../../services/api';
+import { useRequestDetail } from '../../hooks/useRequests';
 import Emblem from '../../components/common/Emblem';
 import { 
   FileText, Clock, CheckCircle2, 
@@ -14,20 +14,7 @@ import {
 const RequestTracking = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const [demande, setDemande] = useState(null);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    getDemandeDetails(id)
-      .then(data => {
-        setDemande(data);
-        setLoading(false);
-      })
-      .catch(err => {
-        console.error(err);
-        setLoading(false);
-      });
-  }, [id]);
+  const { request: demande, loading } = useRequestDetail(id);
 
   if (loading) return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 text-gray-400 font-bold uppercase tracking-widest text-[10px]">

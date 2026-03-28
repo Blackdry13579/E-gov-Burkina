@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import Emblem from '../../components/common/Emblem';
-import { useAuth } from '../../context/AuthContext';
-import { simulateCitizenLogin } from '../../services/api';
+import { useAuthUser } from '../../hooks/useAuth';
+import { login as apiLogin } from '../../services/authService';
 import { Mail, Lock, Eye, EyeOff, Loader2, ArrowRight } from 'lucide-react';
 
 const Login = () => {
@@ -12,7 +12,7 @@ const Login = () => {
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
   
-  const { loginWithToken } = useAuth();
+  const { loginWithToken } = useAuthUser();
   const navigate = useNavigate();
 
   const handleLogin = async (e) => {
@@ -20,10 +20,10 @@ const Login = () => {
     setError(null);
     setLoading(true);
     try {
-      const response = await simulateCitizenLogin(email, password);
+      const response = await apiLogin(email, password);
+      // loginWithToken handles the role derivation automatically now
       loginWithToken(response.token, response.user);
       
-      // Redirection basée sur le rôle réel de l'utilisateur
       const backendRole = response.user?.role || '';
       if (backendRole === 'ADMIN') {
         navigate('/admin/dashboard');

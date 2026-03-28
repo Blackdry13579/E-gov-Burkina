@@ -1,20 +1,16 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
-import { getCitizenServiceDetail } from '../../services/api';
+import { useServiceDetail } from '../../hooks/useServices';
 import { ArrowLeft, Bell, Star, ShieldCheck, Clock, CreditCard, Truck, CheckCircle2, Info, FileText } from 'lucide-react';
 import Emblem from '../../components/common/Emblem';
 
 const ServiceDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const [service, setService] = useState(null);
+  const { service, loading } = useServiceDetail(id);
   const [openFaq, setOpenFaq] = useState(0);
 
-  useEffect(() => {
-    getCitizenServiceDetail(id).then(data => setService(data));
-  }, [id]);
-
-  if (!service) return (
+  if (loading || !service) return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 text-gray-400 font-bold uppercase tracking-widest text-[10px]">
       <div className="w-8 h-8 border-4 border-institutional/20 border-t-institutional rounded-full animate-spin mr-3"></div>
       Chargement...

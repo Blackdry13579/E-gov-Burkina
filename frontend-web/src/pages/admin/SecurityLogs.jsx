@@ -1,26 +1,12 @@
-import React, { useEffect, useState } from 'react';
-import { fetchRequests, fetchUsers } from '../../services/api';
+import React from 'react';
+import { useAdminRequests, useAdminUsers } from '../../hooks/useAdmin';
 import { CheckCircle, XCircle, Clock, Users, BarChart2, TrendingUp, Calendar } from 'lucide-react';
 
 const AdminStats = () => {
-  const [requests, setRequests] = useState([]);
-  const [users, setUsers] = useState([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const load = async () => {
-      try {
-        const [reqs, usrs] = await Promise.all([fetchRequests(), fetchUsers()]);
-        setRequests(reqs);
-        setUsers(usrs);
-      } catch (e) {
-        console.error(e);
-      } finally {
-        setLoading(false);
-      }
-    };
-    load();
-  }, []);
+  const { requests, loading: requestsLoading } = useAdminRequests();
+  const { users, loading: usersLoading } = useAdminUsers();
+  
+  const loading = requestsLoading || usersLoading;
 
   const approved = requests.filter(r => r.status?.toUpperCase().includes('VALID') || r.status?.toUpperCase().includes('APPROUV')).length;
   const rejected = requests.filter(r => r.status?.toUpperCase().includes('REJET')).length;

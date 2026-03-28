@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { getAgentProfile } from '../../services/api';
+import { getProfile as getAgentProfile } from '../../services/agentService';
 import { PenTool, ShieldCheck, Calendar, RefreshCw, CheckCircle, AlertTriangle } from 'lucide-react';
 
 const DigitalSignature = () => {

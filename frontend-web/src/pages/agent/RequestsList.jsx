@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { NavLink } from 'react-router-dom';
-import { getAgentRequests } from '../../services/api';
+import { useAgentRequests } from '../../hooks/useAgent';
 import { Search, Clock, CheckCircle, XCircle, Loader, Eye, AlertTriangle } from 'lucide-react';
 
 const statusConfig = {
@@ -13,14 +13,9 @@ const statusConfig = {
 const filters = ['Tous', 'EN ATTENTE', 'EN COURS', 'VALIDÉ', 'REJETÉ'];
 
 const RequestsList = () => {
-  const [requests, setRequests] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const { requests, loading } = useAgentRequests();
   const [filter, setFilter] = useState('Tous');
   const [search, setSearch] = useState('');
-
-  useEffect(() => {
-    getAgentRequests().then(d => { setRequests(d); setLoading(false); });
-  }, []);
 
   const filtered = requests.filter(r => {
     const matchFilter = filter === 'Tous' || r.status === filter;
