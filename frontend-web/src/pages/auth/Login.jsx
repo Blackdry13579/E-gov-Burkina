@@ -188,14 +188,14 @@ const UnifiedLogin = () => {
             {/* Header */}
             <div className="space-y-1">
               {step === 'credentials' ? (
-                <>
-                  <h2 className="text-3xl font-black text-gray-900 tracking-tight leading-none">
-                    Connexion
-                  </h2>
-                  <p className="text-[11px] font-bold text-gray-400 uppercase tracking-[0.08em]">
-                    Accédez à votre espace personnel
-                  </p>
-                </>
+              <>
+                <h2 className="text-3xl font-black text-gray-900 tracking-tight leading-none">
+                  Connexion
+                </h2>
+                <p className="text-[11px] font-bold text-gray-400 uppercase tracking-[0.08em]">
+                  Citoyen · Agent · Administrateur
+                </p>
+              </>
               ) : (
                 <>
                   <h2 className="text-3xl font-black text-gray-900 tracking-tight leading-none">
