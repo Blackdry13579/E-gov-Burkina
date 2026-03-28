@@ -53,7 +53,7 @@ const RequestTracking = () => {
   };
 
   const handleDownload = () => {
-    const pdfUrl = demande._raw?.documentPDF?.url || (typeof demande._raw?.documentPDF === 'string' ? demande._raw?.documentPDF : null);
+    const pdfUrl = demande.documentPDF?.url || (typeof demande.documentPDF === 'string' ? demande.documentPDF : null);
     if (pdfUrl) {
       window.open(pdfUrl, '_blank');
     } else {
