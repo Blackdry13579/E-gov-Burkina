@@ -3,10 +3,10 @@ import { useNavigate, Link } from 'react-router-dom';
 import Emblem from '../../components/common/Emblem';
 import { simulateAgentLogin } from '../../services/api';
 import { useAuth } from '../../context/AuthContext';
-import { Briefcase, Lock, Eye, EyeOff, Loader2, ArrowRight, ShieldCheck } from 'lucide-react';
+import { Mail, Lock, Eye, EyeOff, Loader2, ArrowRight, ShieldCheck } from 'lucide-react';
 
 const AgentLogin = () => {
-  const [matricule, setMatricule] = useState(import.meta.env.VITE_TEST_AGENT_MATRICULE || '');
+  const [email, setEmail] = useState(import.meta.env.VITE_TEST_AGENT_EMAIL || '');
   const [password, setPassword] = useState(import.meta.env.VITE_TEST_AGENT_PASSWORD || '');
   const [showPass, setShowPass] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -20,7 +20,7 @@ const AgentLogin = () => {
     setError('');
     setLoading(true);
     try {
-      const response = await simulateAgentLogin(matricule, password);
+      const response = await simulateAgentLogin(email, password);
       loginWithToken(response.token, response.user);
       navigate('/agent/dashboard');
     } catch (err) {
@@ -66,7 +66,7 @@ const AgentLogin = () => {
             <div className="flex items-center gap-2 mb-8">
               <ShieldCheck size={14} className="text-yellow-400" />
               <p className="text-[11px] text-blue-100/80 font-medium leading-relaxed">
-                Connectez-vous avec votre matricule pour traiter les demandes citoyennes.
+                Connectez-vous avec votre email professionnel pour traiter les demandes citoyennes.
               </p>
             </div>
 
@@ -109,15 +109,15 @@ const AgentLogin = () => {
               <div className="space-y-5">
                 <div>
                   <label className="block text-[8px] font-black text-gray-400 uppercase tracking-[0.2em] mb-1 px-1">
-                    Matricule Agent
+                    Email Professionnel
                   </label>
                   <div className="relative group">
-                    <Briefcase className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-200 group-focus-within:text-[#1A237E] transition-colors" size={12} />
+                    <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-200 group-focus-within:text-[#1A237E] transition-colors" size={12} />
                     <input
-                      type="text"
-                      value={matricule}
-                      onChange={(e) => setMatricule(e.target.value)}
-                      placeholder="Ex: BF-AG-000001"
+                      type="email"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      placeholder="Ex: agent.mairie@egov.bf"
                       className="w-full pl-9 pr-6 py-3 bg-[#F8FAFF] border border-gray-100 rounded-xl text-[11px] font-bold focus:outline-none focus:border-[#1A237E] transition-all"
                       required
                     />
