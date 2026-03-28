@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import Emblem from '../../components/common/Emblem';
 import { useAuth } from '../../context/AuthContext';
 import { simulateCitizenLogin } from '../../services/api';
-import { Phone, Lock, Eye, EyeOff, Loader2, ArrowRight } from 'lucide-react';
+import { Mail, Lock, Eye, EyeOff, Loader2, ArrowRight } from 'lucide-react';
 
 const Login = () => {
   const [email, setEmail] = useState('');
@@ -93,14 +93,14 @@ const Login = () => {
             <form onSubmit={handleLogin} className="space-y-6">
               <div className="space-y-5">
                 <div>
-                  <label className="block text-[8px] font-black text-gray-400 uppercase tracking-[0.2em] mb-1 px-1">Téléphone cellulaire</label>
+                  <label className="block text-[8px] font-black text-gray-400 uppercase tracking-[0.2em] mb-1 px-1">Adresse Email</label>
                   <div className="relative group">
-                    <Phone className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-200 group-focus-within:text-[#1A237E] transition-colors" size={12} />
+                    <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-200 group-focus-within:text-[#1A237E] transition-colors" size={12} />
                     <input 
-                      type="text" 
+                      type="email" 
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
-                      placeholder="+226 XX XX XX XX" 
+                      placeholder="citoyen@email.bf" 
                       className="w-full pl-9 pr-6 py-3 bg-[#F8FAFF] border border-gray-100 rounded-xl text-[11px] font-bold focus:outline-none focus:border-[#1A237E] transition-all"
                       required
                     />
