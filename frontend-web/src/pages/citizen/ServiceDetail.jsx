@@ -86,13 +86,6 @@ const ServiceDetail = () => {
               Service officiel de délivrance des documents sécurisés de la République du Burkina Faso. Procédure dématérialisée et sécurisée.
             </p>
 
-            <button 
-              onClick={() => navigate('/demande/etape1', { state: { serviceId: id, serviceName: service.name } })}
-              className="px-8 py-3.5 bg-[#1A3A5C] text-white font-black rounded-xl shadow-xl shadow-blue-900/20 hover:bg-[#0f2440] hover:scale-[1.02] active:scale-[0.98] transition-all uppercase tracking-[0.15em] text-[11px] md:text-xs flex items-center gap-2 mb-12"
-            >
-              <CheckCircle2 size={18} /> Faire la Demande
-            </button>
-
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 w-full">
               <div className="bg-gray-50 p-6 rounded-2xl border border-gray-100 flex flex-col items-center gap-2">
                 <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center text-institutional shadow-sm mb-1">
