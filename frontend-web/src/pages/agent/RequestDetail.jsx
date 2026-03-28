@@ -75,13 +75,13 @@ const RequestDetail = () => {
       {/* Decision buttons */}
       <div className="flex gap-3">
         <button
-          onClick={() => navigate(`/agent/requests/${id}/decision`)}
+          onClick={() => navigate(`/agent/requests/${id}/decision`, { state: { intent: 'approve' } })}
           className="flex-1 flex items-center justify-center gap-2 bg-[#00875A] hover:bg-green-700 text-white font-semibold py-3 rounded-xl transition-all shadow-lg shadow-green-900/10 active:scale-95"
         >
           <CheckCircle size={18} /> Approuver
         </button>
         <button
-          onClick={() => navigate(`/agent/requests/${id}/decision`)}
+          onClick={() => navigate(`/agent/requests/${id}/decision`, { state: { intent: 'reject' } })}
           className="flex-1 flex items-center justify-center gap-2 bg-[#E52E2E] hover:bg-red-700 text-white font-semibold py-3 rounded-xl transition-all shadow-lg shadow-red-900/10 active:scale-95"
         >
           <XCircle size={18} /> Rejeter

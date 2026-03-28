@@ -1,13 +1,16 @@
 import React, { useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { useAgentRequestDetail } from '../../hooks/useAgent';
 import { CheckCircle, XCircle, ArrowLeft, MessageSquare, AlertTriangle } from 'lucide-react';
 
 const RequestDecision = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
   const { updateStatus } = useAgentRequestDetail(id);
   
+  const intent = location.state?.intent || null;
+
   const [comment, setComment] = useState('');
   const [step, setStep] = useState('idle'); // idle | loading | success | error
   const [action, setAction] = useState(null);
@@ -64,23 +67,25 @@ const RequestDecision = () => {
           <ArrowLeft size={18} className="text-gray-600" />
         </button>
         <div>
-          <h1 className="text-xl font-bold text-gray-900">Décision de traitement</h1>
+          <h1 className="text-xl font-bold text-gray-900">
+            {intent === 'approve' ? 'Validation du dossier' : intent === 'reject' ? 'Rejet du dossier' : 'Décision de traitement'}
+          </h1>
           <p className="text-sm text-gray-500 font-mono">Réf: {id}</p>
         </div>
       </div>
 
       {/* Zone traitement */}
       <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 space-y-4">
-        <div className="flex items-center gap-2 text-sm font-semibold text-gray-700">
-          <MessageSquare size={16} className="text-[#1A237E]" />
-          Motif du rejet ou commentaire
+        <div className={`flex items-center gap-2 text-sm font-semibold ${intent === 'reject' ? 'text-red-700' : 'text-gray-700'}`}>
+          <MessageSquare size={16} className={intent === 'reject' ? 'text-red-600' : 'text-[#1A237E]'} />
+          {intent === 'reject' ? 'Motif du rejet (Obligatoire)' : 'Commentaire de validation (Optionnel)'}
         </div>
         <textarea
           value={comment}
           onChange={e => setComment(e.target.value)}
-          placeholder="Saisissez un commentaire ou le motif de rejet (obligatoire pour un rejet)..."
+          placeholder={intent === 'reject' ? 'Saisissez le motif explicite du rejet pour le citoyen...' : 'Ajoutez une note interne ou un message (optionnel)...'}
           rows={5}
-          className="w-full px-4 py-3 text-sm rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-[#1A237E]/20 focus:border-[#1A237E] resize-none"
+          className={`w-full px-4 py-3 text-sm rounded-xl border focus:outline-none focus:ring-2 resize-none ${intent === 'reject' ? 'border-red-200 focus:ring-red-500/20 focus:border-red-500 bg-red-50/30' : 'border-gray-200 focus:ring-[#1A237E]/20 focus:border-[#1A237E] bg-white'}`}
         />
 
         {step === 'error' && (
@@ -91,26 +96,30 @@ const RequestDecision = () => {
         )}
 
         <div className="flex gap-3 pt-2">
-          <button
-            onClick={handleApprove}
-            disabled={step === 'loading'}
-            className="flex-1 flex items-center justify-center gap-2 bg-[#00875A] hover:bg-green-700 text-white font-bold py-3.5 rounded-xl transition-all shadow-lg shadow-green-900/10 active:scale-95 disabled:opacity-60"
-          >
-            {step === 'loading' && action === 'approve' ? (
-              <span className="w-5 h-5 border-2 border-white/40 border-t-white rounded-full animate-spin"></span>
-            ) : <CheckCircle size={18} />}
-            Approuver le dossier
-          </button>
-          <button
-            onClick={handleReject}
-            disabled={step === 'loading'}
-            className="flex-1 flex items-center justify-center gap-2 bg-[#E52E2E] hover:bg-red-700 text-white font-bold py-3.5 rounded-xl transition-all shadow-lg shadow-red-900/10 active:scale-95 disabled:opacity-60"
-          >
-            {step === 'loading' && action === 'reject' ? (
-              <span className="w-5 h-5 border-2 border-white/40 border-t-white rounded-full animate-spin"></span>
-            ) : <XCircle size={18} />}
-            Rejeter le dossier
-          </button>
+          {(!intent || intent === 'approve') && (
+            <button
+              onClick={handleApprove}
+              disabled={step === 'loading'}
+              className="flex-1 flex items-center justify-center gap-2 bg-[#00875A] hover:bg-green-700 text-white font-bold py-3.5 rounded-xl transition-all shadow-lg shadow-green-900/10 active:scale-95 disabled:opacity-60"
+            >
+              {step === 'loading' && action === 'approve' ? (
+                <span className="w-5 h-5 border-2 border-white/40 border-t-white rounded-full animate-spin"></span>
+              ) : <CheckCircle size={18} />}
+              Confirmer la validation
+            </button>
+          )}
+          {(!intent || intent === 'reject') && (
+            <button
+              onClick={handleReject}
+              disabled={step === 'loading'}
+              className="flex-1 flex items-center justify-center gap-2 bg-[#E52E2E] hover:bg-red-700 text-white font-bold py-3.5 rounded-xl transition-all shadow-lg shadow-red-900/10 active:scale-95 disabled:opacity-60"
+            >
+              {step === 'loading' && action === 'reject' ? (
+                <span className="w-5 h-5 border-2 border-white/40 border-t-white rounded-full animate-spin"></span>
+              ) : <XCircle size={18} />}
+              Confirmer le rejet
+            </button>
+          )}
         </div>
 
         <p className="text-xs text-gray-400 text-center">Cette décision sera enregistrée et notifiée au citoyen via le portail.</p>
