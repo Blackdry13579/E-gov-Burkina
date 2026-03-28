@@ -22,8 +22,8 @@ const AgentLayout = () => {
       <div className="flex-1 flex flex-col overflow-hidden relative lg:ml-64">
         <header className="hidden lg:flex items-center justify-between px-8 py-4 bg-white border-b border-gray-100 shadow-sm">
           <div>
-            <p className="text-xs text-gray-400 font-medium uppercase tracking-wider">E-Gov Burkina Faso</p>
-            <h2 className="text-lg font-bold text-gray-800">Espace Agent — Mairie de Ouagadougou</h2>
+            <p className="text-[9px] text-gray-400 font-bold uppercase tracking-[0.2em]">E-GOV Document Request</p>
+            <h2 className="text-base font-black text-gray-800">Espace Agent</h2>
           </div>
           <div className="flex items-center gap-3">
             <span className="inline-flex items-center gap-1.5 bg-green-50 text-green-700 text-xs font-semibold px-3 py-1.5 rounded-full border border-green-200">
@@ -36,7 +36,7 @@ const AgentLayout = () => {
 
         <header className="lg:hidden flex items-center justify-between px-4 py-3 bg-[#1A237E] text-white shadow">
           <div>
-            <p className="text-xs text-blue-200">Mairie de Ouagadougou</p>
+            <p className="text-[9px] text-blue-200 font-bold uppercase tracking-widest">E-GOV Document Request</p>
             <h2 className="text-sm font-bold">Espace Agent</h2>
           </div>
           <div className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center text-sm font-bold">

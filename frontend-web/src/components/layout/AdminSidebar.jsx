@@ -60,8 +60,11 @@ const AdminSidebar = () => {
           <UserCircle size={24} className="text-white" />
         </div>
         <div>
-          <p className="text-base font-black tracking-tight leading-none" style={{ color: '#1A1A2E' }}>
-            E-Gov Burkina
+          <p className="text-sm font-black tracking-tight leading-none" style={{ color: '#1A1A2E' }}>
+            E-GOV
+          </p>
+          <p className="text-[9px] font-bold uppercase tracking-[0.18em] mt-0.5" style={{ color: '#1A237E' }}>
+            Document Request
           </p>
           <p className="text-[10px] font-bold uppercase tracking-[0.18em] mt-0.5" style={{ color: '#94A3B8' }}>
             Profil Administrateur
