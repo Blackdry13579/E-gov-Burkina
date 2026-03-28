@@ -30,7 +30,7 @@ const ServiceDetail = () => {
   return (
     <div className="flex flex-col min-h-screen bg-gray-50 pb-24">
 
-      <div className="flex-1 overflow-y-auto mt-4 lg:mt-10 px-4 lg:px-0">
+      <div className="flex-1 overflow-y-auto mt-2 px-4 lg:px-0">
         <div className="max-w-4xl mx-auto space-y-8 pb-12">
           
           {/* Mobile Back Header */}

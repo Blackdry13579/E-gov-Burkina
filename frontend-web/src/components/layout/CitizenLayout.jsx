@@ -13,7 +13,7 @@ const CitizenLayout = () => {
       <div className="flex-1 flex flex-col overflow-hidden relative">
         {/* Main Content Area — Scrollable */}
         <main className="flex-1 overflow-y-auto pb-20 lg:pb-12 relative z-0">
-          <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 h-full w-full py-8">
+          <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 h-full w-full pt-2 pb-8">
             <Outlet />
           </div>
         </main>

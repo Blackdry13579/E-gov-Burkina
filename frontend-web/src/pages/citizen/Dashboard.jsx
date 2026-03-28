@@ -123,7 +123,7 @@ const CitizenDashboard = () => {
   return (
     <div className="flex flex-col min-h-screen bg-gray-50 pb-10">
 
-      <div className="p-4 flex-1 mt-4 lg:mt-8">
+      <div className="p-4 flex-1 mt-0">
         <div className="max-w-6xl mx-auto space-y-10">
           
           {/* Greeting Section */}

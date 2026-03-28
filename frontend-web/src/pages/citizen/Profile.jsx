@@ -34,7 +34,7 @@ const Profile = () => {
 
 
 
-      <div className="p-4 flex-1 pb-10 mt-4 lg:mt-8">
+      <div className="p-4 flex-1 pb-10 mt-0">
 
         <div className="max-w-2xl mx-auto">
           <div className="flex flex-col items-center text-center mt-6 mb-10">

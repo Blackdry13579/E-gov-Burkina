@@ -65,7 +65,7 @@ const EditProfile = () => {
 
 
 
-      <div className="p-4 flex-1 mt-4 lg:mt-8">
+      <div className="p-4 flex-1 mt-0">
         <div className="flex items-center gap-3 mb-6 lg:hidden">
           <button onClick={() => navigate('/citoyen/profil')} className="p-2 hover:bg-white rounded-full transition-colors">
             <ArrowLeft size={20} className="text-gray-600" />

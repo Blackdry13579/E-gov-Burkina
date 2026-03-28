@@ -58,33 +58,8 @@ const RequestTracking = () => {
 
   return (
     <div className="flex flex-col min-h-screen bg-[#F4F6F8]">
-      <header className="bg-white border-b border-gray-100 flex items-center justify-between px-6 py-6 sticky top-0 z-10 shadow-sm lg:px-8">
-        <div className="flex items-center space-x-3 lg:hidden">
-          <Emblem className="w-9 h-9" />
-          <div className="flex flex-col">
-            <span className="font-extrabold text-sm text-[#1A3A5C] leading-tight tracking-tight uppercase">Burkina Faso</span>
-            <span className="text-[10px] tracking-[0.15em] text-gray-400 font-bold uppercase">E-Services Officiels</span>
-          </div>
-        </div>
-        <div className="hidden lg:block text-center flex-1">
-          <h1 className="text-2xl font-extrabold text-[#1A3A5C] mr-10">Suivi de ma demande</h1>
-        </div>
-        <button 
-          onClick={() => navigate('/citoyen/notifications')}
-          className="w-10 h-10 rounded-full bg-blue-50 flex items-center justify-center text-institutional hover:bg-blue-100 transition-colors"
-        >
-          <Bell size={20} />
-        </button>
-      </header>
-
-      {/* Flag Line */}
-      <div className="h-1 flex w-full lg:hidden">
-        <div className="h-full bg-[#EF3340] w-1/2"></div>
-        <div className="h-full bg-[#009739] w-1/2"></div>
-      </div>
-
-      <div className="flex-1 overflow-y-auto">
-        <div className="max-w-4xl mx-auto px-4 lg:px-8 pt-8 pb-12">
+      <div className="flex-1 overflow-y-auto pt-2 pb-12">
+        <div className="max-w-4xl mx-auto px-4 lg:px-8">
           
           {/* TOP BAR MOBILE */}
           <div className="flex items-center gap-4 mb-8 lg:hidden">
