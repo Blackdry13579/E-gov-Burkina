@@ -13,19 +13,20 @@ const MyRequests = () => {
   const navigate = useNavigate();
   const filters = ['Tout', 'En attente', 'Validé', 'Rejeté'];
 
-  const getFilteredRequests = () => {
+const getFilteredRequests = () => {
     if (filter === 'Tout') return requests;
     return requests.filter(r => {
-      if (filter === 'En attente') return r.statut === 'EN_ATTENTE' || r.statut === 'EN_COURS';
-      if (filter === 'Validé') return r.statut === 'VALIDE';
-      if (filter === 'Rejeté') return r.statut === 'REJETE';
+      const s = r.statut?.toUpperCase() || '';
+      if (filter === 'En attente') return s === 'EN_ATTENTE' || s === 'EN_COURS' || s === 'EN ATTENTE';
+      if (filter === 'Validé') return s === 'VALIDE' || s === 'VALIDÉ' || s === 'VALIDEE' || s === 'VALIDÉE';
+      if (filter === 'Rejeté') return s === 'REJETE' || s === 'REJETÉ' || s === 'REJETEE';
       return true;
     });
   };
 
   const getStatusConfig = (status) => {
-    switch(status) {
-      case 'VALIDE': 
+    const s = status?.toUpperCase() || '';
+    if (s.includes('VALIDE') || s.includes('VALIDÉ') || s.includes('DISPONIBLE')) {
         return { 
           label: 'Validé', 
           color: 'text-emerald-700', 
@@ -33,7 +34,8 @@ const MyRequests = () => {
           icon: CheckCircle,
           border: 'border-emerald-100'
         };
-      case 'REJETE': 
+    }
+    if (s.includes('REJETE') || s.includes('REJETÉ')) {
         return { 
           label: 'Rejeté', 
           color: 'text-red-700', 
@@ -41,8 +43,8 @@ const MyRequests = () => {
           icon: AlertCircle,
           border: 'border-red-100'
         };
-      case 'EN_ATTENTE':
-      case 'EN_COURS':
+    }
+    if (s.includes('ATTENTE') || s.includes('COURS')) {
         return { 
           label: 'En attente', 
           color: 'text-amber-700', 
@@ -50,15 +52,14 @@ const MyRequests = () => {
           icon: Clock,
           border: 'border-amber-100'
         };
-      default: 
-        return { 
-          label: status, 
-          color: 'text-gray-700', 
-          bg: 'bg-gray-50', 
-          icon: FileText,
-          border: 'border-gray-100'
-        };
     }
+    return { 
+      label: status || 'Inconnu', 
+      color: 'text-gray-700', 
+      bg: 'bg-gray-50', 
+      icon: FileText,
+      border: 'border-gray-100'
+    };
   };
 
   return (

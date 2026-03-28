@@ -38,12 +38,12 @@ const CitizenDashboard = () => {
     if (!requestsLoading && requests) {
       // 1. Calcul des stats
       const counts = requests.reduce((acc, curr) => {
-        const s = (curr.status || '').toUpperCase();
-        if (s === 'EN_ATTENTE' || s === 'EN_COURS') {
+        const s = (curr.statut || curr.status || '').toUpperCase();
+        if (s === 'EN_ATTENTE' || s === 'EN_COURS' || s === 'EN ATTENTE') {
           acc.enCours += 1;
-        } else if (['VALIDE', 'VALIDÉE', 'DISPONIBLE', 'TERMINEE', 'PRÊT', 'PRET'].includes(s)) {
+        } else if (['VALIDE', 'VALIDÉ', 'VALIDÉE', 'DISPONIBLE', 'TERMINEE', 'PRÊT', 'PRET'].includes(s)) {
           acc.delivres += 1;
-        } else if (s === 'REJETE' || s === 'REJETEE') {
+        } else if (s === 'REJETE' || s === 'REJETÉ' || s === 'REJETEE') {
           acc.rejetes += 1;
         }
         return acc;
