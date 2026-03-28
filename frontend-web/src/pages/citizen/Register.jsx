@@ -127,52 +127,53 @@ const Register = () => {
             {/* Compact Form Fields */}
             <form onSubmit={handleSubmit} className="space-y-3 lg:space-y-4">
               
-              <div>
-                <label className="block text-[8px] font-black text-gray-400 uppercase tracking-[0.2em] mb-1 px-1">Identité Complète</label>
-                <div className="relative group">
-                  <User className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-200 group-focus-within:text-[#1A237E] transition-colors" size={12} />
-                  <input type="text" placeholder="Ex: Jean-Baptiste Sawadogo" required
-                    value={formData.nom}
-                    onChange={e => setFormData({...formData, nom: e.target.value})}
-                    className="w-full pl-9 pr-4 py-2.5 bg-[#F8FAFF] border border-gray-100 rounded-xl text-[11px] font-bold focus:outline-none focus:border-[#1A237E] transition-all"
-                  />
+              <div className="grid grid-cols-2 gap-3 lg:gap-4">
+                <div>
+                  <label className="block text-[8px] font-black text-gray-400 uppercase tracking-[0.2em] mb-1 px-1">Nom</label>
+                  <div className="relative group">
+                    <User className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-200 group-focus-within:text-[#1A237E] transition-colors" size={12} />
+                    <input type="text" placeholder="Ex: Sawadogo" required
+                      value={formData.nom}
+                      onChange={e => setFormData({...formData, nom: e.target.value})}
+                      className="w-full pl-9 pr-4 py-2.5 bg-[#F8FAFF] border border-gray-100 rounded-xl text-[11px] font-bold focus:outline-none focus:border-[#1A237E] transition-all"
+                    />
+                  </div>
+                </div>
+                <div>
+                  <label className="block text-[8px] font-black text-gray-400 uppercase tracking-[0.2em] mb-1 px-1 truncate">Prénom</label>
+                  <div className="relative group">
+                    <User className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-200 group-focus-within:text-[#1A237E] transition-colors" size={12} />
+                    <input type="text" placeholder="Ex: Jean-Baptiste" required
+                      value={formData.prenom}
+                      onChange={e => setFormData({...formData, prenom: e.target.value})}
+                      className="w-full pl-9 pr-4 py-2.5 bg-[#F8FAFF] border border-gray-100 rounded-xl text-[11px] font-bold focus:outline-none focus:border-[#1A237E] transition-all"
+                    />
+                  </div>
                 </div>
               </div>
 
               <div className="grid grid-cols-2 gap-3 lg:gap-4">
                 <div>
-                  <label className="block text-[8px] font-black text-gray-400 uppercase tracking-[0.2em] mb-1 px-1 truncate">N° CNIB</label>
+                  <label className="block text-[8px] font-black text-gray-400 uppercase tracking-[0.2em] mb-1 px-1">Adresse Email</label>
                   <div className="relative group">
-                    <CreditCard className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-200 group-focus-within:text-[#1A237E] transition-colors" size={12} />
-                    <input type="text" placeholder="BXXXXXXXX" required
-                      value={formData.cnib}
-                      onChange={e => setFormData({...formData, cnib: e.target.value})}
+                    <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-200 font-bold text-xs group-focus-within:text-[#1A237E] transition-colors">@</span>
+                    <input type="email" placeholder="mail@egov.bf" required
+                      value={formData.email}
+                      onChange={e => setFormData({...formData, email: e.target.value})}
                       className="w-full pl-9 pr-4 py-2.5 bg-[#F8FAFF] border border-gray-100 rounded-xl text-[11px] font-bold focus:outline-none focus:border-[#1A237E] transition-all"
                     />
                   </div>
                 </div>
                 <div>
-                  <label className="block text-[8px] font-black text-gray-400 uppercase tracking-[0.2em] mb-1 px-1 truncate">Date Naiss.</label>
+                  <label className="block text-[8px] font-black text-gray-400 uppercase tracking-[0.2em] mb-1 px-1 truncate">Téléphone (8 chiffres)</label>
                   <div className="relative group">
-                    <Calendar className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-200 group-focus-within:text-[#1A237E] transition-colors" size={12} />
-                    <input type="date" required
-                      value={formData.dateNaissance}
-                      onChange={e => setFormData({...formData, dateNaissance: e.target.value})}
+                    <Phone className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-200 group-focus-within:text-[#1A237E] transition-colors" size={12} />
+                    <input type="tel" placeholder="70 12 34 56" required maxLength={15}
+                      value={formData.telephone}
+                      onChange={e => setFormData({...formData, telephone: e.target.value.replace(/\s+/g, '')})}
                       className="w-full pl-9 pr-4 py-2.5 bg-[#F8FAFF] border border-gray-100 rounded-xl text-[11px] font-bold focus:outline-none focus:border-[#1A237E] transition-all"
                     />
                   </div>
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-[8px] font-black text-gray-400 uppercase tracking-[0.2em] mb-1 px-1">Téléphone (8 chiffres)</label>
-                <div className="relative group">
-                  <Phone className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-200 group-focus-within:text-[#1A237E] transition-colors" size={12} />
-                  <input type="tel" placeholder="70 12 34 56 (sans +226)" required maxLength={15}
-                    value={formData.telephone}
-                    onChange={e => setFormData({...formData, telephone: e.target.value.replace(/\s+/g, '')})}
-                    className="w-full pl-9 pr-4 py-2.5 bg-[#F8FAFF] border border-gray-100 rounded-xl text-[11px] font-bold focus:outline-none focus:border-[#1A237E] transition-all"
-                  />
                 </div>
               </div>
 
