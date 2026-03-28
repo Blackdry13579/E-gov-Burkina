@@ -112,7 +112,7 @@ const UnifiedLogin = () => {
           <div className="absolute inset-0 bg-gradient-to-br from-[#0F2244]/80 via-[#1A237E]/60 to-[#2952A3]/40" />
 
           {/* Content */}
-          <div className="relative z-10 flex flex-col justify-between p-10 lg:p-14 w-full h-full">
+          <div className="relative z-10 flex flex-col justify-between p-8 lg:p-12 w-full h-full overflow-y-auto custom-scrollbar">
 
             {/* Top: Brand */}
             <div className="flex items-center gap-3">
@@ -127,30 +127,30 @@ const UnifiedLogin = () => {
 
             {/* Middle: Title */}
             <div>
-              <div className="flex gap-1.5 mb-6">
+              <div className="flex gap-1.5 mb-4">
                 <div className="h-1 w-10 bg-yellow-400 rounded-full" />
                 <div className="h-1 w-3 bg-white/20 rounded-full" />
                 <div className="h-1 w-3 bg-white/20 rounded-full" />
               </div>
 
-              <h1 className="text-4xl lg:text-5xl font-black text-white leading-[0.9] tracking-tighter mb-5 uppercase">
+              <h1 className="text-3xl lg:text-4xl font-black text-white leading-[0.9] tracking-tighter mb-4 uppercase">
                 E-GOV<br />
                 <span className="text-blue-300">Document</span><br />
                 Request
               </h1>
 
-              <p className="text-[12px] text-blue-100/70 font-medium max-w-[260px] leading-relaxed mb-8">
+              <p className="text-[11px] text-blue-100/70 font-medium max-w-[240px] leading-relaxed mb-6">
                 Portail numérique unifié pour les services administratifs de l'État burkinabè.
               </p>
 
               {/* Role badges */}
-              <div className="flex flex-col gap-3">
+              <div className="flex flex-col gap-2.5">
                 {[
                   { icon: User,   label: 'Citoyen',         desc: 'Demandez vos documents officiels',   color: 'text-blue-300' },
                   { icon: Users,  label: 'Agent de l\'État', desc: 'Traitez les dossiers en attente',    color: 'text-green-300' },
                   { icon: Shield, label: 'Administrateur',   desc: 'Gérez le système et les utilisateurs', color: 'text-yellow-300' },
                 ].map(({ icon: Icon, label, desc, color }) => (
-                  <div key={label} className="flex items-center gap-3 bg-white/5 backdrop-blur-sm rounded-xl px-4 py-3 border border-white/10">
+                  <div key={label} className="flex items-center gap-3 bg-white/5 backdrop-blur-sm rounded-xl px-4 py-2.5 border border-white/10">
                     <Icon size={16} className={color} />
                     <div>
                       <p className={`text-[10px] font-black uppercase tracking-widest ${color}`}>{label}</p>
