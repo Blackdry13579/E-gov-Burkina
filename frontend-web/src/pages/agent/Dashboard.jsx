@@ -15,7 +15,7 @@ const AgentDashboard = () => {
     </div>
   );
 
-  const pendingRequests = requests?.filter(req => req.status === 'EN_ATTENTE').slice(0, 3) || [];
+  const pendingRequests = requests?.filter(req => req.status === 'EN ATTENTE').slice(0, 3) || [];
 
   return (
     <div className="space-y-6">
@@ -89,8 +89,8 @@ const AgentDashboard = () => {
                       <User size={18} />
                     </div>
                     <div>
-                      <p className="text-sm font-bold text-gray-900">{req.citizenName || req.utilisateur?.nom || 'Citoyen'}</p>
-                      <p className="text-[10px] text-gray-500 uppercase tracking-widest">{req.type || req.documentType?.nom || 'Document'}</p>
+                      <p className="text-sm font-bold text-gray-900">{req.citizen || req.citizenName || req.utilisateur?.nom || 'Citoyen'}</p>
+                      <p className="text-[10px] text-gray-500 uppercase tracking-widest">{req.document || req.type || req.documentType?.nom || 'Document'}</p>
                     </div>
                   </div>
                   <NavLink to={`/agent/requests/${req.id || req._id}/detail`} className="p-2 text-gray-400 hover:text-[#1A237E] hover:bg-white rounded-lg transition-colors">
