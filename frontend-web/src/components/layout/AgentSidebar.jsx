@@ -24,7 +24,7 @@ const AgentSidebar = () => {
 
   const handleLogout = () => {
     logout();
-    navigate('/agent/login');
+    navigate('/login');
   };
 
   return (

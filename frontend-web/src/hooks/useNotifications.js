@@ -52,5 +52,3 @@ export const useNotifications = () => {
     markAllRead: handleMarkAllRead 
   };
 };
-
-export default useNotifications;

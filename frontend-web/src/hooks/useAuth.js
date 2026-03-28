@@ -4,6 +4,7 @@ import { useAuth } from '../context/AuthContext';
  * Convenience hook for authentication.
  * Wraps the raw context and can provide additional helpers.
  */
+
 export const useAuthUser = () => {
   const auth = useAuth();
   
@@ -16,5 +17,3 @@ export const useAuthUser = () => {
     initials: `${auth.user?.prenom?.charAt(0) || ''}${auth.user?.nom?.charAt(0) || ''}`.toUpperCase()
   };
 };
-
-export default useAuthUser;

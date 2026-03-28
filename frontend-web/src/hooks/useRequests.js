@@ -27,5 +27,3 @@ export const useRequests = () => {
 
   return { requests, loading, error, refresh: fetchRequests };
 };
-
-export default useRequests;

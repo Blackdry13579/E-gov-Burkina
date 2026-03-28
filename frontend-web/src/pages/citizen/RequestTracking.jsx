@@ -1,6 +1,6 @@
 import React from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { useRequestDetail } from '../../hooks/useRequests';
+import { useRequestDetail } from '../../hooks/useRequestDetail';
 import Emblem from '../../components/common/Emblem';
 import { 
   FileText, Clock, CheckCircle2, 
