@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
+import Emblem from '../../components/common/Emblem';
 import { simulateAgentLogin } from '../../services/api';
 import { useAuth } from '../../context/AuthContext';
-import { Building2, Eye, EyeOff, LogIn, ShieldCheck } from 'lucide-react';
+import { Briefcase, Lock, Eye, EyeOff, Loader2, ArrowRight, ShieldCheck } from 'lucide-react';
 
 const AgentLogin = () => {
   const [matricule, setMatricule] = useState(import.meta.env.VITE_TEST_AGENT_MATRICULE || '');
@@ -10,6 +11,7 @@ const AgentLogin = () => {
   const [showPass, setShowPass] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+
   const { loginWithToken } = useAuth();
   const navigate = useNavigate();
 
@@ -19,7 +21,6 @@ const AgentLogin = () => {
     setLoading(true);
     try {
       const response = await simulateAgentLogin(matricule, password);
-      // loginWithToken(token, user)
       loginWithToken(response.token, response.user);
       navigate('/agent/dashboard');
     } catch (err) {
@@ -30,112 +31,156 @@ const AgentLogin = () => {
   };
 
   return (
-    <div className="min-h-screen flex bg-[#F8F9FA]">
-      {/* Left Panel */}
-      <div className="hidden lg:flex flex-col justify-between w-1/2 bg-gradient-to-br from-[#1A237E] to-[#0e3d5e] p-12 text-white relative overflow-hidden">
-        <div className="absolute inset-0 opacity-10" style={{backgroundImage:'radial-gradient(circle at 20% 80%, #fff 1px, transparent 1px), radial-gradient(circle at 80% 20%, #fff 1px, transparent 1px)', backgroundSize:'60px 60px'}}></div>
-        <div className="relative z-10">
-          <div className="flex items-center gap-3 mb-2">
-            <div className="w-12 h-12 rounded-2xl bg-white/15 flex items-center justify-center">
-              <Building2 size={24} />
-            </div>
-            <div>
-              <h1 className="font-bold text-xl">E-Gov</h1>
-              <p className="text-blue-200 text-sm">Burkina Faso</p>
-            </div>
-          </div>
-        </div>
-        <div className="relative z-10">
-          <div className="inline-flex items-center gap-2 bg-white/15 rounded-full px-4 py-2 mb-6 text-sm font-medium">
-            <ShieldCheck size={16} /> Espace Sécurisé Agent
-          </div>
-          <h2 className="text-4xl font-extrabold leading-tight mb-4">Mairie de<br/>Ouagadougou</h2>
-          <p className="text-blue-200 text-base max-w-xs">Connectez-vous avec votre matricule officiel pour accéder à l'espace de traitement des demandes citoyennes.</p>
-        </div>
-        <div className="relative z-10 flex gap-4 text-sm text-blue-200">
-          <span>Cité Administrative</span>
-          <span>•</span>
-          <span>État Civil</span>
-          <span>•</span>
-          <span>Services Publics</span>
-        </div>
-      </div>
+    <div className="h-screen w-full bg-[#EAEEF3] flex items-center justify-center p-2 md:p-4 lg:p-6 font-sans overflow-hidden">
+      
+      {/* ── Auth Card ── */}
+      <div className="w-full max-w-[1300px] h-full max-h-[96vh] bg-white rounded-2xl shadow-2xl shadow-blue-900/10 flex flex-col md:flex-row overflow-hidden border border-gray-100">
+        
+        {/* ── Left: Hero (40%) ── */}
+        <div className="hidden md:flex md:w-[40%] relative overflow-hidden bg-[#1A237E]">
+          <img
+            src="/building.png"
+            alt="Bâtiment officiel"
+            className="absolute inset-0 w-full h-full object-cover mix-blend-overlay opacity-40"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-[#0d184a] via-transparent to-transparent" />
 
-      {/* Right Panel - Form */}
-      <div className="flex-1 flex items-center justify-center px-6 py-12">
-        <div className="w-full max-w-md">
-          <div className="lg:hidden flex items-center gap-3 mb-8">
-            <div className="w-10 h-10 rounded-xl bg-[#1A237E] flex items-center justify-center">
-              <Building2 size={20} className="text-white" />
-            </div>
-            <div>
-              <h1 className="font-bold text-[#1A237E]">E-Gov — Espace Agent</h1>
-              <p className="text-gray-500 text-xs">Mairie de Ouagadougou</p>
-            </div>
-          </div>
-
-          <div className="mb-8">
-            <h2 className="text-2xl font-extrabold text-gray-900">Connexion Agent</h2>
-            <p className="text-gray-500 text-sm mt-1">Entrez votre matricule et mot de passe officiel.</p>
-          </div>
-
-          <form onSubmit={handleSubmit} className="space-y-5">
-            <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-1.5">Matricule Agent</label>
-              <input
-                type="text"
-                placeholder="Ex: MAI-OUAGA-2024-089"
-                value={matricule}
-                onChange={e => setMatricule(e.target.value)}
-                className="w-full px-4 py-3 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-[#1A237E]/30 focus:border-[#1A237E] bg-white transition"
-                required
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-1.5">Mot de passe</label>
-              <div className="relative">
-                <input
-                  type={showPass ? 'text' : 'password'}
-                  placeholder="••••••••"
-                  value={password}
-                  onChange={e => setPassword(e.target.value)}
-                  className="w-full px-4 py-3 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-[#1A237E]/30 focus:border-[#1A237E] bg-white transition pr-12"
-                  required
-                />
-                <button type="button" onClick={() => setShowPass(!showPass)} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600">
-                  {showPass ? <EyeOff size={18} /> : <Eye size={18} />}
-                </button>
+          <div className="relative z-10 flex flex-col justify-end p-10 lg:p-12 w-full h-full pb-16">
+            <div className="bg-white/10 backdrop-blur-xl rounded-xl p-3 border border-white/10 w-fit mb-6 shadow-xl">
+              <div className="flex items-center gap-2.5">
+                <div className="bg-white p-1.5 rounded-lg shadow-lg">
+                  <Emblem className="w-6 h-6" />
+                </div>
+                <div className="flex flex-col text-left">
+                  <span className="text-[7px] font-black text-yellow-500 uppercase tracking-[0.3em] mb-0.5 leading-none">République du</span>
+                  <span className="text-sm font-black text-white tracking-tighter leading-none uppercase">Burkina Faso</span>
+                </div>
               </div>
+            </div>
+
+            <h1 className="text-3xl lg:text-4xl font-black text-white leading-[0.9] tracking-tighter mb-4 uppercase">
+              Espace<br />
+              <span className="text-blue-300">Agent Officiel</span>
+            </h1>
+
+            <div className="flex items-center gap-2 mb-8">
+              <ShieldCheck size={14} className="text-yellow-400" />
+              <p className="text-[11px] text-blue-100/80 font-medium leading-relaxed">
+                Connectez-vous avec votre matricule pour traiter les demandes citoyennes.
+              </p>
+            </div>
+
+            <div className="flex gap-3 flex-wrap mb-2">
+              {['État Civil', 'Mairie', 'Services Publics'].map(tag => (
+                <span key={tag} className="text-[9px] px-3 py-1 bg-white/10 border border-white/10 rounded-full text-blue-200 font-bold">
+                  {tag}
+                </span>
+              ))}
+            </div>
+
+            <div className="flex gap-1.5">
+              <div className="h-1 w-8 bg-yellow-500 rounded-full" />
+              <div className="h-1 w-2 bg-white/20 rounded-full" />
+              <div className="h-1 w-2 bg-white/20 rounded-full" />
+            </div>
+          </div>
+        </div>
+
+        {/* ── Right: Form (60%) ── */}
+        <div className="flex-1 flex flex-col items-center p-8 md:p-10 lg:p-12 relative bg-white overflow-y-auto scrollbar-hide pt-24 md:pt-32 lg:pt-40">
+          <div className="max-w-xs w-full mx-auto space-y-10 lg:space-y-12">
+
+            <div className="text-center space-y-2">
+              <h2 className="text-4xl font-black text-gray-900 tracking-tight leading-none uppercase">
+                Connexion 🪪
+              </h2>
+              <p className="text-[10px] font-black text-gray-400 tracking-[0.1em] uppercase opacity-70">
+                Espace sécurisé pour les agents habilités
+              </p>
             </div>
 
             {error && (
-              <div className="bg-red-50 border border-red-200 text-red-700 text-sm px-4 py-3 rounded-xl">
-                {error}
+              <div className="p-3 bg-red-50 border border-red-100 rounded-xl text-red-600 text-[10px] font-bold text-center">
+                ⚠️ {error}
               </div>
             )}
 
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full flex items-center justify-center gap-2 bg-[#1A237E] hover:bg-[#0e3d5e] text-white font-semibold py-3 rounded-xl transition-all duration-200 shadow-lg shadow-blue-900/20 active:scale-95 disabled:opacity-60"
-            >
-              {loading ? (
-                <span className="w-5 h-5 border-2 border-white/40 border-t-white rounded-full animate-spin"></span>
-              ) : (
-                <LogIn size={18} />
-              )}
-              {loading ? 'Connexion...' : 'Se connecter'}
-            </button>
-          </form>
+            <form onSubmit={handleSubmit} className="space-y-6">
+              <div className="space-y-5">
+                <div>
+                  <label className="block text-[8px] font-black text-gray-400 uppercase tracking-[0.2em] mb-1 px-1">
+                    Matricule Agent
+                  </label>
+                  <div className="relative group">
+                    <Briefcase className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-200 group-focus-within:text-[#1A237E] transition-colors" size={12} />
+                    <input
+                      type="text"
+                      value={matricule}
+                      onChange={(e) => setMatricule(e.target.value)}
+                      placeholder="Ex: BF-AG-000001"
+                      className="w-full pl-9 pr-6 py-3 bg-[#F8FAFF] border border-gray-100 rounded-xl text-[11px] font-bold focus:outline-none focus:border-[#1A237E] transition-all"
+                      required
+                    />
+                  </div>
+                </div>
 
-          <div className="mt-8 pt-6 border-t border-gray-100 flex justify-center">
-            <button
-              onClick={() => navigate('/admin/login')}
-              className="text-sm font-medium text-gray-500 hover:text-[#1A237E] transition-colors"
-            >
-              Aller vers le Portail Administratif (Admin)
-            </button>
+                <div>
+                  <label className="block text-[8px] font-black text-gray-400 uppercase tracking-[0.2em] mb-1 px-1">
+                    Mot de passe
+                  </label>
+                  <div className="relative group">
+                    <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-200 group-focus-within:text-[#1A237E] transition-colors" size={12} />
+                    <input
+                      type={showPass ? 'text' : 'password'}
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      placeholder="••••••••"
+                      className="w-full pl-9 pr-12 py-3 bg-[#F8FAFF] border border-gray-100 rounded-xl text-[11px] font-bold focus:outline-none focus:border-[#1A237E] transition-all"
+                      required
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPass(!showPass)}
+                      className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-300 hover:text-[#1A237E]"
+                    >
+                      {showPass ? <EyeOff size={14} /> : <Eye size={14} />}
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <button
+                type="submit"
+                disabled={loading}
+                className="w-full py-3.5 bg-[#1A237E] text-white font-black rounded-xl shadow-xl shadow-blue-900/10 hover:scale-[1.01] active:scale-[0.98] transition-all flex justify-center items-center gap-2.5 disabled:opacity-70"
+              >
+                {loading ? <Loader2 className="animate-spin" size={16} /> : (
+                  <span className="text-[10px] uppercase tracking-wider">
+                    Se Connecter <ArrowRight className="inline ml-1" size={14} />
+                  </span>
+                )}
+              </button>
+            </form>
+
+            <div className="text-center pt-4 space-y-3">
+              <Link
+                to="/login"
+                className="text-[9px] font-black text-gray-300 hover:text-[#1A237E] uppercase tracking-widest transition-colors flex items-center justify-center gap-1.5 mx-auto"
+              >
+                ← Retour à l'espace <span className="text-[#1A237E] underline decoration-2 underline-offset-4">Citoyen</span>
+              </Link>
+            </div>
+
+            <div className="pt-6 flex flex-col items-center gap-2 border-t border-gray-50 scale-[0.8] opacity-60">
+              <div className="flex items-center gap-2 px-6 py-1 bg-gray-50/50 rounded-full border border-gray-100">
+                <span className="text-[7.5px] font-black text-gray-500 uppercase tracking-[0.2em] flex items-center gap-2">
+                  <span className="w-1.5 h-1.5 rounded-full bg-red-500/50" />
+                  Unité - Progrès - Justice
+                  <span className="w-1.5 h-1.5 rounded-full bg-green-500/50" />
+                </span>
+              </div>
+              <p className="text-[7px] font-bold uppercase tracking-[0.2em]">© 2026 Burkina Faso</p>
+            </div>
           </div>
         </div>
       </div>
