@@ -118,3 +118,24 @@ export const useAgentProfile = () => {
 
   return { profile, loading, error };
 };
+
+/**
+ * Hook to manage agent action history
+ */
+export const useAgentHistory = () => {
+  const [history, setHistory] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    // We use getRequests as a base or an empty array for now to avoid build errors
+    getRequests().then(data => {
+      setHistory(data.slice(0, 10)); // Just a stub
+      setLoading(false);
+    }).catch(() => {
+      setHistory([]);
+      setLoading(false);
+    });
+  }, []);
+
+  return { history, loading };
+};
