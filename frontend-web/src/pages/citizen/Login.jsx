@@ -21,8 +21,17 @@ const Login = () => {
     setLoading(true);
     try {
       const response = await simulateCitizenLogin(email, password);
-      loginWithToken(response.token, response.user); 
-      navigate('/accueil');
+      loginWithToken(response.token, response.user);
+      
+      // Redirection basée sur le rôle réel de l'utilisateur
+      const backendRole = response.user?.role || '';
+      if (backendRole === 'ADMIN') {
+        navigate('/admin/dashboard');
+      } else if (backendRole.startsWith('AGENT') || backendRole === 'SUPERVISEUR') {
+        navigate('/agent/dashboard');
+      } else {
+        navigate('/citoyen/accueil');
+      }
     } catch (err) {
       setError(err.message || 'Identifiants incorrects.');
     } finally {
@@ -146,16 +155,6 @@ const Login = () => {
               <Link to="/register" className="text-[9px] font-black text-gray-300 hover:text-[#1A237E] uppercase tracking-widest transition-colors flex items-center justify-center gap-1.5 mx-auto">
                  Pas de compte ? <span className="text-[#1A237E] underline decoration-2 underline-offset-4">Inscription</span>
               </Link>
-              
-              <div className="flex items-center justify-center gap-4">
-                <Link to="/agent/login" className="text-[8px] font-bold text-gray-300 hover:text-[#1A237E] uppercase tracking-[0.2em] transition-colors">
-                   Espace Agent
-                </Link>
-                <span className="text-gray-200">•</span>
-                <Link to="/admin/login" className="text-[8px] font-bold text-gray-300 hover:text-[#1A237E] uppercase tracking-[0.2em] transition-colors">
-                   Espace Administration
-                </Link>
-              </div>
             </div>
 
             {/* Footer Compact */}

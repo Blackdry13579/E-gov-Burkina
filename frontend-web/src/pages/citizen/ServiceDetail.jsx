@@ -120,7 +120,7 @@ const ServiceDetail = () => {
                   <FileText size={14} /> Description
                 </h3>
                 <p className="text-sm text-gray-600 leading-relaxed font-medium">
-                  Le {service.name.toLowerCase()} est délivré après vérification de vos informations par les agents assermentés. La version dématérialisée fournie possède une signature électronique officielle.
+                  Le {service.name.toLowerCase()} est délivré après vérification de vos informations par les services compétents. La version dématérialisée fournie possède une signature électronique officielle.
                 </p>
               </section>
 
@@ -193,7 +193,7 @@ const ServiceDetail = () => {
           {/* Action Principale - Fin de page */}
           <div className="mt-12 flex justify-center pb-8">
             <button 
-              onClick={() => navigate('/demande/etape1', { state: { serviceId: id, serviceName: service.name } })}
+              onClick={() => navigate('/citoyen/demande/etape1', { state: { serviceId: id, serviceName: service.name } })}
               className="w-full md:w-auto px-12 py-4 bg-[#1A3A5C] text-white font-black rounded-2xl shadow-2xl shadow-blue-900/20 hover:scale-[1.02] hover:bg-[#0f2440] active:scale-[0.98] transition-all flex justify-center items-center gap-3 text-[11px] md:text-xs uppercase tracking-[0.15em]"
             >
               <CheckCircle2 size={20} />

@@ -64,19 +64,21 @@ function AppRoutes() {
         <Route path="/register" element={<Register />} />
         
         {/* Protected Citizen Routes in Layout */}
-        <Route element={<CitizenLayout />}>
-          <Route path="/accueil" element={<CitizenDashboard />} />
-          <Route path="/services" element={<ServicesCatalog />} />
-          <Route path="/services/:id" element={<ServiceDetail />} />
-          <Route path="/demande/etape1" element={<FormStep1 />} />
-          <Route path="/demande/etape2" element={<FormStep2 />} />
-          <Route path="/demande/etape3" element={<FormStep3 />} />
-          <Route path="/demande/confirmation" element={<Confirmation />} />
-          <Route path="/demandes" element={<MyRequests />} />
-          <Route path="/suivi/:id" element={<RequestTracking />} />
-          <Route path="/notifications" element={<Notifications />} />
-          <Route path="/profil" element={<Profile />} />
-          <Route path="/profil/modifier" element={<EditProfile />} />
+        <Route element={<PrivateRoute requiredRole="citizen" redirectTo="/login" />}>
+          <Route element={<CitizenLayout />}>
+            <Route path="/citoyen/accueil" element={<CitizenDashboard />} />
+            <Route path="/citoyen/services" element={<ServicesCatalog />} />
+            <Route path="/citoyen/services/:id" element={<ServiceDetail />} />
+            <Route path="/citoyen/demande/etape1" element={<FormStep1 />} />
+            <Route path="/citoyen/demande/etape2" element={<FormStep2 />} />
+            <Route path="/citoyen/demande/etape3" element={<FormStep3 />} />
+            <Route path="/citoyen/demande/confirmation" element={<Confirmation />} />
+            <Route path="/citoyen/demandes" element={<MyRequests />} />
+            <Route path="/citoyen/suivi/:id" element={<RequestTracking />} />
+            <Route path="/citoyen/notifications" element={<Notifications />} />
+            <Route path="/citoyen/profil" element={<Profile />} />
+            <Route path="/citoyen/profil/modifier" element={<EditProfile />} />
+          </Route>
         </Route>
 
         {/* ── Admin ─────────────────────────────────────────── */}

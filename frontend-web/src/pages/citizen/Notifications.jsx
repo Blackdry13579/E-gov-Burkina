@@ -18,7 +18,15 @@ const Notifications = () => {
   const filters = ['Tout', 'Demandes', 'Services'];
 
   useEffect(() => {
-    getCitizenNotifications().then(data => setNotifications(data));
+    getCitizenNotifications().then(data => {
+      // Filtrage strict : Ne garder que ce qui est pour un citoyen
+      const filtered = data.filter(n => {
+        const text = (n.titre + ' ' + n.message).toLowerCase();
+        const agentTerms = ['nouvelle demande', 'à traiter', 'agent', 'mairie', 'assigné', 'instruction', 'commission'];
+        return !agentTerms.some(term => text.includes(term));
+      });
+      setNotifications(filtered);
+    });
   }, []);
 
   const getIcon = (type, lu) => {

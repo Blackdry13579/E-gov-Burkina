@@ -51,7 +51,7 @@ const EditProfile = () => {
       };
 
       await updateCitizenProfile(payload);
-      navigate('/profil');
+      navigate('/citoyen/profil');
     } catch (err) {
       alert(err.message || "Erreur lors de la mise à jour");
     } finally {
@@ -73,7 +73,7 @@ const EditProfile = () => {
           <h1 className="text-2xl font-extrabold text-[#1A3A5C]">Modifier mon profil</h1>
         </div>
         <button 
-          onClick={() => navigate('/notifications')}
+          onClick={() => navigate('/citoyen/notifications')}
           className="w-10 h-10 rounded-full bg-blue-50 flex items-center justify-center text-institutional hover:bg-blue-100 transition-colors"
         >
           <Bell size={20} />
@@ -94,7 +94,7 @@ const EditProfile = () => {
 
       <div className="p-4 flex-1 mt-4 lg:mt-8">
         <div className="flex items-center gap-3 mb-6 lg:hidden">
-          <button onClick={() => navigate('/profil')} className="p-2 hover:bg-white rounded-full transition-colors">
+          <button onClick={() => navigate('/citoyen/profil')} className="p-2 hover:bg-white rounded-full transition-colors">
             <ArrowLeft size={20} className="text-gray-600" />
           </button>
           <div className="flex flex-col">
@@ -193,7 +193,7 @@ const EditProfile = () => {
             </button>
             <button 
               type="button" 
-              onClick={() => navigate('/profil')}
+              onClick={() => navigate('/citoyen/profil')}
               className="w-full py-4 bg-white text-gray-500 font-bold rounded-2xl border border-gray-100 hover:bg-gray-50 transition-all flex justify-center items-center gap-2"
             >
               <X size={20} />

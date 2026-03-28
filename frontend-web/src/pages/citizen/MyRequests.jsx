@@ -81,7 +81,7 @@ const MyRequests = () => {
           <h1 className="text-2xl font-extrabold text-[#1A237E] mr-10">Mes Demandes</h1>
         </div>
         <button 
-          onClick={() => navigate('/notifications')}
+          onClick={() => navigate('/citoyen/notifications')}
           className="w-10 h-10 rounded-full bg-blue-50 flex items-center justify-center text-institutional hover:bg-blue-100 transition-colors"
         >
           <Bell size={20} />
@@ -138,7 +138,7 @@ const MyRequests = () => {
               return (
                 <div 
                   key={req.id} 
-                  onClick={() => navigate(`/suivi/${req.reference}`)}
+                  onClick={() => navigate(`/citoyen/suivi/${req.reference}`)}
                   className="bg-white p-6 rounded-[2rem] border border-gray-100 shadow-sm hover:shadow-md transition-all cursor-pointer group lg:px-8"
                 >
                   <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">

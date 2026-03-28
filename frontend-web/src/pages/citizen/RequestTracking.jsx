@@ -70,7 +70,7 @@ const RequestTracking = () => {
           <h1 className="text-2xl font-extrabold text-[#1A3A5C] mr-10">Suivi de ma demande</h1>
         </div>
         <button 
-          onClick={() => navigate('/notifications')}
+          onClick={() => navigate('/citoyen/notifications')}
           className="w-10 h-10 rounded-full bg-blue-50 flex items-center justify-center text-institutional hover:bg-blue-100 transition-colors"
         >
           <Bell size={20} />
@@ -89,7 +89,7 @@ const RequestTracking = () => {
           {/* TOP BAR MOBILE */}
           <div className="flex items-center gap-4 mb-8 lg:hidden">
             <button 
-              onClick={() => navigate('/demandes')}
+              onClick={() => navigate('/citoyen/demandes')}
               className="p-2 bg-white rounded-full shadow-sm text-gray-600"
             >
               <ArrowLeft size={20} />
@@ -175,7 +175,7 @@ const RequestTracking = () => {
                         ? demande.motifRejet || "Votre dossier nécessite des corrections. Veuillez consulter le motif du rejet."
                         : isValidee 
                         ? "Toutes les informations fournies ont été certifiées conformes."
-                        : "Un officier d'état civil analyse actuellement les documents numériques fournis."}
+                        : "Un service instructeur analyse actuellement les documents numériques fournis."}
                     </p>
                     <p className="text-[10px] text-gray-400 font-bold mt-2 uppercase tracking-tight">{formatDate(demande.updatedAt)}</p>
                   </div>
@@ -196,7 +196,7 @@ const RequestTracking = () => {
                     </div>
                     <h3 className="text-xl font-extrabold mb-2">Votre document est prêt !</h3>
                     <p className="text-blue-200/80 text-sm leading-relaxed">
-                      L'officier d'état civil a signé numériquement votre document. Il est maintenant certifié et prêt à l'emploi.
+                      L'administration a signé numériquement votre document. Il est maintenant certifié et prêt à l'emploi.
                     </p>
                   </div>
                   <button className="bg-white text-[#1A3A5C] px-8 py-5 rounded-2xl font-black text-sm hover:bg-blue-50 transition-all flex items-center justify-center gap-3 shadow-lg group">
@@ -217,7 +217,7 @@ const RequestTracking = () => {
                   </p>
                 </div>
                 <button 
-                  onClick={() => navigate('/catalogue')}
+                  onClick={() => navigate('/citoyen/services')}
                   className="bg-[#1A3A5C] text-white px-10 py-5 rounded-2xl font-extrabold text-sm hover:opacity-90 transition-all shadow-xl shadow-blue-900/10 flex items-center gap-3 mx-auto"
                 >
                   Suggérer une nouvelle demande

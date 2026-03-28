@@ -49,7 +49,7 @@ const ServicesCatalog = () => {
           <h1 className="text-2xl font-extrabold text-[#1A237E] mr-10">Catalogue des Services</h1>
         </div>
         <button 
-          onClick={() => navigate('/notifications')}
+          onClick={() => navigate('/citoyen/notifications')}
           className="w-10 h-10 rounded-full bg-blue-50 flex items-center justify-center text-institutional hover:bg-blue-100 transition-colors"
         >
           <Bell size={20} />
@@ -152,7 +152,7 @@ const ServicesCatalog = () => {
                   </div>
 
                   <button 
-                    onClick={() => navigate(`/services/${service.id}`)}
+                    onClick={() => navigate(`/citoyen/services/${service.id}`)}
                     className="mt-auto flex items-center justify-center gap-2 w-full py-4 bg-white border-2 border-gray-50 text-[#1A237E] hover:bg-[#1A237E] hover:text-white hover:border-[#1A237E] font-black text-sm rounded-2xl transition-all shadow-sm active:scale-[0.98] group/btn"
                   >
                     Démarrer la procédure 

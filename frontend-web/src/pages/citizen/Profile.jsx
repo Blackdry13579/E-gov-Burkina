@@ -44,7 +44,7 @@ const Profile = () => {
         </div>
 
         <button 
-          onClick={() => navigate('/notifications')}
+          onClick={() => navigate('/citoyen/notifications')}
           className="w-10 h-10 rounded-full bg-blue-50 flex items-center justify-center text-institutional hover:bg-blue-100 transition-colors"
         >
           <Bell size={20} />
@@ -75,6 +75,9 @@ const Profile = () => {
                 <ShieldCheck size={14} className="fill-green-700/20" />
                 <span className="text-[10px] font-bold uppercase tracking-wider">Identité certifiée</span>
               </div>
+              <div className="flex items-center gap-1.5 bg-blue-50 text-[#1A237E] px-3 py-1 rounded-full border border-blue-100 shadow-sm">
+                <span className="text-[10px] font-bold uppercase tracking-wider">Compte Citoyen</span>
+              </div>
             </div>
           </div>
 
@@ -84,7 +87,7 @@ const Profile = () => {
                 <UserCircle size={14} />
                 Informations du citoyen
               </h2>
-              <Link to="/edit-profile" className="text-[10px] font-bold text-institutional uppercase tracking-widest bg-blue-50 px-3 py-1.5 rounded-lg hover:bg-blue-100 transition-colors flex items-center gap-1.5">
+              <Link to="/citoyen/profil/modifier" className="text-[10px] font-bold text-institutional uppercase tracking-widest bg-blue-50 px-3 py-1.5 rounded-lg hover:bg-blue-100 transition-colors flex items-center gap-1.5">
                 <Edit2 size={12} /> Modifier
               </Link>
             </div>

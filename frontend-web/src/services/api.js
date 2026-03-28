@@ -112,14 +112,16 @@ export const getCitizenServices = async () => {
   // Le backend retourne { success, data: [...] }
   return (data.data || []).map((doc) => ({
     id: doc._id,
+    code: doc.code, // <-- Ajouté
     name: doc.nom,
-    categorie: doc.service || doc.code,
+    categorie: doc.categorie || 'ETAT_CIVIL',
     prix_fcfa: doc.frais || 0,
-    delai: doc.delaiTraitement ? `${doc.delaiTraitement}H` : '48H',
-    livraison: doc.modeLivraison || 'PDF',
+    delai: doc.delaiJours ? `${doc.delaiJours} JOURS` : '48H',
+    livraison: doc.service === 'mairie' ? 'MAIRIE' : 'JUSTICE',
     statut_badge: doc.actif ? 'DISPONIBLE' : 'INDISPONIBLE',
     documents_requis: (doc.justificatifs || []).map((j) => j.nom || j.code),
     icon: '📄',
+    description: doc.description || '',
     _raw: doc,
   }));
 };

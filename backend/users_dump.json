@@ -1,0 +1,67 @@
+[
+  {
+    "_id": "69c11035a51af3e0372ee268",
+    "email": "admin@egov.bf",
+    "__v": 0,
+    "adminPin": null,
+    "adminPinAttempts": 0,
+    "adminPinExpiry": null,
+    "createdAt": "2026-03-23T10:04:37.159Z",
+    "isActive": true,
+    "nom": "Admin",
+    "password": "$2a$12$2CtsGBLzp3snHEpQTn5OPOUHv7ebXCXL3DHjQH05C72/qiXTTpFn6",
+    "prenom": "System",
+    "role": "ADMIN",
+    "telephone": "77123456",
+    "updatedAt": "2026-03-23T10:04:37.190Z",
+    "passwordChangedAt": "2026-03-23T10:04:36.522Z"
+  },
+  {
+    "_id": "69c110350fd443131f175996",
+    "nom": "Agent",
+    "prenom": "Mairie 1",
+    "email": "agent_mairie@egov.bf",
+    "password": "$2a$12$yvyWuwOkinerZ43h4g1qsOWRyoWQ10d696Frk2N2Fe3auY3If0QBO",
+    "telephone": "60123456",
+    "role": "AGENT_MAIRIE",
+    "service": "mairie",
+    "isActive": true,
+    "adminPin": null,
+    "adminPinExpiry": null,
+    "adminPinAttempts": 0,
+    "createdAt": "2026-03-23T10:04:37.966Z",
+    "updatedAt": "2026-03-23T10:04:37.966Z",
+    "passwordChangedAt": "2026-03-23T10:04:37.297Z",
+    "__v": 0
+  },
+  {
+    "_id": "69c12d528315b7247c29500c",
+    "nom": "ko",
+    "prenom": "jean",
+    "email": "jeanko@gmail.com",
+    "password": "$2a$12$JmseVH3yx/loLpy257m4M.b1xcCPjArGR4VJXSi6dMOvA/7HCpJRK",
+    "telephone": "56436464",
+    "role": "CITOYEN",
+    "isActive": true,
+    "adminPin": null,
+    "adminPinExpiry": null,
+    "adminPinAttempts": 0,
+    "createdAt": "2026-03-23T12:08:50.519Z",
+    "updatedAt": "2026-03-23T12:08:50.519Z",
+    "passwordChangedAt": "2026-03-23T12:08:50.342Z",
+    "__v": 0
+  },
+  {
+    "_id": "69c3a51ff95c795c7b930067",
+    "nom": "Agent",
+    "prenom": "Tribunal",
+    "email": "agent_justice@egov.bf",
+    "password": "$2a$10$0c6urqOe7ytUz/XrAMUJmeoQiDL2nAgTIDoQohHYuwVOjCskTPyOe",
+    "role": "AGENT_JUSTICE",
+    "service": "justice",
+    "isActive": true,
+    "permissions": [
+      "gerer_demandes"
+    ]
+  }
+]

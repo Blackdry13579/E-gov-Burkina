@@ -6,37 +6,26 @@ import {
   ClipboardList, CheckCircle, Bell, LayoutDashboard, AlertCircle,
   Loader2
 } from 'lucide-react';
-import { getCitizenRequests } from '../../services/api';
+import { getCitizenRequests, getCitizenServices } from '../../services/api';
 import Emblem from '../../components/common/Emblem';
 
-const popularDocuments = [
-  {
-    id: 'cnib',
-    title: 'CNIB',
-    description: 'Carte Nationale d\'Identité Burkinabè',
-    icon: Shield,
-    path: '/demande/etape1'
-  },
-  {
-    id: 'acte-naissance',
-    title: 'Acte de naissance',
-    description: 'Copie intégrale ou extrait d\'acte de naissance',
-    icon: FileText,
-    path: '/demande/etape1'
-  },
-  {
-    id: 'casier-judiciaire',
-    title: 'Casier Judiciaire',
-    description: 'Extrait de casier judiciaire (Bulletin n°3)',
-    icon: FileCheck,
-    path: '/demande/etape1'
+// Mappage des icônes par code de document
+const getIconForCode = (code) => {
+  switch (code) {
+    case 'NAISSANCE': return FileText;
+    case 'MARIAGE': return FileCheck;
+    case 'DECES': return FileText;
+    case 'CASIER': return Shield;
+    case 'NATIONALITE': return Shield;
+    default: return FileText;
   }
-];
+};
 
 const CitizenDashboard = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
+  const [popularDocs, setPopularDocs] = useState([]);
   const [statsData, setStatsData] = useState({
     enCours: 0,
     delivres: 0,
@@ -47,22 +36,51 @@ const CitizenDashboard = () => {
     const fetchDashboardData = async () => {
       try {
         setLoading(true);
-        const requests = await getCitizenRequests();
         
+        // Parallélisation des appels
+        const [requests, services] = await Promise.all([
+          getCitizenRequests(),
+          getCitizenServices()
+        ]);
+        
+        // 1. Calcul des stats
         const counts = requests.reduce((acc, curr) => {
-          if (curr.statut === 'EN_ATTENTE' || curr.statut === 'EN_COURS') {
+          const s = (curr.statut || '').toUpperCase();
+          if (s === 'EN_ATTENTE' || s === 'EN_COURS') {
             acc.enCours += 1;
-          } else if (curr.statut === 'VALIDE' || curr.statut === 'DISPONIBLE' || curr.statut === 'TERMINEE') {
+          } else if (['VALIDE', 'DISPONIBLE', 'TERMINEE', 'PRÊT', 'PRET'].includes(s)) {
             acc.delivres += 1;
-          } else if (curr.statut === 'REJETE' || curr.statut === 'REJETEE') {
+          } else if (s === 'REJETE' || s === 'REJETEE') {
             acc.rejetes += 1;
           }
           return acc;
         }, { enCours: 0, delivres: 0, rejetes: 0 });
 
         setStatsData(counts);
+        
+        // 2. Préparation des documents populaires (Priorité : Naissance, Casier, Nationalité)
+        // On trie pour mettre en avant ce que les citoyens demandent le plus
+        const prioritizedCodes = ['NAISSANCE', 'CASIER', 'NATIONALITE', 'MARIAGE'];
+        const sortedServices = [...services].sort((a, b) => {
+          const indexA = prioritizedCodes.indexOf(a.code);
+          const indexB = prioritizedCodes.indexOf(b.code);
+          if (indexA !== -1 && indexB !== -1) return indexA - indexB;
+          if (indexA !== -1) return -1;
+          if (indexB !== -1) return 1;
+          return 0;
+        });
+
+        const docs = sortedServices.slice(0, 3).map(s => ({
+          id: s.id,
+          title: s.name,
+          description: s.description || `Demande de ${s.name.toLowerCase()}`,
+          icon: getIconForCode(s.code),
+          path: `/citoyen/services/${s.id}`
+        }));
+        setPopularDocs(docs);
+
       } catch (error) {
-        console.error("Erreur lors du chargement des stats:", error);
+        console.error("Erreur lors du chargement des données du dashboard:", error);
       } finally {
         setLoading(false);
       }
@@ -95,7 +113,12 @@ const CitizenDashboard = () => {
     }
   ];
 
-  const firstName = user?.prenom || user?.name?.split(' ')[0] || 'Citoyen';
+  const getFirstName = () => {
+    if (user?.prenom && user.prenom.toLowerCase() !== 'mairie') return user.prenom;
+    if (user?.name && user.name.toLowerCase() !== 'mairie') return user.name.split(' ')[0];
+    return 'Citoyen';
+  };
+  const firstName = getFirstName();
 
   return (
     <div className="flex flex-col min-h-screen bg-gray-50 pb-10">
@@ -111,7 +134,7 @@ const CitizenDashboard = () => {
           <h1 className="text-2xl font-extrabold text-[#1A237E] mr-10">Tableau de Bord</h1>
         </div>
         <button 
-          onClick={() => navigate('/notifications')}
+          onClick={() => navigate('/citoyen/notifications')}
           className="w-10 h-10 rounded-full bg-blue-50 flex items-center justify-center text-institutional hover:bg-blue-100 transition-colors"
         >
           <Bell size={20} />
@@ -175,7 +198,7 @@ const CitizenDashboard = () => {
                 <h3 className="text-xl font-black uppercase tracking-tight">Documents Populaires</h3>
               </div>
               <button 
-                onClick={() => navigate('/services')} 
+                onClick={() => navigate('/citoyen/services')} 
                 className="text-[#1A237E] text-sm font-black flex items-center gap-2 hover:bg-white px-4 py-2 rounded-xl transition-all border border-transparent hover:border-gray-100 group shadow-sm"
               >
                 Tout voir <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
@@ -183,7 +206,7 @@ const CitizenDashboard = () => {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              {popularDocuments.map((doc) => (
+              {popularDocs.map((doc) => (
                 <div key={doc.id} className="bg-white rounded-[2.5rem] p-8 border border-gray-100 shadow-sm hover:shadow-xl hover:shadow-blue-900/5 transition-all flex flex-col h-full group/card">
                   <div className="w-16 h-16 rounded-2xl bg-[#F8FAFF] flex items-center justify-center text-[#1A237E] mb-6 group-hover/card:bg-[#1A237E] group-hover/card:text-white transition-colors shadow-inner">
                     <doc.icon size={32} />
