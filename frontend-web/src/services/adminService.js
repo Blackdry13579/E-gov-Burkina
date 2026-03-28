@@ -88,3 +88,15 @@ export const updatePermissions = async (roleId, permissions) => {
     body: JSON.stringify({ permissions }),
   });
 };
+
+export const getRecentActivities = getLogs;
+
+export const getServices = async () => {
+  const data = await request('/documents');
+  return data.data || [];
+};
+
+export const getDocuments = async () => {
+  const data = await request('/admin/demandes/stats'); // Or suitable endpoint
+  return data.data || [];
+};
