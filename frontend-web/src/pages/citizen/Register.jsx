@@ -54,7 +54,11 @@ const Register = () => {
         setError(response.message || "Erreur lors de l'inscription.");
       }
     } catch (err) {
-      setError(err.message || "Une erreur est survenue lors de l'inscription.");
+      if (err.errors && Array.isArray(err.errors)) {
+        setError(err.errors.map(e => e.message).join(' • '));
+      } else {
+        setError(err.message || "Une erreur est survenue lors de l'inscription.");
+      }
     } finally {
       setLoading(false);
     }
@@ -161,12 +165,12 @@ const Register = () => {
               </div>
 
               <div>
-                <label className="block text-[8px] font-black text-gray-400 uppercase tracking-[0.2em] mb-1 px-1">Téléphone cellulaire</label>
+                <label className="block text-[8px] font-black text-gray-400 uppercase tracking-[0.2em] mb-1 px-1">Téléphone (8 chiffres)</label>
                 <div className="relative group">
                   <Phone className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-200 group-focus-within:text-[#1A237E] transition-colors" size={12} />
-                  <input type="tel" placeholder="+226 XX XX XX XX" required
+                  <input type="tel" placeholder="70 12 34 56 (sans +226)" required maxLength={15}
                     value={formData.telephone}
-                    onChange={e => setFormData({...formData, telephone: e.target.value})}
+                    onChange={e => setFormData({...formData, telephone: e.target.value.replace(/\s+/g, '')})}
                     className="w-full pl-9 pr-4 py-2.5 bg-[#F8FAFF] border border-gray-100 rounded-xl text-[11px] font-bold focus:outline-none focus:border-[#1A237E] transition-all"
                   />
                 </div>

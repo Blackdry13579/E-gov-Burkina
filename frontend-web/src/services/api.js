@@ -25,7 +25,9 @@ const request = async (endpoint, options = {}) => {
   const data = await response.json();
 
   if (!response.ok) {
-    throw new Error(data.message || `Erreur ${response.status}`);
+    const error = new Error(data.message || `Erreur ${response.status}`);
+    if (data.errors) error.errors = data.errors;
+    throw error;
   }
 
   return data;
