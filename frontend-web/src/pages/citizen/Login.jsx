@@ -67,9 +67,9 @@ const Login = () => {
               </div>
             </div>
 
-            <h1 className="text-4xl lg:text-5xl font-black text-white leading-[0.9] tracking-tighter mb-4 uppercase">
-              E-CITOYEN <br/>
-              <span className="text-blue-300 text-2xl lg:text-3xl">PORTAIL NATIONAL</span>
+            <h1 className="text-3xl lg:text-4xl font-black text-white leading-[0.9] tracking-tighter mb-4 uppercase">
+              E-GOV <br/>
+              <span className="text-blue-300">Document Request</span>
             </h1>
             
             <p className="text-[11px] text-blue-100/60 font-medium max-w-[240px] leading-relaxed mb-8">

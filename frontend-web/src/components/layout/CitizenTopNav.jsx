@@ -34,8 +34,8 @@ const CitizenTopNav = () => {
           <div className="flex items-center gap-4 cursor-pointer" onClick={() => navigate('/citoyen/accueil')}>
             <Emblem className="w-12 h-12 drop-shadow-sm" />
             <div className="hidden sm:flex flex-col">
-              <span className="text-xl font-black text-[#1A3A5C] uppercase tracking-tighter leading-none">E-CITOYEN</span>
-              <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mt-1">PORTAIL NATIONAL</span>
+              <span className="text-sm font-black text-[#1A3A5C] uppercase tracking-tighter leading-none">E-GOV</span>
+              <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mt-1">Document Request</span>
             </div>
           </div>
 
@@ -53,8 +53,8 @@ const CitizenTopNav = () => {
                   }`
                 }
               >
-                <item.icon size={20} />
-                {/* Text removed as per user request */}
+                <item.icon size={18} />
+                <span className="hidden lg:inline">{item.label}</span>
               </NavLink>
             ))}
           </div>
