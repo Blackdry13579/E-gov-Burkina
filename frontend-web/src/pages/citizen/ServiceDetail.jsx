@@ -192,14 +192,14 @@ const ServiceDetail = () => {
         </div>
       </div>
 
-      <div className="fixed bottom-0 left-0 right-0 p-6 md:p-8 bg-white/80 backdrop-blur-md border-t border-gray-100 z-20">
-        <div className="max-w-4xl mx-auto">
+      <div className="fixed bottom-0 left-0 lg:left-64 right-0 pb-20 lg:pb-0 p-4 md:p-6 bg-white/90 backdrop-blur-xl border-t border-gray-100 z-40 flex justify-center">
+        <div className="w-full max-w-md">
           <button 
             onClick={() => navigate('/demande/etape1', { state: { serviceId: id, serviceName: service.name } })}
-            className="w-full py-5 bg-[#1A3A5C] text-white font-black rounded-[1.25rem] shadow-xl shadow-blue-900/20 hover:scale-[1.01] active:scale-[0.98] transition-all flex justify-center items-center gap-3"
+            className="w-full py-4 bg-[#1A3A5C] text-white font-black rounded-2xl shadow-2xl shadow-blue-900/20 hover:scale-[1.02] active:scale-[0.98] transition-all flex justify-center items-center gap-3 text-[11px] md:text-xs uppercase tracking-widest"
           >
-            <CheckCircle2 size={24} />
-            COMMENCER LA DEMANDE OFFICIELLE
+            <CheckCircle2 size={20} />
+            Démarrer la demande
           </button>
         </div>
       </div>
