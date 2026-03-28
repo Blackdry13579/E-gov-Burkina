@@ -31,7 +31,16 @@ const RequestTracking = () => {
     </div>
   );
 
-  const isValidee = demande.statut === 'VALIDEE' || demande.statut === 'DISPONIBLE' || demande.statut === 'TERMINEE';
+  const s = (demande.statut || '').toUpperCase();
+  let normalizedStatus = 'EN_ATTENTE';
+  if (['VALIDE', 'VALIDÉ', 'VALIDEE', 'VALIDÉE', 'DISPONIBLE', 'TERMINEE', 'PRÊT', 'PRET'].some(val => s.includes(val))) {
+    normalizedStatus = 'VALIDEE';
+  } else if (['REJETE', 'REJETÉ', 'REJETEE', 'REJETÉE'].some(val => s.includes(val))) {
+    normalizedStatus = 'REJETEE';
+  }
+
+  const isValidee = normalizedStatus === 'VALIDEE';
+  const isRejetee = normalizedStatus === 'REJETEE';
 
   const formatDate = (dateStr) => {
     return new Date(dateStr).toLocaleDateString('fr-FR', { 
@@ -84,12 +93,12 @@ const RequestTracking = () => {
                 <div className={`px-5 py-2 rounded-full text-xs font-black uppercase tracking-widest flex items-center gap-2.5 shadow-sm ${
                   isValidee 
                     ? 'bg-green-100 text-green-700' 
-                    : demande.statut === 'REJETEE'
+                    : isRejetee
                     ? 'bg-red-100 text-red-700'
                     : 'bg-amber-100 text-amber-700 border border-amber-200/50'
                 }`}>
-                  {isValidee ? <CheckCircle2 size={16} /> : demande.statut === 'REJETEE' ? <Eye size={16} /> : <Clock size={16} />}
-                  {isValidee ? 'Validée' : demande.statut === 'REJETEE' ? 'Rejetée' : 'En traitement'}
+                  {isValidee ? <CheckCircle2 size={16} /> : isRejetee ? <Eye size={16} /> : <Clock size={16} />}
+                  {isValidee ? 'Validée' : isRejetee ? 'Rejetée' : 'En traitement'}
                 </div>
                 <p className="text-[9px] text-gray-400 font-bold tracking-tight">Mise à jour le {formatDate(demande.updatedAt)}</p>
               </div>
@@ -118,22 +127,22 @@ const RequestTracking = () => {
                 {/* Etape 2: Statut actuel */}
                 <div className="flex gap-6 relative">
                   <div className={`w-12 h-12 rounded-full flex items-center justify-center z-10 shadow-lg shrink-0 ${
-                    demande.statut === 'REJETEE' 
+                    isRejetee 
                       ? 'bg-red-600 text-white shadow-red-600/20' 
                       : isValidee 
                       ? 'bg-blue-600 text-white shadow-blue-600/20' 
                       : 'bg-amber-500 text-white shadow-amber-500/20 animated-pulse'
                   }`}>
-                    {demande.statut === 'REJETEE' ? <Eye size={20} /> : isValidee ? <ShieldCheck size={20} /> : <Clock size={20} />}
+                    {isRejetee ? <Eye size={20} /> : isValidee ? <ShieldCheck size={20} /> : <Clock size={20} />}
                   </div>
                   <div className="pt-2 flex-1">
                     <div className="flex items-center justify-between">
-                      <h4 className={`font-extrabold text-sm ${demande.statut === 'REJETEE' ? 'text-red-600' : 'text-gray-900'}`}>
-                        {demande.statut === 'REJETEE' ? 'Dossier rejeté' : isValidee ? 'Vérification terminée' : 'Vérification en cours'}
+                      <h4 className={`font-extrabold text-sm ${isRejetee ? 'text-red-600' : 'text-gray-900'}`}>
+                        {isRejetee ? 'Dossier rejeté' : isValidee ? 'Vérification terminée' : 'Vérification en cours'}
                       </h4>
                     </div>
                     <p className="text-xs text-gray-500 mt-1">
-                      {demande.statut === 'REJETEE' 
+                      {isRejetee 
                         ? demande.motifRejet || "Votre dossier nécessite des corrections. Veuillez consulter le motif du rejet."
                         : isValidee 
                         ? "Toutes les informations fournies ont été certifiées conformes."
@@ -167,7 +176,7 @@ const RequestTracking = () => {
                   </button>
                 </div>
               </div>
-            ) : demande.statut === 'REJETEE' && (
+            ) : isRejetee && (
               <div className="bg-white rounded-[2rem] p-10 border-2 border-dashed border-red-100 text-center space-y-6">
                 <div className="w-20 h-20 bg-red-50 rounded-3xl flex items-center justify-center text-red-500 mx-auto shadow-inner">
                   <Eye size={40} />
