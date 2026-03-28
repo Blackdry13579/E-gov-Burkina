@@ -1,18 +1,21 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
 import { useAuthUser } from '../../hooks/useAuth';
-import { useAgentStats } from '../../hooks/useAgent';
-import { Clock, CheckCircle, TrendingUp, FileText, Building2, ArrowRight } from 'lucide-react';
+import { useAgentStats, useAgentRequests } from '../../hooks/useAgent';
+import { Clock, CheckCircle, TrendingUp, FileText, Building2, ArrowRight, Eye, User } from 'lucide-react';
 
 const AgentDashboard = () => {
-  const { stats, loading } = useAgentStats();
+  const { stats, loading: statsLoading } = useAgentStats();
+  const { requests, loading: reqLoading } = useAgentRequests();
   const { user } = useAuthUser();
 
-  if (loading) return (
+  if (statsLoading || reqLoading) return (
     <div className="flex items-center justify-center h-64">
       <div className="w-8 h-8 border-4 border-[#1A237E]/30 border-t-[#1A237E] rounded-full animate-spin"></div>
     </div>
   );
+
+  const pendingRequests = requests?.filter(req => req.status === 'EN_ATTENTE').slice(0, 3) || [];
 
   return (
     <div className="space-y-6">
@@ -66,51 +69,73 @@ const AgentDashboard = () => {
         </div>
       </div>
 
-      {/* Quick actions */}
-      <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
-        <h3 className="text-base font-bold text-gray-800 mb-4">Actions Rapides</h3>
-        <div className="space-y-2">
-          <NavLink to="/agent/requests" className="flex items-center justify-between p-3 rounded-xl hover:bg-blue-50 transition-colors group">
-            <div className="flex items-center gap-3">
-              <div className="w-9 h-9 rounded-lg bg-orange-100 flex items-center justify-center">
-                <Clock size={16} className="text-orange-600" />
+      {/* Layout split for Quick Actions and Recent Requests */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        
+        {/* Dossiers récents */}
+        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 flex flex-col">
+          <div className="flex justify-between items-center mb-4">
+            <h3 className="text-base font-bold text-gray-800">Dossiers Récents</h3>
+            <NavLink to="/agent/requests" className="text-xs font-bold text-[#1A237E] hover:underline uppercase tracking-widest">
+              Voir tout
+            </NavLink>
+          </div>
+          <div className="flex-1 space-y-3">
+            {pendingRequests.length > 0 ? (
+              pendingRequests.map(req => (
+                <div key={req.id || req._id} className="flex items-center justify-between p-3 rounded-xl border border-gray-50 hover:bg-gray-50 transition-colors">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-full bg-blue-50 flex items-center justify-center text-[#1A237E]">
+                      <User size={18} />
+                    </div>
+                    <div>
+                      <p className="text-sm font-bold text-gray-900">{req.citizenName || req.utilisateur?.nom || 'Citoyen'}</p>
+                      <p className="text-[10px] text-gray-500 uppercase tracking-widest">{req.type || req.documentType?.nom || 'Document'}</p>
+                    </div>
+                  </div>
+                  <NavLink to={`/agent/requests/${req.id || req._id}/detail`} className="p-2 text-gray-400 hover:text-[#1A237E] hover:bg-white rounded-lg transition-colors">
+                    <Eye size={18} />
+                  </NavLink>
+                </div>
+              ))
+            ) : (
+              <div className="h-full flex flex-col items-center justify-center text-center py-6 text-gray-400">
+                <CheckCircle size={32} className="mb-2 text-green-400/50" />
+                <p className="text-xs font-medium">Aucun nouveau dossier en attente.</p>
               </div>
-              <div>
-                <p className="text-sm font-semibold text-gray-800">Dossiers en attente</p>
-                <p className="text-xs text-gray-500">{stats.pending} requêtes à traiter</p>
-              </div>
-            </div>
-            <ArrowRight size={16} className="text-gray-400 group-hover:text-[#1A237E] transition-colors" />
-          </NavLink>
-          <NavLink to="/agent/history" className="flex items-center justify-between p-3 rounded-xl hover:bg-blue-50 transition-colors group">
-            <div className="flex items-center gap-3">
-              <div className="w-9 h-9 rounded-lg bg-blue-100 flex items-center justify-center">
-                <FileText size={16} className="text-[#1A237E]" />
-              </div>
-              <div>
-                <p className="text-sm font-semibold text-gray-800">Mon historique</p>
-                <p className="text-xs text-gray-500">{stats.totalProcessed} dossiers traités au total</p>
-              </div>
-            </div>
-            <ArrowRight size={16} className="text-gray-400 group-hover:text-[#1A237E] transition-colors" />
-          </NavLink>
+            )}
+          </div>
         </div>
-      </div>
 
-      {/* Performance chart */}
-      <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
-        <h3 className="text-base font-bold text-gray-800 mb-4">Performance Hebdomadaire</h3>
-        <div className="h-40 flex items-end justify-between gap-3">
-          {[55, 80, 45, 90, 70, 65, 40].map((h, i) => (
-            <div key={i} className="w-full flex flex-col items-center gap-1.5 group">
-              <div className="relative w-full rounded-t-lg bg-blue-100 group-hover:bg-[#1A237E] transition-colors" style={{ height: `${h}%` }}>
-                <div className="opacity-0 group-hover:opacity-100 absolute -top-7 left-1/2 -translate-x-1/2 bg-gray-800 text-white text-xs py-1 px-2 rounded whitespace-nowrap">
-                  {Math.round(h * 0.3)} dossiers
+        {/* Quick actions */}
+        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
+          <h3 className="text-base font-bold text-gray-800 mb-4">Actions Rapides</h3>
+          <div className="space-y-2">
+            <NavLink to="/agent/requests" className="flex items-center justify-between p-3 rounded-xl hover:bg-blue-50 transition-colors group">
+              <div className="flex items-center gap-3">
+                <div className="w-9 h-9 rounded-lg bg-orange-100 flex items-center justify-center">
+                  <Clock size={16} className="text-orange-600" />
+                </div>
+                <div>
+                  <p className="text-sm font-semibold text-gray-800">Dossiers en attente</p>
+                  <p className="text-xs text-gray-500">{stats.pending} requêtes à traiter</p>
                 </div>
               </div>
-              <span className="text-xs text-gray-400">{['L','M','M','J','V','S','D'][i]}</span>
-            </div>
-          ))}
+              <ArrowRight size={16} className="text-gray-400 group-hover:text-[#1A237E] transition-colors" />
+            </NavLink>
+            <NavLink to="/agent/history" className="flex items-center justify-between p-3 rounded-xl hover:bg-blue-50 transition-colors group">
+              <div className="flex items-center gap-3">
+                <div className="w-9 h-9 rounded-lg bg-blue-100 flex items-center justify-center">
+                  <FileText size={16} className="text-[#1A237E]" />
+                </div>
+                <div>
+                  <p className="text-sm font-semibold text-gray-800">Mon historique</p>
+                  <p className="text-xs text-gray-500">{stats.totalProcessed} dossiers traités au total</p>
+                </div>
+              </div>
+              <ArrowRight size={16} className="text-gray-400 group-hover:text-[#1A237E] transition-colors" />
+            </NavLink>
+          </div>
         </div>
       </div>
     </div>
