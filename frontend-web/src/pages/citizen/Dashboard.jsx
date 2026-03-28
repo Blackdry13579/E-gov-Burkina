@@ -1,12 +1,13 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../../context/AuthContext';
+import { useAuthUser } from '../../hooks/useAuth';
+import { useRequests } from '../../hooks/useRequests';
 import {
   FileText, Shield, FileCheck, ArrowRight,
   ClipboardList, CheckCircle, Bell, LayoutDashboard, AlertCircle,
   Loader2
 } from 'lucide-react';
-import { getCitizenRequests, getCitizenServices } from '../../services/api';
+import { getServices as getCitizenServices } from '../../services/citizenService';
 import Emblem from '../../components/common/Emblem';
 
 // Mappage des icônes par code de document
@@ -22,8 +23,9 @@ const getIconForCode = (code) => {
 };
 
 const CitizenDashboard = () => {
-  const { user } = useAuth();
+  const { user } = useAuthUser();
   const navigate = useNavigate();
+  const { requests, loading: requestsLoading } = useRequests();
   const [loading, setLoading] = useState(true);
   const [popularDocs, setPopularDocs] = useState([]);
   const [statsData, setStatsData] = useState({
@@ -33,61 +35,32 @@ const CitizenDashboard = () => {
   });
 
   useEffect(() => {
-    const fetchDashboardData = async () => {
-      try {
-        setLoading(true);
-        
-        // Parallélisation des appels
-        const [requests, services] = await Promise.all([
-          getCitizenRequests(),
-          getCitizenServices()
-        ]);
-        
-        // 1. Calcul des stats
-        const counts = requests.reduce((acc, curr) => {
-          const s = (curr.statut || '').toUpperCase();
-          if (s === 'EN_ATTENTE' || s === 'EN_COURS') {
-            acc.enCours += 1;
-          } else if (['VALIDE', 'DISPONIBLE', 'TERMINEE', 'PRÊT', 'PRET'].includes(s)) {
-            acc.delivres += 1;
-          } else if (s === 'REJETE' || s === 'REJETEE') {
-            acc.rejetes += 1;
-          }
-          return acc;
-        }, { enCours: 0, delivres: 0, rejetes: 0 });
+    if (!requestsLoading && requests) {
+      // 1. Calcul des stats
+      const counts = requests.reduce((acc, curr) => {
+        const s = (curr.status || '').toUpperCase();
+        if (s === 'EN_ATTENTE' || s === 'EN_COURS') {
+          acc.enCours += 1;
+        } else if (['VALIDE', 'VALIDÉE', 'DISPONIBLE', 'TERMINEE', 'PRÊT', 'PRET'].includes(s)) {
+          acc.delivres += 1;
+        } else if (s === 'REJETE' || s === 'REJETEE') {
+          acc.rejetes += 1;
+        }
+        return acc;
+      }, { enCours: 0, delivres: 0, rejetes: 0 });
 
-        setStatsData(counts);
-        
-        // 2. Préparation des documents populaires (Priorité : Naissance, Casier, Nationalité)
-        // On trie pour mettre en avant ce que les citoyens demandent le plus
-        const prioritizedCodes = ['NAISSANCE', 'CASIER', 'NATIONALITE', 'MARIAGE'];
-        const sortedServices = [...services].sort((a, b) => {
-          const indexA = prioritizedCodes.indexOf(a.code);
-          const indexB = prioritizedCodes.indexOf(b.code);
-          if (indexA !== -1 && indexB !== -1) return indexA - indexB;
-          if (indexA !== -1) return -1;
-          if (indexB !== -1) return 1;
-          return 0;
-        });
-
-        const docs = sortedServices.slice(0, 3).map(s => ({
-          id: s.id,
-          title: s.name,
-          description: s.description || `Demande de ${s.name.toLowerCase()}`,
-          icon: getIconForCode(s.code),
-          path: `/citoyen/services/${s.id}`
-        }));
-        setPopularDocs(docs);
-
-      } catch (error) {
-        console.error("Erreur lors du chargement des données du dashboard:", error);
-      } finally {
+      setStatsData({
+        enCours: counts.enCours,
+        delivres: counts.delivres,
+        rejetes: counts.rejetes
+      });
+      
+      getCitizenServices().then(services => {
+        setPopularDocs(services.slice(0, 3));
         setLoading(false);
-      }
-    };
-
-    fetchDashboardData();
-  }, []);
+      });
+    }
+  }, [requests, requestsLoading]);
 
   const stats = [
     {
@@ -184,8 +157,8 @@ const CitizenDashboard = () => {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
               {popularDocs.map((doc) => (
                 <div key={doc.id} className="bg-white rounded-[2.5rem] p-8 border border-gray-100 shadow-sm hover:shadow-xl hover:shadow-blue-900/5 transition-all flex flex-col h-full group/card">
-                  <div className="w-16 h-16 rounded-2xl bg-[#F8FAFF] flex items-center justify-center text-[#1A237E] mb-6 group-hover/card:bg-[#1A237E] group-hover/card:text-white transition-colors shadow-inner">
-                    <doc.icon size={32} />
+                  <div className="w-16 h-16 rounded-2xl bg-[#F8FAFF] flex items-center justify-center text-3xl mb-6 group-hover/card:bg-[#1A237E] group-hover/card:text-white transition-colors shadow-inner">
+                    {doc.icon}
                   </div>
                   <h4 className="text-xl font-black text-gray-900 mb-2 leading-tight">{doc.title}</h4>
                   <p className="text-sm text-gray-500 mb-8 flex-1 leading-relaxed">{doc.description}</p>

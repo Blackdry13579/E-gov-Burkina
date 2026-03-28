@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import Emblem from '../../components/common/Emblem';
-import { uploadFile } from '../../services/api';
+import { uploadFile } from '../../services/apiClient';
 import { Bell, ArrowLeft, UploadCloud, FileText, CheckCircle2, Trash2, Loader2, ChevronRight } from 'lucide-react';
 
 const FormStep2 = () => {
@@ -38,7 +38,7 @@ const FormStep2 = () => {
       alert("Veuillez charger au moins un document.");
       return;
     }
-    navigate('/demande/etape3', { 
+    navigate('/citoyen/demande/etape3', { 
       state: { serviceId, serviceName, donnees, fichiers } 
     });
   };

@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import Emblem from '../../components/common/Emblem';
-import { useAuth } from '../../context/AuthContext';
-import { requestAdminPin, simulateLogin } from '../../services/api';
+import { useAuthUser } from '../../hooks/useAuth';
+import { requestAdminPin, loginAdmin } from '../../services/authService';
 import { Mail, Lock, Eye, EyeOff, Loader2, ArrowRight, Key, ShieldCheck } from 'lucide-react';
 
 const AdminLogin = () => {
@@ -14,7 +14,7 @@ const AdminLogin = () => {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
-  const { loginWithToken } = useAuth();
+  const { loginWithToken } = useAuthUser();
   const navigate = useNavigate();
 
   const handleRequestPin = async (e) => {
@@ -40,7 +40,7 @@ const AdminLogin = () => {
     setError('');
     setLoading(true);
     try {
-      const response = await simulateLogin(email, password, pin);
+      const response = await loginAdmin(email, password, pin);
       if (response.success) {
         loginWithToken(response.token, response.user);
         navigate('/admin/dashboard');
