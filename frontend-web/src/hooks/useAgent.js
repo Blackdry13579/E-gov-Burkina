@@ -83,7 +83,8 @@ export const useAgentRequestDetail = (id) => {
 
   const handleUpdateStatus = async (status, motif) => {
     try {
-      await updateRequestStatus(id, status, motif);
+      const targetId = request?._raw?._id || id;
+      await updateRequestStatus(targetId, status, motif);
       await fetchDetail();
       return { success: true };
     } catch (err) {
