@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import Emblem from '../../components/common/Emblem';
-import { CheckCircle2, LayoutDashboard, Search, Bell, Calendar, Hash, FileText, ArrowRight } from 'lucide-react';
+import { CheckCircle2, LayoutDashboard, Search, Bell, Calendar, Hash, FileText, ArrowRight, ShieldCheck } from 'lucide-react';
 
 const Confirmation = () => {
   const location = useLocation();
