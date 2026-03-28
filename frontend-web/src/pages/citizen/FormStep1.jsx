@@ -131,6 +131,54 @@ const FormStep1 = () => {
                 </div>
               </div>
 
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <label className="block text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] mb-2 px-1">Fils de (Père)</label>
+                  <div className="relative">
+                    <User className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-300" size={18} />
+                    <input 
+                      type="text" 
+                      placeholder="Ex: OUEDRAOGO Jean" 
+                      required 
+                      value={donnees.nomPere}
+                      onChange={e => setDonnees({...donnees, nomPere: e.target.value})}
+                      className="w-full pl-12 pr-4 py-4 bg-gray-50 border border-gray-100 rounded-2xl text-sm focus:outline-none focus:ring-4 focus:ring-[#1A237E]/5 focus:border-[#1A237E] transition-all font-bold"
+                    />
+                  </div>
+                </div>
+                <div>
+                  <label className="block text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] mb-2 px-1">Et de (Mère)</label>
+                  <div className="relative">
+                    <User className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-300" size={18} />
+                    <input 
+                      type="text" 
+                      placeholder="Ex: COMPAORE Marie" 
+                      required 
+                      value={donnees.nomMere}
+                      onChange={e => setDonnees({...donnees, nomMere: e.target.value})}
+                      className="w-full pl-12 pr-4 py-4 bg-gray-50 border border-gray-100 rounded-2xl text-sm focus:outline-none focus:ring-4 focus:ring-[#1A237E]/5 focus:border-[#1A237E] transition-all font-bold"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] mb-2 px-1">Genre</label>
+                <div className="relative">
+                  <User className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-300" size={18} />
+                  <select 
+                    required 
+                    value={donnees.genre || ''}
+                    onChange={e => setDonnees({...donnees, genre: e.target.value})}
+                    className="w-full pl-12 pr-4 py-4 bg-gray-50 border border-gray-100 rounded-2xl text-sm focus:outline-none focus:ring-4 focus:ring-[#1A237E]/5 focus:border-[#1A237E] transition-all font-bold text-gray-700 appearance-none"
+                  >
+                    <option value="" disabled>Sélectionner votre genre</option>
+                    <option value="Masculin">Masculin</option>
+                    <option value="Féminin">Féminin</option>
+                  </select>
+                </div>
+              </div>
+
               <div className="p-6 bg-blue-50/50 rounded-2xl border border-blue-100 flex items-start gap-4">
                 <Info className="text-[#1A237E] shrink-0" size={20} />
                 <p className="text-[11px] text-[#1A237E] font-bold leading-relaxed">
