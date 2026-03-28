@@ -112,7 +112,7 @@ const UnifiedLogin = () => {
           <div className="absolute inset-0 bg-gradient-to-br from-[#0F2244]/80 via-[#1A237E]/60 to-[#2952A3]/40" />
 
           {/* Content */}
-          <div className="relative z-10 flex flex-col justify-between p-8 lg:p-12 w-full h-full overflow-y-auto custom-scrollbar">
+          <div className="relative z-10 flex flex-col justify-start gap-12 p-6 lg:p-10 w-full h-full overflow-y-auto custom-scrollbar">
 
             {/* Top: Brand */}
             <div className="flex items-center gap-3">
@@ -127,24 +127,24 @@ const UnifiedLogin = () => {
 
             {/* Middle: Title */}
             <div>
-              <div className="flex gap-1.5 mb-4">
+              <div className="flex gap-1.5 mb-3">
                 <div className="h-1 w-10 bg-yellow-400 rounded-full" />
                 <div className="h-1 w-3 bg-white/20 rounded-full" />
                 <div className="h-1 w-3 bg-white/20 rounded-full" />
               </div>
 
-              <h1 className="text-3xl lg:text-4xl font-black text-white leading-[0.9] tracking-tighter mb-4 uppercase">
+              <h1 className="text-3xl lg:text-4xl font-black text-white leading-[0.9] tracking-tighter mb-3 uppercase">
                 E-GOV<br />
                 <span className="text-blue-300">Document</span><br />
                 Request
               </h1>
 
-              <p className="text-[11px] text-blue-100/70 font-medium max-w-[240px] leading-relaxed mb-6">
+              <p className="text-[11px] text-blue-100/70 font-medium max-w-[240px] leading-relaxed mb-4">
                 Portail numérique unifié pour les services administratifs de l'État burkinabè.
               </p>
 
               {/* Role badges */}
-              <div className="flex flex-col gap-2.5">
+              <div className="flex flex-col gap-2">
                 {[
                   { icon: User,   label: 'Citoyen',         desc: 'Demandez vos documents officiels',   color: 'text-blue-300' },
                   { icon: Users,  label: 'Agent de l\'État', desc: 'Traitez les dossiers en attente',    color: 'text-green-300' },
@@ -162,7 +162,7 @@ const UnifiedLogin = () => {
             </div>
 
             {/* Bottom: Legal */}
-            <div className="flex items-center gap-2 px-4 py-2 bg-white/5 rounded-full border border-white/10 w-fit">
+            <div className="flex items-center gap-2 px-4 py-2 bg-white/5 rounded-full border border-white/10 w-fit mt-auto shrink-0">
               <span className="text-[8px] font-black text-white/50 uppercase tracking-[0.2em] flex items-center gap-2">
                 <span className="w-1.5 h-1.5 rounded-full bg-red-400/60" />
                 Unité · Progrès · Justice
