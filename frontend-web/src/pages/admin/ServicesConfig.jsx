@@ -71,54 +71,54 @@ const ServicesConfig = () => {
         {loading ? (
           <div className="col-span-full py-24 text-center text-gray-300 font-black italic tracking-widest uppercase">CONSULTATION...</div>
         ) : services.map(service => (
-          <div key={service.id} className="bg-white rounded-[2.5rem] border border-gray-100 shadow-sm p-8 hover:shadow-xl hover:shadow-blue-900/5 transition-all group relative overflow-hidden flex flex-col">
+          <div key={service.id} className="bg-white rounded-[2rem] border border-gray-100 shadow-sm p-6 hover:shadow-xl hover:shadow-blue-900/5 transition-all group relative overflow-hidden flex flex-col">
             <div className={`absolute top-0 right-0 w-24 h-24 blur-3xl opacity-10 -mr-12 -mt-12 transition-colors ${service.active ? 'bg-[#1A237E]' : 'bg-gray-400'}`}></div>
             
-            <div className="flex justify-between items-start mb-6">
-              <div className="w-16 h-16 bg-blue-50 text-[#1A237E] rounded-2xl flex items-center justify-center transition-colors group-hover:bg-[#1A237E] group-hover:text-white">
-                <Building2 size={32} />
+            <div className="flex justify-between items-start mb-4">
+              <div className="w-12 h-12 bg-blue-50 text-[#1A237E] rounded-xl flex items-center justify-center transition-colors group-hover:bg-[#1A237E] group-hover:text-white">
+                <Building2 size={24} />
               </div>
-              <span className={`px-4 py-1.5 text-[9px] font-black uppercase tracking-widest rounded-xl ${
+              <span className={`px-3 py-1 text-[8px] font-black uppercase tracking-widest rounded-lg ${
                 service.active ? 'bg-green-100 text-[#00875A]' : 'bg-gray-100 text-gray-400'
               }`}>
                 {service.active ? 'ACTIF' : 'SUSPENDU'}
               </span>
             </div>
 
-            <div className="mb-8 flex-1">
-              <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2 block">{service.id}</span>
-              <h3 className="font-black text-gray-900 text-2xl tracking-tight mb-3 leading-tight uppercase">{service.name}</h3>
-              <p className="text-sm text-gray-500 font-medium leading-relaxed mb-6">{service.description}</p>
+            <div className="mb-4 flex-1">
+              <span className="text-[9px] font-black text-gray-400 uppercase tracking-widest mb-1 block opacity-70">{service.id}</span>
+              <h3 className="font-black text-gray-900 text-lg tracking-tight mb-2 leading-tight uppercase line-clamp-1">{service.name}</h3>
+              <p className="text-xs text-gray-500 font-medium leading-relaxed mb-4 line-clamp-2">{service.description}</p>
               
-              <div className="flex flex-wrap gap-2 text-[10px] uppercase tracking-widest">
-                <span className="flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 text-[#1A237E] rounded-xl font-black">
-                  <MapPin size={12} /> {service.region}
+              <div className="flex flex-wrap gap-2 text-[9px] uppercase tracking-widest opacity-80">
+                <span className="flex items-center gap-1.5 px-2.5 py-1 bg-blue-50 text-[#1A237E] rounded-lg font-black">
+                  <MapPin size={10} /> {service.region}
                 </span>
-                <span className="flex items-center gap-1.5 px-3 py-1.5 bg-gray-50 text-gray-500 rounded-xl font-black">
-                  <Globe size={12} /> {service.type}
+                <span className="flex items-center gap-1.5 px-2.5 py-1 bg-gray-50 text-gray-500 rounded-lg font-black">
+                  <Globe size={10} /> {service.type}
                 </span>
               </div>
             </div>
 
-            <div className="flex items-center justify-between pt-6 border-t border-gray-50">
+            <div className="flex items-center justify-between pt-4 border-t border-gray-50">
               <div className="flex items-center gap-2">
-                <ShieldCheck size={18} className={service.active ? "text-[#1A237E]" : "text-gray-300"} />
-                <span className="text-[9px] font-black text-gray-400 uppercase tracking-widest">Authentification API</span>
+                <ShieldCheck size={16} className={service.active ? "text-[#1A237E]" : "text-gray-300"} />
+                <span className="text-[8px] font-black text-gray-400 uppercase tracking-widest">Auth API</span>
               </div>
               <div className="flex items-center gap-2">
                 <button 
                   onClick={() => openEdit(service)}
-                  className="p-3 bg-gray-50 hover:bg-[#1A237E] hover:text-white rounded-xl transition-all text-gray-400"
+                  className="p-2.5 bg-gray-50 hover:bg-[#1A237E] hover:text-white rounded-xl transition-all text-gray-400"
                   title="Modifier"
                 >
-                  <Edit2 size={16} />
+                  <Edit2 size={14} />
                 </button>
                 <button 
                   onClick={() => handleDelete(service.id)}
-                  className="p-3 bg-gray-50 hover:bg-red-500 hover:text-white rounded-xl transition-all text-gray-400"
+                  className="p-2.5 bg-gray-50 hover:bg-red-500 hover:text-white rounded-xl transition-all text-gray-400"
                   title="Supprimer"
                 >
-                  <Trash2 size={16} />
+                  <Trash2 size={14} />
                 </button>
               </div>
             </div>
@@ -128,13 +128,12 @@ const ServicesConfig = () => {
         {/* Action Card */}
         <div 
           onClick={openAdd}
-          className="bg-gray-50 rounded-[2.5rem] border-2 border-dashed border-gray-200 p-8 flex flex-col items-center justify-center text-center group hover:border-[#1A237E] transition-all cursor-pointer min-h-[350px]"
+          className="bg-gray-50 rounded-[2rem] border-2 border-dashed border-gray-200 p-6 flex flex-col items-center justify-center text-center group hover:border-[#1A237E] transition-all cursor-pointer min-h-[250px]"
         >
-          <div className="w-16 h-16 bg-white rounded-2xl shadow-sm border border-gray-100 flex items-center justify-center text-gray-300 group-hover:text-[#1A237E] transition-all mb-4">
-            <Plus size={32} />
+          <div className="w-12 h-12 bg-white rounded-xl shadow-sm border border-gray-100 flex items-center justify-center text-gray-300 group-hover:text-[#1A237E] transition-all mb-3">
+            <Plus size={24} />
           </div>
-          <h4 className="text-lg font-black text-gray-400 group-hover:text-gray-900 uppercase tracking-widest">Ajouter une Entité</h4>
-          <p className="text-xs text-gray-400 font-bold uppercase tracking-widest px-10 mt-2">Nouveau service ou antenne régionale</p>
+          <h4 className="text-sm font-black text-gray-400 group-hover:text-gray-900 uppercase tracking-widest text-[10px]">Ajouter une Entité</h4>
         </div>
       </div>
 
