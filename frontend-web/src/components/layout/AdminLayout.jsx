@@ -3,10 +3,10 @@ import { Outlet } from 'react-router-dom';
 import AdminSidebar from './AdminSidebar';
 import { useAuth } from '../../context/AuthContext';
 import { Menu } from 'lucide-react';
+import Emblem from '../common/Emblem';
 
 const AdminLayout = () => {
   const { user } = useAuth();
-  const initial = user?.name ? user.name.charAt(0).toUpperCase() : '?';
   const [collapsed, setCollapsed] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
 
@@ -40,7 +40,7 @@ const AdminLayout = () => {
         {/* Header */}
         <header
           className="h-16 bg-white flex items-center justify-between px-4 md:px-8 sticky top-0 z-20"
-          style={{ borderBottom: '1px solid #E2E8F0' }}
+          style={{ borderBottom: '1px solid #EFF3FA', boxShadow: '0 2px 12px 0 rgba(0,0,0,0.02)' }}
         >
           {/* Mobile hamburger */}
           <button
@@ -52,21 +52,19 @@ const AdminLayout = () => {
 
           {/* Devise */}
           <div className="flex-1 text-center hidden sm:block">
-            <h2 className="text-lg font-serif italic tracking-wide" style={{ color: '#4A5568' }}>
+            <h2 className="text-sm font-black italic tracking-[0.1em] uppercase opacity-40 ml-10" style={{ color: '#1A237E' }}>
               « La Patrie ou la Mort, Nous Vaincrons »
             </h2>
           </div>
 
           {/* User info */}
-          <div className="flex items-center gap-3 ml-auto">
-            <div className="text-right mr-2 hidden sm:block">
-              <p className="text-sm font-black" style={{ color: '#1A237E' }}>{user?.name}</p>
+          <div className="flex items-center gap-4 ml-auto">
+            <div className="text-right hidden sm:block">
+              <p className="text-[10px] font-black uppercase tracking-widest text-gray-400 leading-none mb-1">Administrateur</p>
+              <p className="text-sm font-black" style={{ color: '#1A237E' }}>{user?.name || 'Session Admin'}</p>
             </div>
-            <div
-              className="w-10 h-10 text-white rounded-xl shadow-md flex items-center justify-center font-black text-lg"
-              style={{ background: 'linear-gradient(135deg, #1A237E 0%, #2952A3 100%)' }}
-            >
-              {initial}
+            <div className="w-10 h-10 bg-white border border-gray-100 rounded-xl shadow-sm flex items-center justify-center p-2">
+              <Emblem className="w-full h-full" />
             </div>
           </div>
         </header>
