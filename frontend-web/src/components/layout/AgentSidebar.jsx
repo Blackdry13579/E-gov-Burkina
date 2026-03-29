@@ -10,13 +10,9 @@ import Emblem from '../common/Emblem';
 
 const navItems = [
   { to: '/agent/dashboard',       label: 'Tableau de bord',   icon: LayoutDashboard },
-  { to: '/agent/requests',        label: 'Mes Requêtes',      icon: ClipboardList },
+  { to: '/agent/requests',        label: 'Gestion des demandes', icon: ClipboardList },
   { to: '/agent/notifications',   label: 'Notifications',     icon: Bell },
-  { to: '/agent/messaging',       label: 'Messagerie',        icon: MessageSquare },
   { to: '/agent/profile',         label: 'Mon Profil',        icon: UserCircle },
-  { to: '/agent/signature',       label: 'Signature',         icon: PenTool },
-  { to: '/agent/history',         label: 'Historique',        icon: History },
-  { to: '/agent/security',        label: 'Sécurité',          icon: Shield },
 ];
 
 const NavItem = ({ to, label, icon: Icon, collapsed }) => (
@@ -90,19 +86,7 @@ const AgentSidebar = ({ collapsed, onToggle }) => {
             </p>
           )}
           <ul className="space-y-0.5">
-            {navItems.slice(0, 4).map((item) => (
-              <li key={item.to}><NavItem {...item} collapsed={collapsed} /></li>
-            ))}
-          </ul>
-        </div>
-        <div>
-          {!collapsed && (
-            <p className="px-3 mb-1.5 text-[10px] font-black uppercase tracking-[0.2em]" style={{ color: '#CBD5E1' }}>
-              Paramètres
-            </p>
-          )}
-          <ul className="space-y-0.5">
-            {navItems.slice(4).map((item) => (
+            {navItems.map((item) => (
               <li key={item.to}><NavItem {...item} collapsed={collapsed} /></li>
             ))}
           </ul>

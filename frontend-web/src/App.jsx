@@ -48,11 +48,11 @@ import RequestDetail    from './pages/agent/RequestDetail';
 import RequestDecision  from './pages/agent/RequestDecision';
 import DocumentViewer   from './pages/agent/DocumentViewer';
 import AgentProfilePage from './pages/agent/Profile';
-import DigitalSignature from './pages/agent/DigitalSignature';
-import ActionHistory    from './pages/agent/ActionHistory';
+// import DigitalSignature from './pages/agent/DigitalSignature';
+// import ActionHistory    from './pages/agent/ActionHistory';
 import AgentNotifications from './pages/agent/Notifications';
-import Messaging        from './pages/agent/Messaging';
-import AgentSecurity    from './pages/agent/Security';
+// import Messaging        from './pages/agent/Messaging';
+// import AgentSecurity    from './pages/agent/Security';
 
 function AppRoutes() {
   return (
@@ -113,11 +113,11 @@ function AppRoutes() {
             <Route path="requests/:id/decision"           element={<RequestDecision />} />
             <Route path="requests/:id/document/:docIndex" element={<DocumentViewer />} />
             <Route path="notifications"                   element={<AgentNotifications />} />
-            <Route path="messaging"                       element={<Messaging />} />
+            {/* <Route path="messaging"                       element={<Messaging />} /> */}
             <Route path="profile"                         element={<AgentProfilePage />} />
-            <Route path="signature"                       element={<DigitalSignature />} />
-            <Route path="history"                         element={<ActionHistory />} />
-            <Route path="security"                        element={<AgentSecurity />} />
+            {/* <Route path="signature"                       element={<DigitalSignature />} /> */}
+            {/* <Route path="history"                         element={<ActionHistory />} /> */}
+            {/* <Route path="security"                        element={<AgentSecurity />} /> */}
           </Route>
         </Route>
 
