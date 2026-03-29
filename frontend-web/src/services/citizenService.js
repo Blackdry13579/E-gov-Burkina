@@ -1,4 +1,5 @@
 import { request } from './apiClient';
+import { getDocuments as getAdminDocuments } from './adminService';
 
 /**
  * Citizen Service
@@ -6,19 +7,22 @@ import { request } from './apiClient';
  */
 
 export const getServices = async () => {
-  const data = await request('/documents');
-  return (data.data || []).map((doc) => ({
-    id: doc._id,
-    code: doc.code,
-    name: doc.nom,
-    categorie: doc.categorie || 'ETAT_CIVIL',
-    prix_fcfa: doc.frais || 0,
-    delai: doc.delaiJours ? `${doc.delaiJours} JOURS` : '48H',
-    livraison: doc.service === 'mairie' ? 'MAIRIE' : 'JUSTICE',
-    statut_badge: doc.actif ? 'DISPONIBLE' : 'INDISPONIBLE',
-    documents_requis: (doc.justificatifs || []).map((j) => j.nom || j.code),
-    icon: '📄',
-    description: doc.description || '',
+  // We use the unified admin catalog as the source of truth
+  const documents = await getAdminDocuments();
+  
+  // Group documents by their category or service for the catalog view
+  return documents.filter(doc => doc.active).map((doc) => ({
+    id: doc.id,
+    code: doc.id,
+    name: doc.name,
+    categorie: doc.serviceId === 'SRV-JUSTICE' ? 'Justice' : 'État Civil',
+    prix_fcfa: parseInt(doc.price) || 0,
+    delai: doc.duration,
+    livraison: doc.serviceId === 'SRV-MAIRIE' ? 'MAIRIE' : 'JUSTICE',
+    statut_badge: 'DISPONIBLE',
+    documents_requis: [],
+    icon: doc.serviceId === 'SRV-JUSTICE' ? '⚖️' : '📄',
+    description: doc.desc || '',
     _raw: doc,
   }));
 };

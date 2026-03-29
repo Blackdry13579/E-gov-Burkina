@@ -1,7 +1,9 @@
 import { useState, useEffect, useCallback } from 'react';
 import { 
   getStats, getRecentActivities, getUsers, 
-  getRequests, getServices, getDocuments 
+  getRequests, getServices, getDocuments,
+  addService, updateService, deleteService,
+  addDocument, updateDocument, deleteDocument
 } from '../services/adminService';
 
 /**
@@ -96,14 +98,45 @@ export const useAdminServices = () => {
   const [services, setServices] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    getServices().then(data => {
+  const fetchServices = useCallback(async () => {
+    try {
+      setLoading(true);
+      const data = await getServices();
       setServices(data);
+    } catch (err) {
+      console.error(err);
+    } finally {
       setLoading(false);
-    });
+    }
   }, []);
 
-  return { services, loading };
+  useEffect(() => {
+    fetchServices();
+  }, [fetchServices]);
+
+  const handleAddService = async (data) => {
+    await addService(data);
+    await fetchServices();
+  };
+
+  const handleUpdateService = async (id, data) => {
+    await updateService(id, data);
+    await fetchServices();
+  };
+
+  const handleDeleteService = async (id) => {
+    await deleteService(id);
+    await fetchServices();
+  };
+
+  return { 
+    services, 
+    loading, 
+    refresh: fetchServices,
+    addService: handleAddService,
+    updateService: handleUpdateService,
+    deleteService: handleDeleteService
+  };
 };
 
 /**
@@ -113,14 +146,45 @@ export const useAdminDocuments = () => {
   const [documents, setDocuments] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    getDocuments().then(data => {
+  const fetchDocs = useCallback(async () => {
+    try {
+      setLoading(true);
+      const data = await getDocuments();
       setDocuments(data);
+    } catch (err) {
+      console.error(err);
+    } finally {
       setLoading(false);
-    });
+    }
   }, []);
 
-  return { documents, loading };
+  useEffect(() => {
+    fetchDocs();
+  }, [fetchDocs]);
+
+  const handleAddDoc = async (data) => {
+    await addDocument(data);
+    await fetchDocs();
+  };
+
+  const handleUpdateDoc = async (id, data) => {
+    await updateDocument(id, data);
+    await fetchDocs();
+  };
+
+  const handleDeleteDoc = async (id) => {
+    await deleteDocument(id);
+    await fetchDocs();
+  };
+
+  return { 
+    documents, 
+    loading, 
+    refresh: fetchDocs,
+    addDoc: handleAddDoc,
+    updateDoc: handleUpdateDoc,
+    deleteDoc: handleDeleteDoc
+  };
 };
 
 /**
