@@ -17,7 +17,7 @@ const channelColors = {
 };
 
 const Notifications = () => {
-  const { notifications: notifs, loading, markAllRead } = useNotifications();
+  const { notifications: notifs, loading, markAllRead, markRead } = useNotifications();
 
   // Correction : Utilisation de "lu" au lieu de "read" pour correspondre au service
   const unreadCount = notifs.filter(n => !n.lu).length;
@@ -52,6 +52,7 @@ const Notifications = () => {
               <div
                 key={notif.id}
                 tabIndex="0"
+                onClick={() => !notif.lu && markRead(notif.id)}
                 className={`rounded-2xl border shadow-sm p-4 flex items-start gap-4 transition-all outline-none cursor-pointer focus:bg-white active:bg-white ${
                   !notif.lu 
                     ? 'bg-blue-50/50 border-blue-200 ring-1 ring-blue-100' 
