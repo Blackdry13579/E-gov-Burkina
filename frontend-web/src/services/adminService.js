@@ -94,8 +94,25 @@ export const updatePermissions = async (roleId, permissions) => {
 export const getRecentActivities = getLogs;
 
 export const getServices = async () => {
-  const data = await request('/documents');
-  return data.data || [];
+  // Common services as requested: Mairie and Justice
+  return [
+    { 
+      id: 'SRV-MAIRIE', 
+      name: 'Services de la Mairie', 
+      description: 'Gestion de l\'état civil (naissances, mariages, décès) et documents municipaux.',
+      region: 'National',
+      type: 'Administration Territoriale',
+      active: true 
+    },
+    { 
+      id: 'SRV-JUSTICE', 
+      name: 'Services de la Justice', 
+      description: 'Délivrance de casiers judiciaires, certificats de nationalité et actes juridiques.',
+      region: 'National',
+      type: 'Pouvoir Judiciaire',
+      active: true 
+    }
+  ];
 };
 
 export const getDocuments = async () => {
