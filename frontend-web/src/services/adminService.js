@@ -143,4 +143,11 @@ export const toggleUserActive = async (userId) => {
   return request(`/admin/users/${userId}/toggle`, { method: 'PUT' });
 };
 
+export const updatePermissions = async (roleId, permissions) => {
+  return request(`/admin/roles/${roleId}/permissions`, {
+    method: 'PUT',
+    body: JSON.stringify({ permissions }),
+  });
+};
+
 export const getRecentActivities = getLogs;
