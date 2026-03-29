@@ -186,9 +186,9 @@ const RequestsList = () => {
                     <td className="px-6 py-4 align-middle text-right">
                       <NavLink 
                         to={`/agent/requests/${req.id}/detail`}
-                        className="px-4 py-2 bg-[#1A237E] text-white rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-[#0D145A] transition-all opacity-0 group-hover:opacity-100 shadow-lg shadow-blue-900/20"
+                        className="text-sm font-bold text-[#0F5F9E] hover:text-[#1A237E] transition-colors whitespace-nowrap"
                       >
-                        Traiter
+                        Voir Détails
                       </NavLink>
                     </td>
                   </tr>
