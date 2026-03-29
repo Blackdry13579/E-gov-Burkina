@@ -51,8 +51,11 @@ const Notifications = () => {
             return (
               <div
                 key={notif.id}
-                className={`bg-white rounded-2xl border shadow-sm p-4 flex items-start gap-4 transition-all ${
-                  !notif.lu ? 'border-[#1A237E]/20 ring-1 ring-[#1A237E]/10' : 'border-gray-100'
+                tabIndex="0"
+                className={`rounded-2xl border shadow-sm p-4 flex items-start gap-4 transition-all outline-none cursor-pointer focus:bg-white active:bg-white ${
+                  !notif.lu 
+                    ? 'bg-blue-50/50 border-blue-200 ring-1 ring-blue-100' 
+                    : 'bg-white border-gray-100'
                 }`}
               >
                 <div className={`w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 ${cfg.color}`}>
