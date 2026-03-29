@@ -20,7 +20,13 @@ const groups = [
     items: [
       { name: 'Utilisateurs',          path: '/admin/users',    icon: Users },
       { name: 'Documents & Services',  path: '/admin/services', icon: FolderOpen },
-      { name: 'Mon Profil',            path: '/admin/profile',  icon: UserCircle },
+    ],
+  },
+  {
+    label: 'Analyse',
+    items: [
+      { name: 'Statistiques',    path: '/admin/security', icon: BarChart2 },
+      { name: 'Mon Profil',      path: '/admin/profile',  icon: UserCircle },
     ],
   },
 ];
