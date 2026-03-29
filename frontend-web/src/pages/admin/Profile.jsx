@@ -194,38 +194,6 @@ const AdminProfile = () => {
             )}
           </div>
 
-          {/* Niveaux d'accès */}
-          <div className="md:col-span-2 bg-white rounded-3xl border border-gray-100 shadow-sm p-6">
-            <h3 className="text-sm font-black text-gray-400 uppercase tracking-widest mb-6 flex items-center gap-2">
-              <ShieldCheck size={16} className="text-orange-500" /> Niveaux d'Accès
-            </h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="flex items-center justify-between p-4 bg-gray-50 rounded-2xl">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-orange-100 flex items-center justify-center text-orange-600">
-                    <ShieldCheck size={20} />
-                  </div>
-                  <div>
-                    <p className="text-sm font-bold text-gray-800">Accès Root</p>
-                    <p className="text-xs text-gray-500">Contrôle total sur les agents et services</p>
-                  </div>
-                </div>
-                <div className="px-3 py-1 bg-green-100 text-[#00875A] text-xs font-black rounded-full">ACTIF</div>
-              </div>
-              <div className="flex items-center justify-between p-4 bg-gray-50 rounded-2xl">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-blue-100 flex items-center justify-center text-blue-600">
-                    <Server size={20} />
-                  </div>
-                  <div>
-                    <p className="text-sm font-bold text-gray-800">Audit des Logs</p>
-                    <p className="text-xs text-gray-500">Consultation des actions systèmes</p>
-                  </div>
-                </div>
-                <div className="px-3 py-1 bg-blue-100 text-blue-600 text-xs font-black rounded-full">INCLUS</div>
-              </div>
-            </div>
-          </div>
         </div>
       )}
 
