@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import {
-  LayoutDashboard, FileText, Users, ShieldCheck, FolderOpen,
-  BarChart2, UserCircle, LogOut, ChevronRight, Shield,
+  LayoutDashboard, FileText, Users, FolderOpen,
+  BarChart2, UserCircle, LogOut, ChevronRight,
   ChevronsLeft, ChevronsRight,
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
@@ -25,6 +25,7 @@ const groups = [
   {
     label: 'Analyse',
     items: [
+      { name: 'Statistiques',    path: '/admin/security', icon: BarChart2 },
       { name: 'Mon Profil',      path: '/admin/profile',  icon: UserCircle },
     ],
   },
