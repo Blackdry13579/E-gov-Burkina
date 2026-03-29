@@ -23,7 +23,7 @@ const Notifications = () => {
   const unreadCount = notifs.filter(n => !n.lu).length;
 
   return (
-    <div className="space-y-6 max-w-full font-sans">
+    <div className="space-y-6 max-w-5xl mx-auto font-sans">
       <div className="flex items-center justify-between pb-6 border-b border-gray-100">
         <div>
           <h1 className="text-3xl font-black text-gray-900 tracking-tight">Centre de Notifications</h1>
