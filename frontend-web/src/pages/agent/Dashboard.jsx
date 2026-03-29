@@ -20,7 +20,7 @@ const AgentDashboard = () => {
   const pendingCount = allPending.length;
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 max-w-6xl mx-auto">
       {/* Welcome banner */}
       <div className="relative bg-gradient-to-br from-[#1A237E] to-[#0e3960] rounded-2xl p-6 text-white overflow-hidden">
         <div className="absolute top-0 right-0 w-40 h-40 bg-white/5 rounded-full -translate-y-10 translate-x-10"></div>
