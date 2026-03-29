@@ -106,7 +106,6 @@ const Requests = () => {
 
   const getStatusBadge = (status) => {
     const s = status?.toUpperCase() || '';
-    if (s.includes('COURS')) return <span className="px-3 py-1 rounded-full text-[11px] font-bold bg-blue-100 text-blue-700 whitespace-nowrap">En cours</span>;
     if (s.includes('ATTENTE') || s.includes('EXAMEN')) return <span className="px-3 py-1 rounded-full text-[11px] font-bold bg-[#FEF3C7] text-[#D97706] whitespace-nowrap">En attente d'examen</span>;
     if (s.includes('VALID') || s.includes('APPROUV')) return <span className="px-3 py-1 rounded-full text-[11px] font-bold bg-[#DCFCE7] text-[#16A34A] whitespace-nowrap">Approuvée</span>;
     if (s.includes('REJET')) return <span className="px-3 py-1 rounded-full text-[11px] font-bold bg-[#FEE2E2] text-[#DC2626] whitespace-nowrap">Rejetée</span>;

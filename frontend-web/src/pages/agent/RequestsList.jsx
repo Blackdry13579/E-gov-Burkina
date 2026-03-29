@@ -95,7 +95,6 @@ const RequestsList = () => {
 
   const getStatusBadge = (status) => {
     const s = status?.toUpperCase() || '';
-    if (s.includes('COURS')) return <span className="px-3 py-1 rounded-full text-[10px] font-bold bg-blue-100 text-blue-700 whitespace-nowrap">En cours</span>;
     if (s.includes('ATTENTE')) return <span className="px-3 py-1 rounded-full text-[10px] font-bold bg-[#FEF3C7] text-[#D97706] whitespace-nowrap">En attente</span>;
     if (s.includes('VALID')) return <span className="px-3 py-1 rounded-full text-[10px] font-bold bg-[#DCFCE7] text-[#16A34A] whitespace-nowrap">Validée</span>;
     if (s.includes('REJET')) return <span className="px-3 py-1 rounded-full text-[10px] font-bold bg-[#FEE2E2] text-[#DC2626] whitespace-nowrap">Rejetée</span>;
@@ -130,7 +129,6 @@ const RequestsList = () => {
           >
             <option value="ALL">Tous les statuts</option>
             <option value="ATTENTE">En attente</option>
-            <option value="COURS">En cours</option>
             <option value="VALID">Validées</option>
             <option value="REJET">Rejetées</option>
           </select>
