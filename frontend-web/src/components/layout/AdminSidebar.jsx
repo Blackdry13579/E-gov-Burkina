@@ -19,16 +19,13 @@ const groups = [
     label: 'Administration',
     items: [
       { name: 'Utilisateurs',          path: '/admin/users',    icon: Users },
-      { name: 'Rôles & Perms',         path: '/admin/roles',    icon: ShieldCheck },
       { name: 'Documents & Services',  path: '/admin/services', icon: FolderOpen },
     ],
   },
   {
     label: 'Analyse',
     items: [
-      { name: 'Statistiques',    path: '/admin/security', icon: BarChart2 },
       { name: 'Mon Profil',      path: '/admin/profile',  icon: UserCircle },
-      { name: 'Sécurité & Logs', path: '/admin/logs',     icon: Shield },
     ],
   },
 ];

@@ -95,11 +95,8 @@ function AppRoutes() {
             <Route path="users/add"   element={<AddAgent />} />
             <Route path="users/:id"   element={<AgentProfile />} />
             <Route path="requests"    element={<Requests />} />
-            <Route path="roles"       element={<RolePermissions />} />
             <Route path="services"    element={<ServicesConfig />} />
             <Route path="documents"   element={<DocumentsConfig />} />
-            <Route path="security"    element={<SecurityLogs />} />
-            <Route path="logs"        element={<AdminLogs />} />
             <Route path="profile"     element={<AdminProfile />} />
           </Route>
         </Route>
