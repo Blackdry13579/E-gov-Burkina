@@ -4,6 +4,7 @@ import AdminSidebar from './AdminSidebar';
 import { useAuth } from '../../context/AuthContext';
 import { Menu } from 'lucide-react';
 import Emblem from '../common/Emblem';
+import NotificationDropdown from './NotificationDropdown';
 
 const AdminLayout = () => {
   const { user } = useAuth();
@@ -59,6 +60,8 @@ const AdminLayout = () => {
 
           {/* User info */}
           <div className="flex items-center gap-4 ml-auto">
+            <NotificationDropdown />
+            <div className="h-8 w-px bg-gray-100 mx-1 hidden sm:block"></div>
             <div className="text-right hidden sm:block">
               <p className="text-[10px] font-black uppercase tracking-widest text-gray-400 leading-none mb-1">Administrateur</p>
               <p className="text-sm font-black" style={{ color: '#1A237E' }}>{user?.name || 'Session Admin'}</p>

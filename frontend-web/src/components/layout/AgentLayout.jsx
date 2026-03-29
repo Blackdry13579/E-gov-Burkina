@@ -3,6 +3,8 @@ import { Outlet, NavLink } from 'react-router-dom';
 import AgentSidebar from './AgentSidebar';
 import { LayoutDashboard, ClipboardList, Bell, MessageSquare, UserCircle, Menu } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
+import NotificationDropdown from './NotificationDropdown';
+import Emblem from '../common/Emblem';
 
 const bottomNavItems = [
   { to: '/agent/dashboard',     icon: LayoutDashboard, label: 'Accueil' },
@@ -45,17 +47,27 @@ const AgentLayout = () => {
         style={{ marginLeft: `${sidebarWidth}px` }}
       >
         {/* Desktop header */}
-        <header className="hidden lg:flex items-center justify-between px-8 py-4 bg-white border-b border-gray-100 shadow-sm sticky top-0 z-20">
-          <div>
-            <p className="text-[9px] text-gray-400 font-bold uppercase tracking-[0.2em]">E-GOV Document Request</p>
-            <h2 className="text-base font-black text-gray-800">Espace Agent</h2>
+        <header className="hidden lg:flex items-center justify-between px-8 py-3 bg-white border-b border-gray-100 shadow-sm sticky top-0 z-20">
+          <div className="flex items-center gap-4">
+            <div className="w-10 h-10 bg-white border border-gray-50 rounded-xl flex items-center justify-center p-2">
+              <Emblem className="w-full h-full" />
+            </div>
+            <div>
+              <p className="text-[9px] text-gray-400 font-bold uppercase tracking-[0.2em] leading-tight">E-GOV BURKINA</p>
+              <h2 className="text-sm font-black text-gray-800 uppercase tracking-tight italic">Espace Agent de Service</h2>
+            </div>
           </div>
-          <div className="flex items-center gap-3">
-            <span className="inline-flex items-center gap-1.5 bg-green-50 text-green-700 text-xs font-semibold px-3 py-1.5 rounded-full border border-green-200">
-              <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></span>
-              En ligne
-            </span>
-            <span className="text-sm text-gray-600 font-medium">{user?.name || 'Agent'}</span>
+          
+          <div className="flex items-center gap-4">
+            <NotificationDropdown />
+            <div className="h-8 w-px bg-gray-100 mx-1"></div>
+            <div className="text-right">
+              <div className="flex items-center gap-2 justify-end">
+                <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></span>
+                <p className="text-[9px] font-black uppercase tracking-widest text-[#00875A]">Session Active</p>
+              </div>
+              <p className="text-sm font-black text-[#1A237E]">{user?.name || 'Agent'}</p>
+            </div>
           </div>
         </header>
 
