@@ -11,7 +11,6 @@ const RequestsList = () => {
   const [search, setSearch] = useState('');
   const [typeFilter, setTypeFilter] = useState('ALL');
   const [statusFilter, setStatusFilter] = useState('ALL');
-  const [periodeFilter, setPeriodeFilter] = useState('ALL');
   const [customDate, setCustomDate] = useState('');
   
   // Validation flow state
@@ -69,20 +68,10 @@ const RequestsList = () => {
     const matchesType = typeFilter === 'ALL' || r.document.toLowerCase().includes(typeFilter.toLowerCase());
     
     let matchesPeriode = true;
-    if (periodeFilter !== 'ALL' && r.date) {
-      const today = new Date();
+    if (customDate && r.date) {
       const parts = r.date.split('/');
       const reqDate = new Date(parts[2], parts[1]-1, parts[0]);
-      if (periodeFilter === 'TODAY') {
-        matchesPeriode = reqDate.toDateString() === today.toDateString();
-      } else if (periodeFilter === 'WEEK') {
-        const weekAgo = new Date(today); weekAgo.setDate(today.getDate() - 7);
-        matchesPeriode = reqDate >= weekAgo;
-      } else if (periodeFilter === 'MONTH') {
-        matchesPeriode = reqDate.getMonth() === today.getMonth() && reqDate.getFullYear() === today.getFullYear();
-      } else if (periodeFilter === 'CUSTOM' && customDate) {
-        matchesPeriode = reqDate.toDateString() === new Date(customDate).toDateString();
-      }
+      matchesPeriode = reqDate.toDateString() === new Date(customDate).toDateString();
     }
     
     return matchesSearch && matchesStatus && matchesType && matchesPeriode;
@@ -133,27 +122,27 @@ const RequestsList = () => {
             <option value="REJET">Rejetées</option>
           </select>
 
-          <select 
-            value={periodeFilter}
-            onChange={(e) => { setPeriodeFilter(e.target.value); setCurrentPage(1); }}
-            className="px-4 py-3 bg-white border border-gray-100 rounded-[1.25rem] text-sm font-semibold text-gray-700 outline-none focus:ring-2 focus:ring-[#1A237E]/10 shadow-sm cursor-pointer"
-          >
-            <option value="ALL">Toute période</option>
-            <option value="TODAY">Aujourd'hui</option>
-            <option value="WEEK">Cette semaine</option>
-            <option value="MONTH">Ce mois</option>
-            <option value="CUSTOM">Choisir une date</option>
-          </select>
-
-          {/* Date picker si CUSTOM */}
-          {periodeFilter === 'CUSTOM' && (
-            <input
-              type="date"
-              value={customDate}
-              onChange={(e) => { setCustomDate(e.target.value); setCurrentPage(1); }}
-              className="py-3 px-4 bg-white border border-gray-100 rounded-[1.25rem] text-sm font-semibold text-gray-700 outline-none focus:ring-2 focus:ring-[#1A237E]/10 shadow-sm"
-            />
-          )}
+          {/* Date picker (Only option) */}
+          <div className="relative shrink-0 flex items-center gap-2">
+            <div className="relative overflow-hidden">
+              <input
+                type="date"
+                value={customDate}
+                onChange={(e) => { setCustomDate(e.target.value); setCurrentPage(1); }}
+                className="pl-10 pr-4 py-3 bg-white border border-gray-100 rounded-[1.25rem] text-sm font-semibold text-gray-700 outline-none focus:ring-2 focus:ring-[#1A237E]/10 shadow-sm transition-all"
+              />
+              <Calendar size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
+            </div>
+            {customDate && (
+              <button 
+                onClick={() => { setCustomDate(''); setCurrentPage(1); }}
+                className="text-[10px] font-bold text-red-600 hover:text-red-700 uppercase tracking-widest bg-red-50 px-3 py-1.5 rounded-lg border border-red-100 transition-colors"
+                title="Réinitialiser la date"
+              >
+                Tout voir
+              </button>
+            )}
+          </div>
         </div>
       </div>
 

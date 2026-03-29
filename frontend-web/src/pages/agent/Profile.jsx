@@ -13,13 +13,13 @@ const AgentProfile = () => {
 
   // Fallback to avoid white screen if profile is null or properties are missing
   const safeProfile = profile || {
-    name: 'Agent',
+    name: user?.name || 'Agent E-Gov',
     role: 'Agent de service',
-    department: 'Administration',
-    matricule: '—',
-    email: '—',
-    phone: '—',
-    since: '—',
+    department: user?.service || 'Administration Générale',
+    matricule: user?.matricule || 'MAI-OUAGA-2024-XXX',
+    email: user?.email || 'agent@egov.bf',
+    phone: user?.telephone || '+226 XX XX XX XX',
+    since: user?.dateCreation ? new Date(user.dateCreation).toLocaleDateString() : '01/01/2024',
     stats: {
       processed: 0,
       validated: 0,
