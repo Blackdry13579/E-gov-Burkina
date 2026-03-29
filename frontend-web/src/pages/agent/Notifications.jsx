@@ -66,7 +66,6 @@ const Notifications = () => {
                   <div className="flex items-start justify-between gap-2">
                     {/* Correction : Utilisation de "titre" et "lu" selon le service */}
                     <p className={`text-sm font-bold ${!notif.lu ? 'text-gray-900' : 'text-gray-700'}`}>{notif.titre}</p>
-                    {!notif.lu && <span className="w-2 h-2 rounded-full bg-[#1A237E] flex-shrink-0 mt-1.5"></span>}
                   </div>
                   {/* Correction : Utilisation de "message" au lieu de "body" */}
                   <p className="text-xs text-gray-500 mt-0.5">{notif.message}</p>
