@@ -28,12 +28,14 @@ export const getRequests = async () => {
 
     return {
       id: d.reference,
-      citizen: `${d.citoyenId?.prenom || ''} ${d.citoyenId?.nom || ''}`.trim(),
-      document: d.documentTypeId?.nom || '',
+      citizen: `${d.citoyenId?.prenom || ''} ${d.citoyenId?.nom || ''}`.trim() || 'Inconnu',
+      document: d.documentTypeId?.nom || 'Document',
+      service: d.documentTypeId?.centreTraitement || 'National', // Added for global view
       status: status,
       date: d.dateSoumission
         ? new Date(d.dateSoumission).toLocaleDateString('fr-FR')
         : '',
+      _raw: d
     };
   });
 };

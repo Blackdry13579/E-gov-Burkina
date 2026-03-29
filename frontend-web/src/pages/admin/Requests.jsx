@@ -211,52 +211,50 @@ const Requests = () => {
               <tr className="border-b border-gray-100 bg-white">
                 <th className="px-6 py-5 text-[10px] font-black uppercase text-gray-400 tracking-wider">ID DEMANDE</th>
                 <th className="px-6 py-5 text-[10px] font-black uppercase text-gray-400 tracking-wider">CITOYEN</th>
-                <th className="px-6 py-5 text-[10px] font-black uppercase text-gray-400 tracking-wider">TYPE DE DOCUMENT</th>
-                <th className="px-6 py-5 text-[10px] font-black uppercase text-gray-400 tracking-wider">DATE DE SOUMISSION</th>
-                <th className="px-6 py-5 text-[10px] font-black uppercase text-gray-400 tracking-wider">STATUT</th>
+                <th className="px-6 py-5 text-[10px] font-black uppercase text-gray-400 tracking-wider">DOCUMENT</th>
+                <th className="px-6 py-5 text-[10px] font-black uppercase text-gray-400 tracking-wider">SERVICE / CENTRE</th>
+                <th className="px-6 py-5 text-[10px] font-black uppercase text-gray-400 tracking-wider">DATE</th>
+                <th className="px-6 py-5 text-[10px] font-black uppercase text-gray-400 tracking-wider text-center">STATUT</th>
                 <th className="px-6 py-5 text-[10px] font-black uppercase text-gray-400 tracking-wider text-right">ACTIONS</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-50">
               {loading ? (
-                <tr><td colSpan="6" className="py-20 text-center text-gray-400 font-bold">Chargement...</td></tr>
+                <tr><td colSpan="7" className="py-20 text-center text-gray-400 font-bold italic">Consultation des registres nationaux...</td></tr>
               ) : paginatedRequests.length === 0 ? (
-                <tr><td colSpan="6" className="py-20 text-center text-gray-400 font-bold">Aucun résultat</td></tr>
+                <tr><td colSpan="7" className="py-20 text-center text-gray-400 font-bold">Aucune demande trouvée pour ces critères</td></tr>
               ) : (
                 paginatedRequests.map(req => {
-                  // Format match design (e.g. CDB-2026-8812)
                   const displayId = req.id.includes('-') ? req.id : `CDB-${new Date().getFullYear()}-${req.id.slice(-4).padStart(4,'0')}`;
                   
                   return (
-                    <tr key={req.id} className="hover:bg-gray-50/50 transition-colors bg-white">
+                    <tr key={req.id} className="hover:bg-gray-50/80 transition-all bg-white group">
                       <td className="px-6 py-4 align-middle">
-                        <span className="text-sm font-bold text-[#334155]">{displayId}</span>
+                        <span className="text-sm font-black text-slate-700 font-mono tracking-tighter">{displayId}</span>
+                      </td>
+                      <td className="px-6 py-4 align-middle font-bold text-slate-800 text-sm">
+                        {req.citizen}
                       </td>
                       <td className="px-6 py-4 align-middle">
-                        <div className="flex items-center gap-3">
-                          <img 
-                            src={`https://ui-avatars.com/api/?name=${encodeURIComponent(req.citizen)}&background=F1F5F9&color=334155&bold=true`} 
-                            alt={req.citizen} 
-                            className="w-8 h-8 rounded-full border border-gray-200"
-                          />
-                          <span className="text-sm font-bold text-[#1E293B] whitespace-nowrap">{req.citizen}</span>
-                        </div>
+                        <span className="px-3 py-1 bg-slate-100 text-slate-600 rounded-lg text-xs font-bold uppercase tracking-tight border border-slate-200">
+                          {req.document}
+                        </span>
                       </td>
                       <td className="px-6 py-4 align-middle">
-                        <span className="text-sm font-medium text-[#475569]">{req.document}</span>
+                        <span className="text-sm font-medium text-slate-500 italic">{req.service || 'Direction Générale'}</span>
                       </td>
-                      <td className="px-6 py-4 align-middle">
-                        <span className="text-sm font-medium text-[#64748B] whitespace-nowrap">{req.date}</span>
+                      <td className="px-6 py-4 align-middle text-sm text-slate-400 font-medium">
+                        {req.date}
                       </td>
-                      <td className="px-6 py-4 align-middle">
+                      <td className="px-6 py-4 align-middle text-center">
                         {getStatusBadge(req.status)}
                       </td>
                       <td className="px-6 py-4 align-middle text-right">
                         <button 
                           onClick={() => handleOpenDetails(req)}
-                          className="text-sm font-bold text-[#0F5F9E] hover:text-[#1A237E] transition-colors whitespace-nowrap"
+                          className="px-4 py-2 bg-slate-900 text-white rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-slate-800 transition-all opacity-0 group-hover:opacity-100 shadow-lg shadow-slate-900/20"
                         >
-                          Voir Détails
+                          Détails
                         </button>
                       </td>
                     </tr>
