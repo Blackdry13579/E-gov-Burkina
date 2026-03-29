@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, Save } from 'lucide-react';
 import { createAgent } from '../../services/adminService';
+import { useAdminServices } from '../../hooks/useAdmin';
 
 const AddAgent = () => {
   const navigate = useNavigate();
@@ -16,6 +17,8 @@ const AddAgent = () => {
     password: ''
   });
   const [submitting, setSubmitting] = useState(false);
+
+  const { services, loading: servicesLoading } = useAdminServices();
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -105,20 +108,20 @@ const AddAgent = () => {
               <div className="space-y-5">
                 <div>
                   <label className={labelClass}>Service *</label>
-                  <select name="service" value={formData.service} onChange={handleChange} className={inputClass + " appearance-none cursor-pointer"} required>
+                  <select name="service" value={formData.service} onChange={handleChange} className={inputClass + " appearance-none cursor-pointer uppercase"} required>
                     <option value="" disabled>Choisir un service</option>
-                    <option value="mairie">Mairie (Etat-Civil)</option>
-                    <option value="justice">Justice (Casier/Nat)</option>
+                    {services.map(s => (
+                      <option key={s.id} value={s.id}>{s.name.toUpperCase()}</option>
+                    ))}
                   </select>
                 </div>
                 <div>
                   <label className={labelClass}>Rôle Système *</label>
-                  <select name="role" value={formData.role} onChange={handleChange} className={inputClass + " appearance-none cursor-pointer"} required>
+                  <select name="role" value={formData.role} onChange={handleChange} className={inputClass + " appearance-none cursor-pointer uppercase"} required>
                     <option value="" disabled>Choisir un rôle</option>
-                    <option value="AGENT_MAIRIE">Agent Mairie</option>
-                    <option value="AGENT_JUSTICE">Agent Justice</option>
+                    <option value="AGENT">Agent de Service</option>
                     <option value="SUPERVISEUR">Superviseur</option>
-                    <option value="ADMIN">Administrateur</option>
+                    <option value="ADMIN">Administrateur Système</option>
                   </select>
                 </div>
               </div>
