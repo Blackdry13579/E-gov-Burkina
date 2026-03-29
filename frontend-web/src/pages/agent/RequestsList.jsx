@@ -142,7 +142,18 @@ const RequestsList = () => {
             <option value="TODAY">Aujourd'hui</option>
             <option value="WEEK">Cette semaine</option>
             <option value="MONTH">Ce mois</option>
+            <option value="CUSTOM">Choisir une date</option>
           </select>
+
+          {/* Date picker si CUSTOM */}
+          {periodeFilter === 'CUSTOM' && (
+            <input
+              type="date"
+              value={customDate}
+              onChange={(e) => { setCustomDate(e.target.value); setCurrentPage(1); }}
+              className="py-3 px-4 bg-white border border-gray-100 rounded-[1.25rem] text-sm font-semibold text-gray-700 outline-none focus:ring-2 focus:ring-[#1A237E]/10 shadow-sm"
+            />
+          )}
         </div>
       </div>
 
