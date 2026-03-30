@@ -55,33 +55,41 @@ const RequestDetail = () => {
 
       {/* Documents */}
       <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
-        <h2 className="text-sm font-bold text-gray-500 uppercase tracking-wide mb-4">Pièces Justificatives</h2>
+        <h2 className="text-sm font-bold text-gray-500 uppercase tracking-wide mb-4">Pièces Justificatives & Photos</h2>
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-          {request.pieces.map((piece, i) => (
-            <button
+          {request.pieces && request.pieces.length > 0 ? request.pieces.map((piece, i) => (
+            <a
               key={i}
-              onClick={() => navigate(`/agent/requests/${id}/document/${i}`)}
+              href={piece.url}
+              target="_blank"
+              rel="noopener noreferrer"
               className="aspect-square rounded-xl border-2 border-dashed border-gray-200 hover:border-[#1A237E] hover:bg-blue-50 flex flex-col items-center justify-center gap-2 transition-all group"
             >
-              <div className="w-10 h-10 rounded-lg bg-gray-100 group-hover:bg-[#1A237E]/10 flex items-center justify-center">
-                <Eye size={18} className="text-gray-400 group-hover:text-[#1A237E]" />
+              <div className="w-10 h-10 rounded-lg bg-gray-100 group-hover:bg-[#1A237E]/10 flex items-center justify-center overflow-hidden">
+                {piece.type === 'image' && piece.url ? (
+                  <img src={piece.url} alt={piece.name} className="w-full h-full object-cover" />
+                ) : (
+                  <FileText size={18} className="text-gray-400 group-hover:text-[#1A237E]" />
+                )}
               </div>
-              <span className="text-xs text-gray-500 font-medium text-center px-1 leading-tight">{piece.name}</span>
-            </button>
-          ))}
+              <span className="text-[10px] text-gray-500 font-black uppercase tracking-tight text-center px-1 leading-tight">{piece.name}</span>
+            </a>
+          )) : (
+            <div className="col-span-full py-6 text-center text-gray-400 italic text-sm">Aucun document joint.</div>
+          )}
         </div>
       </div>
 
       {/* Decision buttons */}
       <div className="flex gap-3">
         <button
-          onClick={() => navigate(`/agent/requests/${id}/decision`, { state: { intent: 'approve' } })}
+          onClick={() => navigate(`/agent/requests/${id}/decision`, { state: { intent: 'approve', dbId: request._raw?._id } })}
           className="flex-1 flex items-center justify-center gap-2 bg-[#00875A] hover:bg-green-700 text-white font-semibold py-3 rounded-xl transition-all shadow-lg shadow-green-900/10 active:scale-95"
         >
           <CheckCircle size={18} /> Approuver
         </button>
         <button
-          onClick={() => navigate(`/agent/requests/${id}/decision`, { state: { intent: 'reject' } })}
+          onClick={() => navigate(`/agent/requests/${id}/decision`, { state: { intent: 'reject', dbId: request._raw?._id } })}
           className="flex-1 flex items-center justify-center gap-2 bg-[#E52E2E] hover:bg-red-700 text-white font-semibold py-3 rounded-xl transition-all shadow-lg shadow-red-900/10 active:scale-95"
         >
           <XCircle size={18} /> Rejeter

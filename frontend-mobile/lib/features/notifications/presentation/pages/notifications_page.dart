@@ -277,7 +277,7 @@ class _NotificationTile extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.fromLTRB(14, 12, 14, 12),
       decoration: BoxDecoration(
-        color: lue ? AppColors.cardBg : AppColors.primary.withOpacity(0.03),
+        color: lue ? AppColors.cardBg : const Color(0xFFF8FAFC),
         borderRadius: BorderRadius.circular(18),
         border: Border.all(color: lue ? AppColors.divider : AppColors.primary.withOpacity(0.2)),
         boxShadow: lue ? null : [

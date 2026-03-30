@@ -3,8 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import '../../../../core/providers/user_management_provider.dart';
+import '../../../../core/providers/document_provider.dart';
 import '../../../../core/providers/auth_provider.dart';
 import 'service_model.dart';
+import '../../../../features/catalogue/domain/models/document_model.dart';
 
 class GestionServicesPage extends StatefulWidget {
   const GestionServicesPage({super.key});
@@ -17,6 +19,7 @@ class _GestionServicesPageState extends State<GestionServicesPage> {
   // ── Couleurs imposées ───────────────────────────────────────────────────────
   static const Color primaryBlue     = Color(0xFF1A237E);
   static const Color successGreen    = Color(0xFF27AE60);
+  static const Color dangerRed       = Color(0xFFDC2626);
   static const Color backgroundLight = Color(0xFFF4F6F9);
   static const Color textPrimary     = Color(0xFF1C1C1E);
   static const Color textSecondary   = Color(0xFF8E8E93);
@@ -45,6 +48,17 @@ class _GestionServicesPageState extends State<GestionServicesPage> {
   int _selectedIconIndex  = 0;
 
   @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final token = context.read<AuthProvider>().token;
+      if (token != null) {
+        context.read<DocumentProvider>().loadDocuments(token);
+      }
+    });
+  }
+
+  @override
   void dispose() {
     _nomController.dispose();
     super.dispose();
@@ -54,6 +68,7 @@ class _GestionServicesPageState extends State<GestionServicesPage> {
   @override
   Widget build(BuildContext context) {
     final userProvider = context.watch<UserManagementProvider>();
+    final docProvider = context.watch<DocumentProvider>();
     final services = userProvider.services;
 
     return Scaffold(
@@ -69,9 +84,9 @@ class _GestionServicesPageState extends State<GestionServicesPage> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  "Services",
+                  "Services & Documents",
                   style: GoogleFonts.inter(
-                    fontSize: 22,
+                    fontSize: 20,
                     fontWeight: FontWeight.w800,
                     color: textPrimary,
                   ),
@@ -80,7 +95,7 @@ class _GestionServicesPageState extends State<GestionServicesPage> {
                   onPressed: () => _showNouveauServiceSheet(context),
                   icon: const Icon(Icons.add, size: 18),
                   label: Text(
-                    "Ajouter",
+                    "Service",
                     style: GoogleFonts.inter(
                       fontSize: 13,
                       fontWeight: FontWeight.w600,
@@ -116,7 +131,7 @@ class _GestionServicesPageState extends State<GestionServicesPage> {
                   const SizedBox(width: 10),
                   Expanded(
                     child: Text(
-                      "Chaque service regroupe des agents et des types de documents associés.",
+                      "Gérez les services administratifs et les types de documents qui leur sont rattachés.",
                       style: GoogleFonts.inter(
                         fontSize: 12,
                         color: primaryBlue,
@@ -131,21 +146,103 @@ class _GestionServicesPageState extends State<GestionServicesPage> {
             const SizedBox(height: 16),
 
             // Cartes service dynamiques
-            ...services.map((s) => _buildServiceCard(
-              service: s,
-              onToggle: (val) {
-                userProvider.toggleServiceStatus(s.id);
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text("${s.name} ${val ? 'activé' : 'désactivé'}"),
-                    duration: const Duration(seconds: 1),
-                    behavior: SnackBarBehavior.floating,
-                  ),
-                );
-              },
-            )),
+            ...services.map((s) {
+              final serviceDocs = docProvider.allDocuments.where((d) => 
+                d.service.toLowerCase() == s.name.toLowerCase() || 
+                d.service.toLowerCase() == s.id.toLowerCase()
+              ).toList();
+              
+              return _buildServiceCard(
+                service: s,
+                documents: serviceDocs,
+                onToggle: (val) {
+                  userProvider.toggleServiceStatus(s.id);
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text("${s.name} ${val ? 'activé' : 'désactivé'}"),
+                      duration: const Duration(seconds: 1),
+                      behavior: SnackBarBehavior.floating,
+                    ),
+                  );
+                },
+                onDeleteService: () {
+                  _confirmDeleteService(context, s, userProvider, docProvider);
+                },
+              );
+            }),
           ],
         ),
+      ),
+    );
+  }
+
+  void _confirmDeleteService(BuildContext context, ServiceData service, UserManagementProvider userProvider, DocumentProvider docProvider) {
+    showDialog(
+      context: context,
+      builder: (_) => AlertDialog(
+        title: Text("Supprimer le service ?", style: GoogleFonts.inter(fontWeight: FontWeight.bold)),
+        content: Text("Voulez-vous vraiment supprimer le service '${service.name}' ? Tous ses documents seront également supprimés."),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text("Annuler", style: GoogleFonts.inter(color: textSecondary)),
+          ),
+          ElevatedButton(
+            onPressed: () async {
+               Navigator.pop(context);
+               final token = context.read<AuthProvider>().token ?? '';
+               
+               // Suppression de ce service
+               userProvider.removeService(service.id);
+               
+               // Suppression en cascade des documents
+               final serviceDocs = docProvider.allDocuments.where((d) => 
+                  d.service.toLowerCase() == service.name.toLowerCase() || 
+                  d.service.toLowerCase() == service.id.toLowerCase()
+               ).toList();
+               
+               for (var d in serviceDocs) {
+                  await docProvider.deleteDocument(documentId: d.id, token: token);
+               }
+               
+               if (context.mounted) {
+                 ScaffoldMessenger.of(context).showSnackBar(
+                   SnackBar(
+                     content: Text("Service et documents associés supprimés"),
+                     backgroundColor: successGreen,
+                   ),
+                 );
+               }
+            },
+            style: ElevatedButton.styleFrom(backgroundColor: dangerRed, foregroundColor: Colors.white),
+            child: const Text("Supprimer"),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _confirmDeleteDocument(BuildContext context, DocumentModel doc, DocumentProvider docProvider) {
+    showDialog(
+      context: context,
+      builder: (_) => AlertDialog(
+        title: Text("Supprimer ce document ?", style: GoogleFonts.inter(fontWeight: FontWeight.bold)),
+        content: Text("Confirmer la suppression du type de document '${doc.title}' ?"),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text("Annuler", style: GoogleFonts.inter(color: textSecondary)),
+          ),
+          ElevatedButton(
+            onPressed: () async {
+               Navigator.pop(context);
+               final token = context.read<AuthProvider>().token ?? '';
+               await docProvider.deleteDocument(documentId: doc.id, token: token);
+            },
+            style: ElevatedButton.styleFrom(backgroundColor: dangerRed, foregroundColor: Colors.white),
+            child: const Text("Supprimer"),
+          ),
+        ],
       ),
     );
   }
@@ -155,14 +252,15 @@ class _GestionServicesPageState extends State<GestionServicesPage> {
     return const EgovMainAppBar(title: 'GESTION DES SERVICES');
   }
 
-  // ── Carte Service ───────────────────────────────────────────────────────────
+  // ── Carte Service avec Expansion ─────────────────────────────────────────────
   Widget _buildServiceCard({
     required ServiceData service,
+    required List<DocumentModel> documents,
     required ValueChanged<bool> onToggle,
+    required VoidCallback onDeleteService,
   }) {
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
-      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
@@ -174,23 +272,25 @@ class _GestionServicesPageState extends State<GestionServicesPage> {
           ),
         ],
       ),
-      child: Row(
-        children: [
-          Container(
-            width: 52,
-            height: 52,
-            decoration: BoxDecoration(
-              color: service.color,
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Icon(service.icon, color: Colors.white, size: 26),
-          ),
-          const SizedBox(width: 14),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
+      child: Theme(
+        data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
+        child: ExpansionTile(
+          tilePadding: const EdgeInsets.all(16),
+          title: Row(
+            children: [
+              Container(
+                width: 48,
+                height: 48,
+                decoration: BoxDecoration(
+                  color: service.color,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Icon(service.icon, color: Colors.white, size: 24),
+              ),
+              const SizedBox(width: 14),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
                       service.name,
@@ -200,47 +300,96 @@ class _GestionServicesPageState extends State<GestionServicesPage> {
                         color: textPrimary,
                       ),
                     ),
-                    const SizedBox(width: 8),
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                      decoration: BoxDecoration(
-                        color: service.isActive ? successGreen : textSecondary.withOpacity(0.2),
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      child: Text(
-                        service.isActive ? "ACTIF" : "INACTIF",
-                        style: GoogleFonts.inter(
-                          fontSize: 10,
-                          fontWeight: FontWeight.w700,
-                          color: service.isActive ? Colors.white : textSecondary,
-                          letterSpacing: 0.5,
-                        ),
-                      ),
+                    const SizedBox(height: 4),
+                    Row(
+                      children: [
+                        const Icon(Icons.people_outline, size: 14, color: textSecondary),
+                        const SizedBox(width: 4),
+                        Text("${service.agentCount} Agents", style: GoogleFonts.inter(fontSize: 11, color: textSecondary)),
+                        const SizedBox(width: 12),
+                        const Icon(Icons.description_outlined, size: 14, color: textSecondary),
+                        const SizedBox(width: 4),
+                        Text("${documents.length} Docs", style: GoogleFonts.inter(fontSize: 11, color: textSecondary)),
+                      ],
                     ),
                   ],
                 ),
-                const SizedBox(height: 6),
+              ),
+            ],
+          ),
+          childrenPadding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+          children: [
+            const Divider(height: 1, color: Color(0xFFF0F0F0)),
+            const SizedBox(height: 12),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
                 Row(
                   children: [
-                    const Icon(Icons.people_outline, size: 14, color: textSecondary),
-                    const SizedBox(width: 4),
-                    Text("${service.agentCount} Agents", style: GoogleFonts.inter(fontSize: 12, color: textSecondary)),
-                    const SizedBox(width: 12),
-                    const Icon(Icons.description_outlined, size: 14, color: textSecondary),
-                    const SizedBox(width: 4),
-                    Text("${service.docCount} Docs", style: GoogleFonts.inter(fontSize: 12, color: textSecondary)),
+                    Text("Statut: ", style: GoogleFonts.inter(fontSize: 12, color: textSecondary)),
+                    Switch(
+                      value: service.isActive,
+                      onChanged: onToggle,
+                      activeThumbColor: successGreen,
+                      activeTrackColor: successGreen.withOpacity(0.3),
+                    ),
                   ],
+                ),
+                TextButton.icon(
+                  onPressed: onDeleteService,
+                  icon: const Icon(Icons.delete_outline, color: dangerRed, size:18),
+                  label: Text("Retirer Service", style: GoogleFonts.inter(color: dangerRed, fontSize: 13, fontWeight: FontWeight.w600)),
                 ),
               ],
             ),
-          ),
-          Switch(
-            value: service.isActive,
-            onChanged: onToggle,
-            activeThumbColor: successGreen,
-            activeTrackColor: successGreen.withOpacity(0.3),
-          ),
-        ],
+            const SizedBox(height: 8),
+            Align(
+              alignment: Alignment.centerLeft,
+              child: Text(
+                "Types de documents associés :",
+                style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.w700, color: textPrimary),
+              ),
+            ),
+            const SizedBox(height: 8),
+            
+            if (documents.isEmpty)
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 8),
+                child: Text("Aucun document pour ce service.", style: GoogleFonts.inter(color: textSecondary, fontSize: 13)),
+              )
+            else
+              ...documents.map((doc) => Container(
+                margin: const EdgeInsets.only(bottom: 8),
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: backgroundLight,
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(doc.title, style: GoogleFonts.inter(fontWeight: FontWeight.w600, fontSize: 13, color: textPrimary)),
+                          if (doc.description.isNotEmpty) ...[
+                            const SizedBox(height: 2),
+                            Text(doc.description, style: GoogleFonts.inter(fontSize: 11, color: textSecondary)),
+                          ]
+                        ],
+                      ),
+                    ),
+                    IconButton(
+                      icon: const Icon(Icons.delete_outline, size: 18, color: dangerRed),
+                      onPressed: () {
+                        _confirmDeleteDocument(context, doc, context.read<DocumentProvider>());
+                      },
+                    )
+                  ],
+                ),
+              ))
+          ],
+        ),
       ),
     );
   }

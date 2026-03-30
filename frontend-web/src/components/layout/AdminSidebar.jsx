@@ -10,24 +10,19 @@ import Emblem from '../common/Emblem';
 
 const groups = [
   {
-    label: 'Principal',
+    label: 'Pilotage',
     items: [
       { name: 'Tableau de bord',      path: '/admin/dashboard', icon: LayoutDashboard },
       { name: 'Gestion des demandes', path: '/admin/requests',  icon: FileText },
+      { name: 'Rapports & Stats',     path: '/admin/security',  icon: BarChart2 },
     ],
   },
   {
-    label: 'Administration',
+    label: 'Paramètres',
     items: [
       { name: 'Utilisateurs',          path: '/admin/users',    icon: Users },
       { name: 'Documents & Services',  path: '/admin/services', icon: FolderOpen },
-    ],
-  },
-  {
-    label: 'Analyse',
-    items: [
-      { name: 'Statistiques',    path: '/admin/security', icon: BarChart2 },
-      { name: 'Mon Profil',      path: '/admin/profile',  icon: UserCircle },
+      { name: 'Mon Profil',            path: '/admin/profile',  icon: UserCircle },
     ],
   },
 ];

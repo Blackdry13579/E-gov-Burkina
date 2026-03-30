@@ -150,4 +150,11 @@ export const updatePermissions = async (roleId, permissions) => {
   });
 };
 
+export const updateAdminProfile = async (userData) => {
+  return request('/auth/me', {
+    method: 'PUT',
+    body: JSON.stringify(userData),
+  });
+};
+
 export const getRecentActivities = getLogs;

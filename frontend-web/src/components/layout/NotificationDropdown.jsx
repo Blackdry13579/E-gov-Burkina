@@ -2,37 +2,38 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Bell, Clock, CheckCircle2, AlertCircle, X, ChevronRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
-const mockNotifications = [
-  {
-    id: 1,
-    title: "Nouvelle demande reçue",
-    description: "Un citoyen a soumis une demande d'acte de naissance.",
-    time: "Il y a 5 min",
-    type: "info",
-    unread: true
-  },
-  {
-    id: 2,
-    title: "Document validé",
-    description: "Le dossier #REF-882 est désormais prêt pour impression.",
-    time: "Il y a 2h",
-    type: "success",
-    unread: false
-  },
-  {
-    id: 3,
-    title: "Alerte système",
-    description: "Maintenance prévue ce soir à 23h00.",
-    time: "Il y a 4h",
-    type: "warning",
-    unread: false
-  }
-];
+import { getLogs } from '../../services/adminService';
 
 const NotificationDropdown = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const [notifications, setNotifications] = useState([]);
+  const [loading, setLoading] = useState(false);
   const dropdownRef = useRef(null);
-  const unreadCount = mockNotifications.filter(n => n.unread).length;
+
+  const fetchNotifications = async () => {
+    setLoading(true);
+    try {
+      const logs = await getLogs();
+      // Map logs to notification format
+      const mapped = logs.map(log => ({
+        id: log.id,
+        title: log.text || 'Action Système',
+        description: `Action effectuée le ${log.time}`,
+        time: 'Récent',
+        type: log.type?.includes('error') ? 'warning' : (log.type?.includes('valid') ? 'success' : 'info'),
+        unread: false
+      }));
+      setNotifications(mapped);
+    } catch (e) {
+      console.error("Failed to fetch logs:", e);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (isOpen) fetchNotifications();
+  }, [isOpen]);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -77,11 +78,15 @@ const NotificationDropdown = () => {
           </div>
 
           <div className="max-h-[400px] overflow-y-auto">
-            {mockNotifications.length > 0 ? (
-              mockNotifications.map((n) => (
+            {loading ? (
+              <div className="py-12 text-center animate-pulse">
+                <p className="text-[10px] text-gray-400 font-black uppercase tracking-widest">Mise à jour...</p>
+              </div>
+            ) : notifications.length > 0 ? (
+              notifications.map((n) => (
                 <div 
                   key={n.id} 
-                  className={`px-6 py-5 border-b border-gray-50 hover:bg-gray-50 transition-colors cursor-pointer group flex gap-4 ${n.unread ? 'bg-blue-50/30' : ''}`}
+                  className="px-6 py-5 border-b border-gray-50 hover:bg-gray-50 transition-colors cursor-pointer group flex gap-4"
                 >
                   <div className="mt-1 shrink-0">
                     <div className={`w-8 h-8 rounded-xl flex items-center justify-center ${
@@ -94,15 +99,14 @@ const NotificationDropdown = () => {
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center justify-between mb-1">
                       <h4 className="text-sm font-black text-gray-900 line-clamp-1">{n.title}</h4>
-                      <span className="text-[9px] font-bold text-gray-400 uppercase">{n.time}</span>
                     </div>
                     <p className="text-xs text-gray-500 font-medium leading-relaxed line-clamp-2">{n.description}</p>
                   </div>
                 </div>
               ))
             ) : (
-              <div className="py-12 text-center">
-                <p className="text-sm text-gray-400 font-bold uppercase tracking-widest">Aucune notification</p>
+              <div className="py-12 text-center text-gray-300 italic font-medium text-sm">
+                Aucune activité récente.
               </div>
             )}
           </div>

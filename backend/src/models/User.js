@@ -41,15 +41,15 @@ const userSchema = new mongoose.Schema(
     },
     role: {
       type: String,
-      enum: ['CITOYEN', 'AGENT_MAIRIE', 'AGENT_JUSTICE', 'SUPERVISEUR', 'ADMIN'],
+      enum: ['CITOYEN', 'AGENT', 'AGENT_MAIRIE', 'AGENT_JUSTICE', 'SUPERVISEUR', 'ADMIN'],
       default: 'CITOYEN'
     },
     service: {
       type: String,
-      enum: ['mairie', 'justice'],
+      enum: ['mairie', 'justice', 'MAIRIE', 'JUSTICE', 'SRV-MAIRIE', 'SRV-JUSTICE'],
       required: [
         function () {
-          return this.role && (this.role.startsWith('AGENT_') || this.role === 'SUPERVISEUR');
+          return this.role && (this.role.startsWith('AGENT') || this.role === 'SUPERVISEUR');
         },
         'Le service est obligatoire pour les agents et superviseurs'
       ]

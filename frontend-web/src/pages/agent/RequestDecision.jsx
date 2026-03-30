@@ -10,6 +10,7 @@ const RequestDecision = () => {
   const { updateStatus, request } = useAgentRequestDetail(id);
   
   const intent = location.state?.intent || null;
+  const dbId = location.state?.dbId || id;
 
   const [comment, setComment] = useState('');
   const [step, setStep] = useState('idle'); // idle | loading | success | error
@@ -19,7 +20,7 @@ const RequestDecision = () => {
   const handleApprove = async () => {
     setAction('approve');
     setStep('loading');
-    const res = await updateStatus('VALIDÉ', comment);
+    const res = await updateStatus('VALIDÉ', comment, dbId);
     if (res.success) {
       setMessage('Le dossier a été approuvé avec succès.');
       setStep('success');
@@ -37,7 +38,7 @@ const RequestDecision = () => {
     }
     setAction('reject');
     setStep('loading');
-    const res = await updateStatus('REJETÉ', comment);
+    const res = await updateStatus('REJETÉ', comment, dbId);
     if (res.success) {
       setMessage('Le dossier a été rejeté.');
       setStep('success');

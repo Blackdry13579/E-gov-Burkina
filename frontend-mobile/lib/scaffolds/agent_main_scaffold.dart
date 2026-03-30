@@ -111,7 +111,7 @@ class _AgentMainScaffoldState extends State<AgentMainScaffold> {
           BottomNavigationBarItem(
             icon: Icon(Icons.folder_open_outlined),
             activeIcon: Icon(Icons.folder_rounded),
-            label: 'Demandes',
+            label: 'Gestion des demandes',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.description_outlined),

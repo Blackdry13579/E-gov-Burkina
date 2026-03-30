@@ -191,4 +191,9 @@ class UserManagementProvider extends ChangeNotifier {
       notifyListeners();
     }
   }
+
+  void removeService(String id) {
+    _services.removeWhere((s) => s.id == id);
+    notifyListeners();
+  }
 }

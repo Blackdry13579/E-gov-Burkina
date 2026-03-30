@@ -52,7 +52,6 @@ class AgentProfilePage extends StatelessWidget {
             ),
             const SizedBox(height: 12),
             _buildSettingsItem(Icons.badge_outlined, "Identifiant Agent", agent?.id ?? "N/A", AppColors.primary, AppColors.textDark, AppColors.textLight, AppColors.background),
-            _buildSettingsItem(Icons.shield_outlined, "Signature Numérique", "Certifiée et valide", AppColors.primary, AppColors.textDark, AppColors.textLight, AppColors.background),
             const SizedBox(height: 40),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),

@@ -6,6 +6,20 @@ const AppError = require('../utils/AppError');
 const asyncHandler = require('../middleware/asyncHandler');
 const { generateDocumentPDF } = require('../utils/pdfGenerator');
 
+/**
+ * Helper to find demande by ID or Reference
+ */
+const _findDemande = async (idOrRef) => {
+  if (idOrRef.startsWith('CDB-')) {
+    return await Demande.findOne({ reference: idOrRef }).populate('documentTypeId');
+  }
+  try {
+    return await Demande.findById(idOrRef).populate('documentTypeId');
+  } catch (e) {
+    return await Demande.findOne({ reference: idOrRef }).populate('documentTypeId');
+  }
+};
+
 
 /**
  * Récupérer les demandes du service de l'agent
@@ -52,7 +66,7 @@ exports.getDemandesAgent = asyncHandler(async (req, res) => {
  * Prendre en charge une demande
  */
 exports.prendreEnCharge = asyncHandler(async (req, res, next) => {
-  const demande = await Demande.findById(req.params.id).populate('documentTypeId');
+  const demande = await _findDemande(req.params.id);
 
   if (!demande) {
     return next(new AppError('Demande non trouvée', 404));
@@ -94,7 +108,7 @@ exports.prendreEnCharge = asyncHandler(async (req, res, next) => {
  * Valider une demande
  */
 exports.validerDemande = asyncHandler(async (req, res, next) => {
-  const demande = await Demande.findById(req.params.id).populate('documentTypeId');
+  const demande = await _findDemande(req.params.id);
 
   if (!demande) return next(new AppError('Demande non trouvée', 404));
   
@@ -159,7 +173,7 @@ exports.rejeterDemande = asyncHandler(async (req, res, next) => {
   const { motif } = req.body;
   if (!motif) return next(new AppError('Un motif de rejet est obligatoire', 400));
 
-  const demande = await Demande.findById(req.params.id).populate('documentTypeId');
+  const demande = await _findDemande(req.params.id);
 
   if (!demande) return next(new AppError('Demande non trouvée', 404));
   
@@ -211,7 +225,7 @@ exports.demanderComplement = asyncHandler(async (req, res, next) => {
     return next(new AppError('Veuillez spécifier la liste des documents manquants', 400));
   }
 
-  const demande = await Demande.findById(req.params.id).populate('documentTypeId');
+  const demande = await _findDemande(req.params.id);
 
   if (!demande) return next(new AppError('Demande non trouvée', 404));
   

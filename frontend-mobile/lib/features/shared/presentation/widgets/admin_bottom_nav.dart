@@ -97,7 +97,7 @@ class AdminBottomNav extends StatelessWidget {
           BottomNavigationBarItem(
             icon: Icon(Icons.folder_open_outlined, size: 22),
             activeIcon: Icon(Icons.folder_rounded, size: 22),
-            label: 'DOCUMENTS',
+            label: 'DOCS & SERVICES',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.account_circle_outlined, size: 22),

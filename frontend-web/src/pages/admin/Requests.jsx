@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { useAdminRequests } from '../../hooks/useAdmin';
 import { approveRequest, rejectRequest, getRequestDetail as getAgentRequestDetail } from '../../services/agentService';
-import { Search, Filter, CheckCircle, XCircle, AlertCircle, ChevronLeft, ChevronRight, Calendar, FileText, Download } from 'lucide-react';
+import { request } from '../../services/apiClient';
+import { Search, Filter, CheckCircle, XCircle, AlertCircle, ChevronLeft, ChevronRight, Calendar, FileText, Download, Eye } from 'lucide-react';
 
 const Requests = () => {
   const { requests, loading } = useAdminRequests();
@@ -49,16 +50,29 @@ const Requests = () => {
   const handleAction = async (action) => {
     setSubmitting(true);
     try {
-      if (action === 'APPROVE') {
-        await approveRequest(activeRequest.id, 'Dossier conforme et validé.');
-        setActiveRequest({ id: activeRequest.id, step: 'SUCCESS', type: 'APPROVE' });
-      } else if (action === 'REJECT') {
-        if (!comment.trim()) { alert('Motif obligatoire'); setSubmitting(false); return; }
-        await rejectRequest(activeRequest.id, comment);
-        setActiveRequest({ id: activeRequest.id, step: 'SUCCESS', type: 'REJECT' });
+      const dbId = detailData?._raw?._id;
+      if (!dbId) throw new Error("ID technique manquant. Impossible de traiter.");
+      
+      // Force taking charge if the request is still 'EN_ATTENTE'
+      if (detailData?._raw?.statut === 'EN_ATTENTE') {
+        await request(`/agent/demandes/${dbId}/prendre-en-charge`, { method: 'PUT' });
       }
+
+      if (action === 'APPROVE') {
+        await approveRequest(dbId, 'Dossier conforme et validé par l\'administrateur.');
+        alert('Demande validée avec succès !');
+      } else if (action === 'REJECT') {
+        if (!comment.trim()) { alert('Un motif de rejet est obligatoire.'); setSubmitting(false); return; }
+        await rejectRequest(dbId, comment);
+        alert('Demande rejetée.');
+      }
+      
+      setActiveRequest(null);
+      // Refresh the page or the list
+      window.location.reload();
     } catch (error) {
-      alert('Erreur: ' + error.message);
+      console.error("Action error:", error);
+      alert('Erreur: ' + (error.response?.data?.message || error.message));
     } finally {
       setSubmitting(false);
       setComment('');
@@ -123,9 +137,9 @@ const Requests = () => {
               className="appearance-none pl-10 pr-10 py-3 bg-white border border-gray-100 rounded-[1.25rem] text-sm font-semibold text-gray-700 outline-none focus:ring-2 focus:ring-[#1A237E]/20 cursor-pointer shadow-sm"
             >
               <option value="ALL">Type de Document</option>
-              <option value="CNI">CNI</option>
-              <option value="Passeport">Passeport</option>
-              <option value="Acte de Naissance">Acte de Naissance</option>
+              <option value="Acte de Naissance">Extrait de Naissance</option>
+              <option value="Casier Judiciaire">Casier Judiciaire</option>
+              <option value="Certificat de Nationalité">Certificat de Nationalité</option>
             </select>
             <Filter size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
           </div>
@@ -136,7 +150,7 @@ const Requests = () => {
               onChange={(e) => { setStatusFilter(e.target.value); setCurrentPage(1); }}
               className="appearance-none pl-10 pr-10 py-3 bg-white border border-gray-100 rounded-[1.25rem] text-sm font-semibold text-gray-700 outline-none focus:ring-2 focus:ring-[#1A237E]/20 cursor-pointer shadow-sm"
             >
-              <option value="ALL">Statut</option>
+              <option value="ALL">Tous les Statuts</option>
               <option value="ATTENTE">En attente</option>
               <option value="VALID">Approuvée</option>
               <option value="REJET">Rejetée</option>
@@ -144,9 +158,9 @@ const Requests = () => {
             <div className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 rounded-full border-[4px] border-[#1A237E]" />
           </div>
 
-          {/* Calendrier uniquement */}
-          <div className="relative shrink-0 flex items-center gap-2">
-            <div className="relative overflow-hidden">
+          {/* Filtre Date repositionné en dessous ou après */}
+          <div className="relative flex items-center gap-2">
+            <div className="relative">
               <input
                 type="date"
                 value={customDate}
@@ -158,9 +172,10 @@ const Requests = () => {
             {customDate && (
               <button 
                 onClick={() => { setCustomDate(''); setCurrentPage(1); }}
-                className="text-[10px] font-bold text-red-600 hover:text-red-700 uppercase tracking-widest bg-red-50 px-3 py-1.5 rounded-lg border border-red-100 transition-colors"
+                className="p-3 bg-red-50 text-red-600 rounded-xl hover:bg-red-100 transition-colors"
+                title="Réinitialiser la date"
               >
-                Tout voir
+                <XCircle size={18} />
               </button>
             )}
           </div>
@@ -198,9 +213,10 @@ const Requests = () => {
                     <td className="px-6 py-4 align-middle text-right">
                       <button 
                         onClick={() => handleOpenDetails(req)}
-                        className="px-4 py-2 bg-slate-900 text-white rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-slate-800 transition-all opacity-0 group-hover:opacity-100 shadow-lg shadow-slate-900/20"
+                        className="w-10 h-10 bg-slate-50 text-slate-400 hover:text-[#1A237E] hover:bg-blue-50 rounded-xl flex items-center justify-center transition-all border border-gray-100 shadow-sm mx-auto mr-0"
+                        title="Voir les détails"
                       >
-                        Détails
+                        <Eye size={18} />
                       </button>
                     </td>
                   </tr>
@@ -222,12 +238,48 @@ const Requests = () => {
               </button>
             </div>
             <div className="flex-1 overflow-y-auto p-6 bg-[#F8FAFC]">
-               {/* Contenu simplifié */}
-               <p className="text-center py-20 text-gray-500 italic font-bold tracking-widest">Informations confidentielles chargées.</p>
+               {detailData ? (
+                 <div className="space-y-6">
+                    <div className="grid grid-cols-2 gap-4 bg-white p-5 rounded-2xl border border-gray-100 shadow-sm">
+                       <div>
+                          <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Citoyen</p>
+                          <p className="text-sm font-bold text-slate-800">{detailData.citizen?.name || detailData.citizen}</p>
+                       </div>
+                       <div>
+                          <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Statut Actuel</p>
+                          {getStatusBadge(detailData._raw?.statut)}
+                       </div>
+                    </div>
+                    
+                    <div className="space-y-3">
+                       <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Décision de l'Administrateur</p>
+                       <textarea 
+                          value={comment}
+                          onChange={(e) => setComment(e.target.value)}
+                          placeholder="Note de validation ou motif de rejet..."
+                          className="w-full p-4 bg-white border border-gray-100 rounded-2xl text-sm font-medium focus:ring-4 focus:ring-blue-50 outline-none min-h-[100px]"
+                       />
+                    </div>
+                 </div>
+               ) : (
+                 <p className="text-center py-20 text-gray-500 italic font-bold tracking-widest animate-pulse">Chargement des données...</p>
+               )}
             </div>
             <div className="bg-gray-100 px-6 py-4 border-t border-gray-200 flex justify-end gap-3">
-               <button onClick={() => handleAction('REJECT')} className="px-6 py-2.5 bg-white border border-red-200 text-red-700 hover:bg-red-50 rounded font-bold text-sm transition-colors">Rejeter</button>
-               <button onClick={() => handleAction('APPROVE')} className="px-6 py-2.5 bg-[#10B981] hover:bg-[#059669] text-white rounded font-bold text-sm transition-colors shadow-lg shadow-green-900/20">Valider</button>
+               <button 
+                 onClick={() => handleAction('REJECT')} 
+                 disabled={submitting || !detailData}
+                 className="px-6 py-2.5 bg-white border border-red-200 text-red-700 hover:bg-red-50 rounded-xl font-black text-[10px] uppercase tracking-widest transition-colors disabled:opacity-50"
+               >
+                 Rejeter le dossier
+               </button>
+               <button 
+                 onClick={() => handleAction('APPROVE')} 
+                 disabled={submitting || !detailData}
+                 className="px-8 py-2.5 bg-[#10B981] hover:bg-[#059669] text-white rounded-xl font-black text-[10px] uppercase tracking-widest transition-colors shadow-lg shadow-green-900/20 disabled:opacity-50"
+               >
+                 {submitting ? 'Traitement...' : 'Valider & Générer PDF'}
+               </button>
             </div>
           </div>
         </div>

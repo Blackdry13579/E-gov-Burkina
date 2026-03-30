@@ -13,6 +13,7 @@ import '../../../../core/constants/app_colors.dart';
 import 'admin_users_page.dart';
 import 'admin_demandes_page.dart';
 import 'admin_stats_page.dart';
+import '../widgets/admin_drawer.dart';
 
 class AdminHomePage extends StatefulWidget {
   const AdminHomePage({super.key});
@@ -55,16 +56,34 @@ class _AdminHomePageState extends State<AdminHomePage> {
 
     return Scaffold(
       backgroundColor: backgroundLight,
-      appBar: EgovMainAppBar(
-        title: 'ADMINISTRATION PUBLIQUE',
-        onNotificationTap: () => Navigator.push(
-          context,
-          MaterialPageRoute(builder: (_) => const NotificationsPage(role: 'admin')),
+      drawer: const AdminDrawer(),
+      appBar: AppBar(
+        backgroundColor: Colors.white,
+        elevation: 0,
+        leading: Builder(
+          builder: (ctx) => IconButton(
+            icon: const Icon(Icons.menu_rounded, color: primaryBlue),
+            onPressed: () => Scaffold.of(ctx).openDrawer(),
+          ),
         ),
-        onProfileTap: () => Navigator.push(
-          context,
-          MaterialPageRoute(builder: (_) => const AdminProfilePage()),
+        title: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('E-Gov Burkina', style: GoogleFonts.publicSans(color: primaryBlue, fontSize: 15, fontWeight: FontWeight.bold)),
+            Text('ADMINISTRATION PUBLIQUE', style: GoogleFonts.publicSans(color: textSecondary, fontSize: 10, fontWeight: FontWeight.w800, letterSpacing: 1.2)),
+          ],
         ),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.notifications_none_rounded, color: primaryBlue),
+            onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const NotificationsPage(role: 'admin'))),
+          ),
+          IconButton(
+            icon: const Icon(Icons.account_circle, color: primaryBlue),
+            onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const AdminProfilePage())),
+          ),
+          const SizedBox(width: 8),
+        ],
       ),
       body: stats.isLoading || userMgmt.isLoading
           ? const Center(child: CircularProgressIndicator(color: primaryBlue))
@@ -88,25 +107,30 @@ class _AdminHomePageState extends State<AdminHomePage> {
                   Container(
                     width: double.infinity,
                     height: 100,
-                    padding: const EdgeInsets.all(20),
+                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                     decoration: BoxDecoration(color: heroBg, borderRadius: BorderRadius.circular(18)),
-                    child: Stack(
+                    child: Row(
                       children: [
-                        Positioned(
-                          right: -8, top: -12,
-                          child: Icon(Icons.account_balance_rounded, color: primaryBlue.withOpacity(0.07), size: 90),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                "Bienvenue, ${user?.fullName ?? 'Administrateur'}",
+                                style: GoogleFonts.inter(fontSize: 17, fontWeight: FontWeight.w700, color: primaryBlue),
+                              ),
+                              const SizedBox(height: 6),
+                              Text("Administration Publique", style: GoogleFonts.inter(fontSize: 13, color: textSecondary)),
+                            ],
+                          ),
                         ),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text(
-                              "Bienvenue, ${user?.fullName ?? 'Administrateur'}",
-                              style: GoogleFonts.inter(fontSize: 17, fontWeight: FontWeight.w700, color: primaryBlue),
-                            ),
-                            const SizedBox(height: 6),
-                            Text("Unité · Progrès · Justice", style: GoogleFonts.inter(fontSize: 13, fontStyle: FontStyle.italic, color: accentTeal)),
-                          ],
+                        Image.asset(
+                          'assets/images/embleme.png',
+                          height: 60,
+                          fit: BoxFit.contain,
+                          errorBuilder: (context, error, stackTrace) =>
+                              const Icon(Icons.account_balance_rounded, color: primaryBlue, size: 40),
                         ),
                       ],
                     ),
