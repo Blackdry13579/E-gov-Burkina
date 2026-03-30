@@ -1,5 +1,6 @@
 require('dotenv').config();
 const path = require('path');
+const logger = require('./utils/logger');
 const validateEnv = require('./config/env');
 
 // Valider les variables d'environnement au démarrage
@@ -20,7 +21,6 @@ const compression = require('compression');
 const connectDB = require('./config/database');
 const seedDocuments = require('./config/seeds');
 const errorHandler = require('./middleware/errorHandler');
-const logger = require('./utils/logger');
 
 // Connexion à la base de données
 const startServer = async () => {

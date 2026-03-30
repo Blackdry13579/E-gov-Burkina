@@ -8,10 +8,14 @@ const logger = require('../utils/logger');
  */
 const connectDB = async () => {
   try {
-    const conn = await mongoose.connect(process.env.MONGODB_URI);
+    const conn = await mongoose.connect(process.env.MONGODB_URI, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+      serverSelectionTimeoutMS: 5000, // Timeout after 5s instead of 30s
+    });
     logger.info(`✅ MongoDB connecté : ${conn.connection.host}`);
   } catch (error) {
-    logger.error(`Erreur de connexion MongoDB : ${error.message}`);
+    logger.error(`❌ Erreur de connexion MongoDB : ${error.message}`);
     process.exit(1);
   }
 };
