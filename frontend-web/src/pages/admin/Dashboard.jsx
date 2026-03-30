@@ -162,14 +162,14 @@ const Dashboard = () => {
     <div className="space-y-8 pb-20">
 
       {/* ── Bannière de bienvenue ── */}
-      <div className="relative h-56 rounded-[2.5rem] overflow-hidden shadow-xl shadow-blue-900/10">
+      <div className="relative h-64 rounded-[3rem] overflow-hidden shadow-2xl shadow-blue-900/10 bg-[#1A237E]">
         <img
           src="/building.png"
           alt="E-Gov Burkina"
-          className="absolute inset-0 w-full h-full object-cover object-center"
+          className="absolute inset-0 w-full h-full object-cover object-center opacity-60"
         />
         {/* Dégradé directionnel pour lisibilité du texte */}
-        <div className="absolute inset-0 bg-gradient-to-r from-[#1A237E]/90 via-[#1A237E]/60 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-r from-[#1A237E] via-[#1A237E]/40 to-transparent" />
         <div className="relative h-full flex flex-col justify-center px-12 text-white">
           <p className="text-xs font-black uppercase tracking-[0.25em] text-blue-200 mb-2">
             Tableau de bord
@@ -187,7 +187,7 @@ const Dashboard = () => {
         {statCards.map((card, idx) => (
           <div
             key={idx}
-            className="bg-white rounded-[2rem] p-7 border border-gray-100 shadow-sm hover:shadow-lg transition-all"
+            className="bg-white rounded-[2rem] p-7 border border-white shadow-md shadow-blue-900/5 hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
           >
             <div className="flex items-start justify-between mb-5">
               <div className={`w-14 h-14 rounded-2xl flex items-center justify-center ${card.bg} ${card.color}`}>

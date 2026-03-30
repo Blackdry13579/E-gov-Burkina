@@ -14,7 +14,7 @@ const AdminLayout = () => {
   const sidebarWidth = collapsed ? 72 : 288;
 
   return (
-    <div className="flex min-h-screen font-sans" style={{ backgroundColor: '#F5F7FA' }}>
+    <div className="flex min-h-screen font-sans bg-slate-50">
 
       {/* Mobile Overlay */}
       {mobileOpen && (

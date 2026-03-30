@@ -9,6 +9,7 @@ const NotificationDropdown = () => {
   const [notifications, setNotifications] = useState([]);
   const [loading, setLoading] = useState(false);
   const dropdownRef = useRef(null);
+  const unreadCount = notifications.filter(n => n.unread).length;
 
   const fetchNotifications = async () => {
     setLoading(true);
