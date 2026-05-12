@@ -49,7 +49,7 @@ Application CiviDoc destinée exclusivement aux Citoyens pour un usage ultra-acc
 ---
 
 ## ⚙️ Déploiement et Installation en Local
-
+     technical part
 ### Prérequis
 - **Node.js** (v18+)
 - **MongoDB** (Installé en local ou URI MongoDB Atlas)
